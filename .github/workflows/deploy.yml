@@ -32,6 +32,4 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
       - name: Deploy a Firebase Hosting
-        run: npx firebase-tools deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
-        env:
-          FIREBASE_PROJECT: fraganzia-e9b70
+        run: npx firebase-tools deploy --only hosting --project fraganzia-e9b70 --token "${{ secrets.FIREBASE_TOKEN }}"
