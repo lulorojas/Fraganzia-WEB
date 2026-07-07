@@ -13,3 +13,22 @@ export function preciosPorMetodo(precioUSD, dolarMedio) {
     precioEfectivo: precioARS * 0.95,
   };
 }
+
+/**
+ * Devuelve la mejor promoción aplicable para un perfume dado.
+ * - Si perfumeIds es vacío/null → aplica a TODOS los perfumes.
+ * - Si perfumeIds tiene valores → solo aplica a esos IDs.
+ * - Entre varias promos aplicables, devuelve la de mayor descuento.
+ */
+export function getMejorPromo(perfumeId, promociones) {
+  if (!promociones?.length) return null;
+  const aplicables = promociones.filter((p) => {
+    if (!p.descuentoPorcentaje || p.descuentoPorcentaje <= 0) return false;
+    if (!p.perfumeIds || p.perfumeIds.length === 0) return true;
+    return p.perfumeIds.includes(perfumeId);
+  });
+  if (!aplicables.length) return null;
+  return aplicables.reduce((best, p) =>
+    p.descuentoPorcentaje > best.descuentoPorcentaje ? p : best
+  );
+}

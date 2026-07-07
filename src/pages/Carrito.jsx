@@ -5,6 +5,7 @@ import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useConfig } from '../hooks/useConfig';
 import { useCrearPedido } from '../hooks/usePedidos';
 import { usePromocionesActivas } from '../hooks/usePromociones';
+import { useAuth } from '../context/AuthContext';
 import { obtenerPerfumePorId } from '../services/perfumesService';
 import { CartItem } from '../components/cart/CartItem';
 import { SelectorPago } from '../components/cart/SelectorPago';
@@ -20,6 +21,7 @@ export default function Carrito() {
   const { data: config } = useConfig();
   const { mutateAsync: crearPedido, isPending } = useCrearPedido();
   const { data: promociones } = usePromocionesActivas();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Mejor descuento entre todas las promociones activas
@@ -28,7 +30,7 @@ export default function Carrito() {
     ?.reduce((best, p) => (!best || p.descuentoPorcentaje > best.descuentoPorcentaje ? p : best), null);
   const promoDescuentoPct = mejorPromo?.descuentoPorcentaje ?? 0;
 
-  const [clienteNombre, setClienteNombre] = useState('');
+  const [clienteNombre, setClienteNombre] = useState(user?.displayName ?? '');
   const [errorNombre, setErrorNombre] = useState(null);
   const [avisoDisponibilidad, setAvisoDisponibilidad] = useState(null);
 

@@ -9,6 +9,8 @@ import Catalogo from '../pages/Catalogo';
 import PerfumeDetalle from '../pages/PerfumeDetalle';
 import Carrito from '../pages/Carrito';
 import Login from '../pages/Login';
+import SobreNosotros from '../pages/SobreNosotros';
+import Contacto from '../pages/Contacto';
 import Dashboard from '../pages/admin/Dashboard';
 import AdminPerfumes from '../pages/admin/AdminPerfumes';
 import AdminPedidos from '../pages/admin/AdminPedidos';
@@ -36,6 +38,8 @@ export function AppRouter() {
           <Route path="/catalogo" element={<Catalogo />} />
           <Route path="/perfume/:id" element={<PerfumeDetalle />} />
           <Route path="/carrito" element={<Carrito />} />
+          <Route path="/sobre-nosotros" element={<SobreNosotros />} />
+          <Route path="/contacto" element={<Contacto />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

@@ -4,11 +4,12 @@ import { usePerfume } from '../hooks/usePerfume';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
 import { useConfig } from '../hooks/useConfig';
+import { usePromocionesActivas } from '../hooks/usePromociones';
 import { NotasOlfativas } from '../components/perfumes/NotasOlfativas';
 import { PrecioNoDisponible } from '../components/perfumes/PrecioNoDisponible';
 import { Spinner } from '../components/ui/Spinner';
 import { Button } from '../components/ui/Button';
-import { preciosPorMetodo } from '../utils/precios';
+import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
 import { formatARS } from '../utils/format';
 
 export default function PerfumeDetalle() {
@@ -16,6 +17,7 @@ export default function PerfumeDetalle() {
   const { data: perfume, isLoading } = usePerfume(id);
   const { dolarMedio } = useDolarBlue();
   const { data: config } = useConfig();
+  const { data: promociones } = usePromocionesActivas();
   const { dispatch } = useCart();
   const [cantidad, setCantidad] = useState(1);
 
@@ -44,6 +46,11 @@ export default function PerfumeDetalle() {
   const tieneCotizacion = Boolean(dolarMedio);
   const precios = tieneCotizacion ? preciosPorMetodo(perfume.precioUSD, dolarMedio) : null;
 
+  const promo = getMejorPromo(perfume.id, promociones);
+  const pct = promo?.descuentoPorcentaje ?? 0;
+  const precioTransConPromo = precios && pct ? precios.precioTransferencia * (1 - pct / 100) : null;
+  const precioEfecConPromo  = precios && pct ? precios.precioEfectivo  * (1 - pct / 100) : null;
+
   return (
     <div className="mx-auto max-w-3xl p-6">
       {perfume.imagenes?.[0] && (
@@ -57,9 +64,28 @@ export default function PerfumeDetalle() {
       <p className="text-text-secondary">{perfume.marca} · {perfume.volumenML} ml</p>
 
       {tieneCotizacion ? (
-        <div className="mt-4 font-luxury text-xl text-text">
-          <p>Transferencia: {formatARS(precios.precioTransferencia)}</p>
-          <p>Efectivo: {formatARS(precios.precioEfectivo)}</p>
+        <div className="mt-4 font-luxury">
+          {pct > 0 ? (
+            <>
+              {promo?.nombre && (
+                <p className="mb-1 text-sm text-lila font-medium">🏷️ {promo.nombre} — {pct}% off</p>
+              )}
+              <div className="flex items-baseline gap-3 text-xl">
+                <span className="line-through text-error">{formatARS(precios.precioTransferencia)}</span>
+                <span className="text-success font-bold">{formatARS(precioTransConPromo)}</span>
+              </div>
+              <p className="text-text-secondary">
+                Efectivo:{' '}
+                <span className="line-through text-error mr-1">{formatARS(precios.precioEfectivo)}</span>
+                <span className="text-success font-bold">{formatARS(precioEfecConPromo)}</span>
+              </p>
+            </>
+          ) : (
+            <div className="text-xl text-text">
+              <p>Transferencia: {formatARS(precios.precioTransferencia)}</p>
+              <p>Efectivo: {formatARS(precios.precioEfectivo)}</p>
+            </div>
+          )}
         </div>
       ) : (
         <div className="mt-4">

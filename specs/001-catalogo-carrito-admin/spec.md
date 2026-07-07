@@ -209,6 +209,83 @@ y que los precios usen el valor de referencia cuando la cotización automática 
 
 ---
 
+### User Story 8 - Login y registro de clientes desde la portada (Priority: P2)
+
+Un cliente puede crear una cuenta o iniciar sesión desde cualquier página usando el ícono de
+usuario en el Navbar. Si está autenticado, su nombre se pre-carga en el checkout. Los
+administradores usan el mismo flujo; si su UID está en `admins`, ven acceso al panel admin.
+
+**Why this priority**: Mejora la experiencia (checkout más rápido), pero la compra sigue siendo
+posible sin registrarse.
+
+**Independent Test**: Registrarse, cerrar sesión, volver a iniciar sesión y verificar que el
+nombre aparece pre-cargado en el campo del checkout.
+
+**Acceptance Scenarios**:
+
+1. **Given** el cliente hace click en el ícono de usuario sin estar autenticado, **Then** se
+   abre un modal con pestañas "Iniciar sesión" y "Registrarse".
+2. **Given** el modal de registro, **When** el cliente completa nombre, email y contraseña
+   válidos, **Then** la cuenta se crea y queda autenticado.
+3. **Given** el cliente está autenticado, **When** va al carrito, **Then** el campo de nombre
+   está pre-cargado con su nombre de registro.
+4. **Given** el usuario autenticado es admin, **When** abre el menú de usuario, **Then** ve un
+   acceso directo al "Panel Admin".
+
+---
+
+### User Story 9 - Ver precio con descuento de promoción (Priority: P2)
+
+Cuando hay una promoción activa con porcentaje de descuento, el cliente ve el precio original
+tachado en rojo y el precio con descuento en verde en tarjetas y detalle de perfume.
+
+**Why this priority**: Impacto directo en conversión — el cliente ve el beneficio al navegar.
+
+**Independent Test**: Con una promo activa con descuento > 0, los perfumes afectados muestran
+precio tachado rojo + precio con descuento verde en grilla y detalle.
+
+**Acceptance Scenarios**:
+
+1. **Given** promo activa con `descuentoPorcentaje: 20` y sin `perfumeIds`, **When** el cliente
+   ve el catálogo, **Then** cada tarjeta muestra precio original tachado rojo y precio con 20%
+   de descuento en verde.
+2. **Given** la promo tiene `perfumeIds: [id1, id2]`, **When** el cliente ve el catálogo,
+   **Then** solo esos perfumes muestran el descuento; el resto muestra precio normal.
+3. **Given** no hay promociones activas con descuento, **When** el cliente navega, **Then** los
+   precios se muestran normales sin tachado.
+4. **Given** promo con descuento activa, **When** el cliente abre el detalle de un perfume
+   afectado, **Then** el detalle también muestra precio original tachado + precio con descuento.
+
+---
+
+### User Story 10 - Páginas Sobre Nosotros y Contacto (Priority: P3)
+
+Un visitante puede acceder a información sobre Fraganzia y sus canales de contacto desde el
+Navbar. Estas páginas son estáticas.
+
+**Why this priority**: Genera confianza, pero no bloquea el flujo de compra.
+
+**Acceptance Scenarios**:
+
+1. **Given** click en "Nosotros" en el Navbar, **Then** llega a `/sobre-nosotros`.
+2. **Given** click en "Contacto" en el Navbar, **Then** llega a `/contacto` con WhatsApp directo.
+
+---
+
+### User Story 11 - Dashboard con estadísticas de pedidos (Priority: P2)
+
+El admin ve en el Dashboard: total de pedidos, monto total facturado y desglose por método de pago.
+
+**Why this priority**: Visibilidad básica de operación sin salir del panel.
+
+**Acceptance Scenarios**:
+
+1. **Given** existen pedidos en Firestore, **When** el admin entra al Dashboard, **Then** ve
+   total pedidos, monto total en ARS y desglose por método de pago.
+2. **Given** no hay pedidos, **When** el admin entra al Dashboard, **Then** ve todo en cero.
+
+---
+
 ### Edge Cases
 
 - Si un perfume que un cliente tiene en el carrito pasa a no estar disponible antes de que
@@ -314,6 +391,24 @@ y que los precios usen el valor de referencia cuando la cotización automática 
 - **FR-035**: El sistema DEBE mostrar una página de "Perfume no encontrado" con una acción para
   volver al catálogo cuando un cliente intente abrir el detalle de un perfume inexistente o dado de
   baja, en lugar de un error sin manejar.
+- **FR-036**: El sistema DEBE mostrar un ícono de usuario en la barra de navegación en toda la
+  aplicación pública.
+- **FR-037**: El sistema DEBE permitir a un visitante registrarse como cliente con nombre, email y
+  contraseña desde un modal accesible desde el ícono de usuario.
+- **FR-038**: El sistema DEBE permitir a un cliente registrado iniciar sesión desde el mismo modal.
+- **FR-039**: Cuando el cliente está autenticado, el sistema DEBE pre-cargar su nombre en el campo
+  de nombre del checkout.
+- **FR-040**: Si hay una promoción activa con `descuentoPorcentaje > 0`, el sistema DEBE mostrar en
+  cada perfume afectado el precio original tachado en rojo y el precio con descuento en verde, tanto
+  en la grilla del catálogo como en el detalle del perfume.
+- **FR-041**: Si la promoción tiene `perfumeIds` con valores, el descuento visual aplica únicamente
+  a esos perfumes; si `perfumeIds` está vacío o ausente, aplica a todos los perfumes.
+- **FR-042**: El sistema DEBE tener una página `/sobre-nosotros` accesible desde el Navbar con
+  información sobre la marca.
+- **FR-043**: El sistema DEBE tener una página `/contacto` accesible desde el Navbar con el número
+  de WhatsApp del negocio y un botón directo para iniciar una conversación.
+- **FR-044**: El Dashboard del panel de administración DEBE mostrar estadísticas de pedidos: total
+  de pedidos, suma total facturada en ARS y desglose de cantidad por método de pago.
 
 ### Key Entities
 
@@ -354,15 +449,14 @@ y que los precios usen el valor de referencia cuando la cotización automática 
 
 ## Assumptions
 
-- El catálogo, el carrito y el checkout son de acceso público; no se requiere que un cliente se
-  registre ni inicie sesión para comprar.
-- Cada pedido queda identificado únicamente con el nombre que el cliente ingresa al confirmar; no
-  se solicitan otros datos de contacto adicionales dentro del sistema, ya que la coordinación
-  posterior ocurre por WhatsApp.
-- Los administradores son cuentas de confianza dadas de alta fuera del flujo normal de la tienda
-  (no existe un alta de administradores autoservicio dentro de este alcance).
-- Las promociones son contenido informativo/visual y no modifican por sí mismas el precio de los
-  productos asociados.
-- Existe siempre un único conjunto de configuración general para todo el negocio (no hay
-  configuraciones por sucursal, región o vendedor).
-- El idioma de toda la experiencia, tanto para clientes como administradores, es español.
+- El catálogo, el carrito y el checkout son de acceso público; registrarse es **opcional** para
+  los clientes. Si están autenticados, su nombre se pre-carga en el checkout (FR-039).
+- Cada pedido queda identificado con el nombre que el cliente ingresa al confirmar; la
+  coordinación de pago y entrega ocurre por WhatsApp.
+- Los administradores se dan de alta manualmente (colección `admins`). Los clientes sí pueden
+  registrarse solos con email y contraseña (FR-037).
+- Las promociones con `descuentoPorcentaje > 0` tienen efecto visual directo sobre los precios
+  del catálogo y el detalle (FR-040/FR-041). *(Asunción original de "puramente informativas"
+  superada por US9.)*
+- Existe siempre un único conjunto de configuración general para todo el negocio.
+- El idioma de toda la experiencia es español.
