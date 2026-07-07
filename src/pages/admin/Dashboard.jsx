@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { DollarSign, CreditCard, Banknote } from 'lucide-react';
+import { ShoppingBag, DollarSign, CreditCard, Banknote } from 'lucide-react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Spinner } from '../../components/ui/Spinner';
 import { usePedidosList } from '../../hooks/usePedidos';
@@ -46,7 +46,12 @@ export default function Dashboard() {
           <Spinner />
         </div>
       ) : (
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            Icon={ShoppingBag}
+            label="Total pedidos"
+            value={totalPedidos}
+          />
           <StatCard
             Icon={DollarSign}
             label="Facturación total"
