@@ -3,7 +3,7 @@ import { formatARS } from '../../utils/format';
 import { construirLinkWhatsApp } from '../../utils/whatsapp';
 import { WHATSAPP_NUMERO, FACTOR_EFECTIVO } from '../../constants';
 
-export function ResumenCheckout({ items, metodoPago, dolarMedio, whatsappNumero }) {
+export function ResumenCheckout({ items, metodoPago, dolarMedio, whatsappNumero, promoDescuentoPct = 0, promoNombre }) {
   const tieneCotizacion = Boolean(dolarMedio);
 
   if (!tieneCotizacion) {
@@ -29,15 +29,28 @@ export function ResumenCheckout({ items, metodoPago, dolarMedio, whatsappNumero 
     (acc, item) => acc + usdAArs(item.precioUSD, dolarMedio) * item.cantidad,
     0
   );
+
+  // Descuento de promoción activa
+  const descuentoPromoARS = subtotalARS * (promoDescuentoPct / 100);
+  const subtotalConPromo = subtotalARS - descuentoPromoARS;
+
+  // Descuento por efectivo sobre el subtotal ya con promo
   const esEfectivo = metodoPago === 'Efectivo';
-  const totalARS = esEfectivo ? subtotalARS * FACTOR_EFECTIVO : subtotalARS;
-  const descuentoARS = subtotalARS - totalARS;
+  const descuentoEfectivoARS = esEfectivo ? subtotalConPromo * (1 - FACTOR_EFECTIVO) : 0;
+  const totalARS = subtotalConPromo - descuentoEfectivoARS;
 
   return (
-    <div className="font-luxury text-text">
-      <p>Subtotal: {formatARS(subtotalARS)}</p>
-      {esEfectivo && <p className="text-success">Descuento 5%: -{formatARS(descuentoARS)}</p>}
-      <p className="text-xl">Total: {formatARS(totalARS)}</p>
+    <div className="font-luxury text-text flex flex-col gap-1">
+      <p className="text-text-secondary">Subtotal: {formatARS(subtotalARS)}</p>
+      {promoDescuentoPct > 0 && (
+        <p className="text-lila text-sm">
+          Promo {promoNombre ? `"${promoNombre}"` : ''} -{promoDescuentoPct}%: -{formatARS(descuentoPromoARS)}
+        </p>
+      )}
+      {esEfectivo && (
+        <p className="text-success text-sm">Descuento efectivo 5%: -{formatARS(descuentoEfectivoARS)}</p>
+      )}
+      <p className="text-xl font-bold">Total: {formatARS(totalARS)}</p>
     </div>
   );
 }

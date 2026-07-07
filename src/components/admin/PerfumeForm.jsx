@@ -18,6 +18,24 @@ function Campo({ label, error, children }) {
 const INPUT = 'w-full rounded-xl border border-border bg-transparent px-3 py-2 text-text';
 const SELECT = 'w-full rounded-xl border border-border bg-bg px-3 py-2 text-text';
 
+// Convierte un array a string para mostrar en el input
+function arr(v, sep = ', ') {
+  if (!v) return '';
+  return Array.isArray(v) ? v.join(sep) : String(v);
+}
+
+// Serializa un perfume existente para que los inputs muestren strings
+function toFormValues(p) {
+  if (!p) return null;
+  return {
+    ...p,
+    notasSalida: arr(p.notasSalida),
+    notasCorazon: arr(p.notasCorazon),
+    notasFondo: arr(p.notasFondo),
+    imagenes: arr(p.imagenes, '\n'),
+  };
+}
+
 export function PerfumeForm({ perfume, onSubmit, onCancel, cargando }) {
   const {
     register,
@@ -26,32 +44,19 @@ export function PerfumeForm({ perfume, onSubmit, onCancel, cargando }) {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(perfumeSchema),
-    defaultValues: perfume ?? {
+    defaultValues: toFormValues(perfume) ?? {
       nombre: '', marca: MARCAS[0], genero: GENEROS[0],
       familiaOlfativa: FAMILIAS_OLFATIVAS[0], descripcion: '',
-      notasSalida: [], notasCorazon: [], notasFondo: [],
-      precioUSD: '', volumenML: 100, imagenes: [],
+      notasSalida: '', notasCorazon: '', notasFondo: '',
+      precioUSD: '', volumenML: 100, imagenes: '',
       destacado: false, disponible: true, activo: true,
     },
   });
 
-  useEffect(() => { if (perfume) reset(perfume); }, [perfume, reset]);
+  useEffect(() => { if (perfume) reset(toFormValues(perfume)); }, [perfume, reset]);
 
-  function procesar(data) {
-    // Notas: campo de texto libre separado por comas → array
-    const parsarNotas = (v) =>
-      Array.isArray(v) ? v : v.split(',').map((s) => s.trim()).filter(Boolean);
-    const imagenes = Array.isArray(data.imagenes)
-      ? data.imagenes
-      : data.imagenes.split('\n').map((s) => s.trim()).filter(Boolean);
-    onSubmit({
-      ...data,
-      notasSalida: parsarNotas(data.notasSalida),
-      notasCorazon: parsarNotas(data.notasCorazon),
-      notasFondo: parsarNotas(data.notasFondo),
-      imagenes,
-    });
-  }
+  // El schema (preprocess) ya convierte strings → arrays antes de validar
+  function procesar(data) { onSubmit(data); }
 
   return (
     <form onSubmit={handleSubmit(procesar)} className="flex flex-col gap-4">

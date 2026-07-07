@@ -1,6 +1,20 @@
 import { z } from 'zod';
 import { GENEROS, FAMILIAS_OLFATIVAS, MARCAS } from '../constants';
 
+// Acepta string CSV ("Bergamota, Rosa") o array — siempre produce array.
+const arrayDesdeComa = z.preprocess((v) => {
+  if (v === undefined || v === null || v === '') return [];
+  if (Array.isArray(v)) return v.filter(Boolean);
+  return String(v).split(',').map((s) => s.trim()).filter(Boolean);
+}, z.array(z.string()));
+
+// Acepta string con saltos de línea o array — siempre produce array.
+const arrayDesdeLineas = z.preprocess((v) => {
+  if (v === undefined || v === null || v === '') return [];
+  if (Array.isArray(v)) return v.filter(Boolean);
+  return String(v).split('\n').map((s) => s.trim()).filter(Boolean);
+}, z.array(z.string()));
+
 export const perfumeSchema = z.object({
   nombre: z.string().min(1, 'El nombre es obligatorio'),
   marca: z.enum(MARCAS, { errorMap: () => ({ message: 'Elegí una marca válida' }) }),
@@ -9,12 +23,12 @@ export const perfumeSchema = z.object({
     errorMap: () => ({ message: 'Elegí una familia olfativa válida' }),
   }),
   descripcion: z.string().min(1, 'La descripción es obligatoria'),
-  notasSalida: z.array(z.string()).default([]),
-  notasCorazon: z.array(z.string()).default([]),
-  notasFondo: z.array(z.string()).default([]),
+  notasSalida: arrayDesdeComa,
+  notasCorazon: arrayDesdeComa,
+  notasFondo: arrayDesdeComa,
   precioUSD: z.coerce.number().positive('El precio debe ser mayor a 0'),
   volumenML: z.coerce.number().positive('El volumen debe ser mayor a 0'),
-  imagenes: z.array(z.string()).default([]),
+  imagenes: arrayDesdeLineas,
   destacado: z.boolean().default(false),
   disponible: z.boolean().default(true),
   activo: z.boolean().default(true),

@@ -1,9 +1,15 @@
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 
-export function PerfumesTable({ perfumes, onEditar, onToggleDisponible, onToggleActivo }) {
+export function PerfumesTable({ perfumes, onEditar, onToggleDisponible, onToggleActivo, onEliminar }) {
   if (!perfumes?.length) {
     return <p className="text-text-secondary">No hay perfumes cargados.</p>;
+  }
+
+  function confirmarEliminar(p) {
+    if (window.confirm(`¿Eliminar "${p.nombre}" permanentemente de la base de datos? Esta acción no se puede deshacer.`)) {
+      onEliminar(p.id);
+    }
   }
 
   return (
@@ -59,6 +65,13 @@ export function PerfumesTable({ perfumes, onEditar, onToggleDisponible, onToggle
                     onClick={() => onToggleActivo(p)}
                   >
                     {p.activo ? 'Ocultar' : 'Publicar'}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="text-xs px-2 py-1 text-error"
+                    onClick={() => confirmarEliminar(p)}
+                  >
+                    Eliminar
                   </Button>
                 </div>
               </td>

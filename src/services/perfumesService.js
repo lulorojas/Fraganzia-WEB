@@ -1,6 +1,6 @@
 import {
   collection, doc, getDoc, getDocs, query, where,
-  addDoc, updateDoc, serverTimestamp,
+  addDoc, updateDoc, deleteDoc, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
@@ -94,4 +94,8 @@ export async function actualizarActivo(id, activo) {
     activo,
     updatedAt: serverTimestamp(),
   });
+}
+
+export async function eliminarPerfume(id) {
+  await deleteDoc(doc(db, COLLECTION, id));
 }

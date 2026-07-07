@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import {
   listarTodosLosPerfumes, crearPerfume, editarPerfume,
-  actualizarDisponibilidad, actualizarActivo,
+  actualizarDisponibilidad, actualizarActivo, eliminarPerfume,
 } from '../../services/perfumesService';
 import { PerfumesTable } from '../../components/admin/PerfumesTable';
 import { PerfumeForm } from '../../components/admin/PerfumeForm';
@@ -47,6 +47,11 @@ export default function AdminPerfumes() {
     qc.invalidateQueries({ queryKey: ['perfumes'] });
   }
 
+  async function handleEliminar(id) {
+    await eliminarPerfume(id);
+    qc.invalidateQueries({ queryKey: ['perfumes'] });
+  }
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -67,6 +72,7 @@ export default function AdminPerfumes() {
           onEditar={abrirEditar}
           onToggleDisponible={handleToggleDisponible}
           onToggleActivo={handleToggleActivo}
+          onEliminar={handleEliminar}
         />
       )}
     </div>

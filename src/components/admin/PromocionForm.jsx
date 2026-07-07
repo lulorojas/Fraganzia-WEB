@@ -6,7 +6,7 @@ const INPUT = 'w-full rounded-xl border border-border bg-transparent px-3 py-2 t
 
 export function PromocionForm({ promocion, onSubmit, onCancel, cargando }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
-    defaultValues: promocion ?? { titulo: '', descripcion: '', imagen: '', activa: true, orden: 1 },
+    defaultValues: promocion ?? { titulo: '', descripcion: '', imagen: '', activa: true, orden: 1, descuentoPorcentaje: 0 },
   });
 
   useEffect(() => { if (promocion) reset(promocion); }, [promocion, reset]);
@@ -30,6 +30,15 @@ export function PromocionForm({ promocion, onSubmit, onCancel, cargando }) {
         <div className="flex-1">
           <label className="text-sm text-text-secondary">Orden</label>
           <input type="number" className={INPUT} {...register('orden', { valueAsNumber: true })} />
+        </div>
+        <div className="flex-1">
+          <label className="text-sm text-text-secondary">Descuento (%)</label>
+          <input
+            type="number" min="0" max="100" step="1"
+            className={INPUT}
+            {...register('descuentoPorcentaje', { valueAsNumber: true })}
+          />
+          <p className="text-xs text-text-secondary mt-1">0 = sin descuento</p>
         </div>
         <label className="flex items-center gap-2 text-text-secondary cursor-pointer mt-5">
           <input type="checkbox" {...register('activa')} /> Activa

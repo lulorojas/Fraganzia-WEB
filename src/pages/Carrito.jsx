@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useConfig } from '../hooks/useConfig';
 import { useCrearPedido } from '../hooks/usePedidos';
+import { usePromocionesActivas } from '../hooks/usePromociones';
 import { obtenerPerfumePorId } from '../services/perfumesService';
 import { CartItem } from '../components/cart/CartItem';
 import { SelectorPago } from '../components/cart/SelectorPago';
@@ -18,7 +19,14 @@ export default function Carrito() {
   const { dolarMedio } = useDolarBlue();
   const { data: config } = useConfig();
   const { mutateAsync: crearPedido, isPending } = useCrearPedido();
+  const { data: promociones } = usePromocionesActivas();
   const navigate = useNavigate();
+
+  // Mejor descuento entre todas las promociones activas
+  const mejorPromo = promociones
+    ?.filter((p) => (p.descuentoPorcentaje ?? 0) > 0)
+    ?.reduce((best, p) => (!best || p.descuentoPorcentaje > best.descuentoPorcentaje ? p : best), null);
+  const promoDescuentoPct = mejorPromo?.descuentoPorcentaje ?? 0;
 
   const [clienteNombre, setClienteNombre] = useState('');
   const [errorNombre, setErrorNombre] = useState(null);
@@ -93,9 +101,13 @@ export default function Carrito() {
       (acc, item) => acc + item.precioARS * item.cantidad,
       0
     );
+    // Descuento promo (si existe) + descuento efectivo (si corresponde)
+    const descuentoPromoARS = subtotalARS * (promoDescuentoPct / 100);
+    const subtotalConPromo = subtotalARS - descuentoPromoARS;
     const esEfectivo = state.metodoPago === 'Efectivo';
-    const totalARS = esEfectivo ? subtotalARS * FACTOR_EFECTIVO : subtotalARS;
-    const descuentoARS = subtotalARS - totalARS;
+    const descuentoEfectivoARS = esEfectivo ? subtotalConPromo * (1 - FACTOR_EFECTIVO) : 0;
+    const totalARS = subtotalConPromo - descuentoEfectivoARS;
+    const descuentoARS = descuentoPromoARS + descuentoEfectivoARS;
 
     const pedido = {
       items: itemsConPrecio,
@@ -143,6 +155,8 @@ export default function Carrito() {
           metodoPago={state.metodoPago}
           dolarMedio={dolarMedio}
           whatsappNumero={config?.whatsappNumero}
+          promoDescuentoPct={promoDescuentoPct}
+          promoNombre={mejorPromo?.titulo}
         />
       </div>
 
