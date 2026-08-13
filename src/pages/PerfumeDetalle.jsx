@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { usePerfume } from '../hooks/usePerfume';
+import { incrementarVista, incrementarAgregadoCarrito } from '../services/estadisticasService';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
 import { useConfig } from '../hooks/useConfig';
@@ -20,6 +21,13 @@ export default function PerfumeDetalle() {
   const { data: promociones } = usePromocionesActivas();
   const { dispatch } = useCart();
   const [cantidad, setCantidad] = useState(1);
+
+  // Registra la vista una sola vez por perfume por sesión (ver
+  // estadisticasService). El id es la dependencia: navegar a otro perfume
+  // vuelve a disparar, recargar el mismo no.
+  useEffect(() => {
+    if (id) incrementarVista(id);
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -105,7 +113,7 @@ export default function PerfumeDetalle() {
           className="w-20 rounded-xl border border-border bg-transparent px-3 py-2 text-text"
         />
         <Button
-          onClick={() =>
+          onClick={() => {
             dispatch({
               type: 'ADD_ITEM',
               payload: {
@@ -115,8 +123,9 @@ export default function PerfumeDetalle() {
                 precioUSD: perfume.precioUSD,
                 cantidad,
               },
-            })
-          }
+            });
+            incrementarAgregadoCarrito(perfume.id);
+          }}
         >
           Agregar al carrito
         </Button>

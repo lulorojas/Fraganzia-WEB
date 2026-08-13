@@ -13,6 +13,10 @@ import {
 import {
   PerfumesMasPedidos, MarcasMasPedidas, OportunidadesReposicion, EvolucionPedidos,
 } from '../../components/admin/panel/DashboardAnalitica';
+import {
+  PerfumesMasVistos, MasBuscados, BusquedasSinResultado, BajaConversion,
+} from '../../components/admin/panel/InteresClientes';
+import { useInteresClientes } from '../../hooks/useInteresClientes';
 import { formatARS } from '../../utils/format';
 
 const VACIO = [];
@@ -36,6 +40,7 @@ export default function Dashboard() {
   const { data: pedidos, isLoading } = usePedidosList();
   const { data: compras } = useCompras();
   const { data: ventasSocios } = useVentasSocios();
+  const { data: interes } = useInteresClientes();
 
   const analitica = useMemo(() => {
     const p = pedidos ?? VACIO;
@@ -85,11 +90,23 @@ export default function Dashboard() {
           </div>
 
           <h2 className="mb-3 font-display text-lg text-text-secondary">Qué se vende y qué reponer</h2>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
             <PerfumesMasPedidos perfumes={analitica.masPedidos} />
             <MarcasMasPedidas marcas={analitica.marcas} />
             <OportunidadesReposicion perfumes={analitica.reposicion} />
             <EvolucionPedidos evolucion={analitica.evolucion} />
+          </div>
+
+          <h2 className="mb-1 font-display text-lg text-text-secondary">Qué mira y busca la gente</h2>
+          <p className="mb-3 text-xs text-text-secondary">
+            Se empezó a registrar a partir de este deploy: los números arrancan de cero y se
+            acumulan con el tráfico de ahora en adelante.
+          </p>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <PerfumesMasVistos perfumes={interes?.masVistos} />
+            <MasBuscados terminos={interes?.masBuscados} />
+            <BusquedasSinResultado terminos={interes?.sinResultado} />
+            <BajaConversion perfumes={interes?.bajaConversion} />
           </div>
         </>
       )}
