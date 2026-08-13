@@ -50,5 +50,54 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if false;
     }
+
+    // ─── Panel financiero interno de socios (privado, solo isAdmin) ──────────
+
+    // Socios: mapeo uid admin -> socio (nombre, authUid). Solo lectura/escritura admin.
+    match /socios/{socioId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Costo de referencia de compra por producto. Privado: nunca se mezcla con
+    // el catálogo público `perfumes`.
+    match /costosProductos/{perfumeId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Ventas directas de perfumes por los socios (distinto de `pedidos`, que son
+    // las compras online del catálogo público).
+    match /ventasSocios/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Ventas de decants.
+    match /ventasDecants/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Compras a proveedores.
+    match /compras/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Gastos compartidos del negocio.
+    match /gastos/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Aportes/retiros propios de cada socio.
+    match /movimientosPersonales/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Transferencias de dinero entre socios (solo constancia contable).
+    match /transferenciasSocios/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Auditoría de creación/edición/anulación de movimientos de este módulo.
+    match /auditoria/{id} {
+      allow read, write: if isAdmin();
+    }
   }
 }

@@ -3,6 +3,13 @@ import { ShoppingBag, DollarSign, CreditCard, Banknote } from 'lucide-react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Spinner } from '../../components/ui/Spinner';
 import { usePedidosList } from '../../hooks/usePedidos';
+import { usePanelFinanciero } from '../../hooks/usePanelFinanciero';
+import { useSocios } from '../../hooks/useSocios';
+import { usePerfumesAdmin } from '../../hooks/usePerfumesAdmin';
+import { TotalesSocioCard } from '../../components/admin/panel/TotalesSocioCard';
+import { SaldoNetoCard } from '../../components/admin/panel/SaldoNetoCard';
+import { StockCard } from '../../components/admin/panel/StockCard';
+import { MovimientosRecientesList } from '../../components/admin/panel/MovimientosRecientesList';
 import { formatARS } from '../../utils/format';
 
 const ACCESOS = [
@@ -29,6 +36,9 @@ function StatCard({ Icon, label, value, sub }) {
 
 export default function Dashboard() {
   const { data: pedidos, isLoading } = usePedidosList();
+  const { data: panel, isLoading: cargandoPanel } = usePanelFinanciero();
+  const { data: socios } = useSocios();
+  const { data: perfumes } = usePerfumesAdmin();
 
   const totalPedidos = pedidos?.length ?? 0;
   const totalARS = pedidos?.reduce((acc, p) => acc + (p.totalARS ?? 0), 0) ?? 0;
@@ -70,6 +80,26 @@ export default function Dashboard() {
             value={porEfectivo}
             sub={`${totalPedidos ? Math.round((porEfectivo / totalPedidos) * 100) : 0}% del total`}
           />
+        </div>
+      )}
+
+      {/* Panel financiero de socios */}
+      <h2 className="mb-3 font-display text-lg text-text-secondary">Panel financiero de socios</h2>
+      {cargandoPanel ? (
+        <div className="mb-8 flex justify-center">
+          <Spinner />
+        </div>
+      ) : (
+        <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <TotalesSocioCard socios={socios} totalesPorSocio={panel?.totalesPorSocio} />
+          <SaldoNetoCard saldoNeto={panel?.saldoNeto ?? 0} socios={socios} />
+          <StockCard
+            stockPorProducto={panel?.stockPorProducto}
+            valorStockTotal={panel?.valorStockTotal}
+            valorStockPorProducto={panel?.valorStockPorProducto}
+            perfumes={perfumes}
+          />
+          <MovimientosRecientesList movimientos={panel?.movimientosRecientes} />
         </div>
       )}
 

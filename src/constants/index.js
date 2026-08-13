@@ -22,3 +22,18 @@ export const FACTOR_EFECTIVO = 0.95;
 export const ESTADOS_PEDIDO = ['confirmado'];
 
 export const DOLAR_BLUE_API = 'https://dolarapi.com/v1/dolares/blue';
+
+// ─── Panel financiero interno de socios ──────────────────────────────────────
+
+export const SOCIOS = [
+  { id: 'luciano', nombre: 'Luciano' },
+  { id: 'benja', nombre: 'Benja' },
+];
+
+export const METODOS_PAGO_SOCIOS = ['efectivo', 'mercadopago'];
+
+export const GASTO_CATEGORIAS = ['Envíos', 'Insumos', 'Marketing', 'Alquiler', 'Otros'];
+
+export const ESTADOS_VENTA_SOCIO = ['pendiente', 'cobrada'];
+
+export const TIPOS_MOVIMIENTO_PERSONAL = ['retiro', 'aporte'];
