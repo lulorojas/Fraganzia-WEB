@@ -325,7 +325,7 @@ reportes reflejan correctamente los rankings y la evolución temporal.
   `/admin`
 - [X] T068 Revisar manejo de errores de Firestore (permisos, red) con mensajes claros en los
   servicios de este módulo (`movimientosService.js` y los wrappers específicos)
-- [ ] T069 Confirmar con el usuario y ejecutar el deploy de `firestore.rules` a producción
+- [X] T069 Confirmar con el usuario y ejecutar el deploy de `firestore.rules` a producción
   (`firebase deploy --only firestore:rules`) — acción de alto impacto, requiere aprobación
   explícita antes de correrla (ver T001)
 - [X] T070 Limpieza final: eliminar `console.log` de debug en los archivos nuevos de este módulo
