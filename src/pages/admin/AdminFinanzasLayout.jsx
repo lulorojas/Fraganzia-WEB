@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import {
-  LayoutDashboard, TrendingUp, Droplet, ShoppingCart, Receipt, ArrowLeftRight, History,
+  LayoutDashboard, TrendingUp, Droplet, ShoppingCart, Receipt, ArrowLeftRight, History, BarChart3,
 } from 'lucide-react';
 
 const TABS = [
@@ -10,7 +10,8 @@ const TABS = [
   { to: 'compras', label: 'Compras', Icon: ShoppingCart },
   { to: 'gastos', label: 'Gastos', Icon: Receipt },
   { to: 'movimientos', label: 'Movimientos', Icon: ArrowLeftRight },
-  { to: 'historial', label: 'Historial', Icon: History },
+  { to: 'analytics', label: 'Analytics', Icon: BarChart3 },
+  { to: 'auditoria', label: 'Auditoría', Icon: History },
 ];
 
 export default function AdminFinanzasLayout() {

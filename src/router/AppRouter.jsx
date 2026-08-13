@@ -23,7 +23,8 @@ import AdminCompras from '../pages/admin/AdminCompras';
 import AdminVentasDecants from '../pages/admin/AdminVentasDecants';
 import AdminGastos from '../pages/admin/AdminGastos';
 import AdminMovimientos from '../pages/admin/AdminMovimientos';
-import AdminFinanzasHistorial from '../pages/admin/AdminFinanzasHistorial';
+import AdminAuditoria from '../pages/admin/AdminAuditoria';
+import AdminAnalytics from '../pages/admin/AdminAnalytics';
 
 function PublicLayout() {
   return (
@@ -72,7 +73,8 @@ export function AppRouter() {
             <Route path="compras" element={<AdminCompras />} />
             <Route path="gastos" element={<AdminGastos />} />
             <Route path="movimientos" element={<AdminMovimientos />} />
-            <Route path="historial" element={<AdminFinanzasHistorial />} />
+            <Route path="analytics" element={<AdminAnalytics />} />
+            <Route path="auditoria" element={<AdminAuditoria />} />
           </Route>
         </Route>
       </Routes>

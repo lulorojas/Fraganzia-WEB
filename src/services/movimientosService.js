@@ -70,6 +70,18 @@ export function anularMovimientoEnBatch(batch, coleccion, id, valorAnterior, soc
   return ref;
 }
 
+/**
+ * `socioPrivado` marca a quién pertenece una entrada que NO es compartida.
+ * Las entradas de `movimientosPersonales` guardan el detalle del movimiento
+ * (monto, tipo) en valorAnterior/valorNuevo, así que sin esta marca el otro
+ * socio podría leer por la auditoría lo que la regla de la colección le
+ * oculta. `null` = compartida, la ven ambos.
+ */
+function socioPrivadoDe(coleccion, valorAnterior, valorNuevo, modificadoPor) {
+  if (coleccion !== 'movimientosPersonales') return null;
+  return valorNuevo?.socioId ?? valorAnterior?.socioId ?? modificadoPor;
+}
+
 export function registrarAuditoriaEnBatch(batch, {
   coleccion, documentoId, accion, valorAnterior, valorNuevo, modificadoPor,
 }) {
@@ -81,6 +93,7 @@ export function registrarAuditoriaEnBatch(batch, {
     valorAnterior: valorAnterior ?? null,
     valorNuevo: valorNuevo ?? null,
     modificadoPor,
+    socioPrivado: socioPrivadoDe(coleccion, valorAnterior, valorNuevo, modificadoPor),
     modificadoAt: serverTimestamp(),
   });
   return ref;

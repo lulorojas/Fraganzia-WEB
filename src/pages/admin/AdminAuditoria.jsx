@@ -24,6 +24,12 @@ export default function AdminAuditoria() {
 
   return (
     <div>
+      <p className="mb-4 text-xs text-text-secondary">
+        Incluye todos los movimientos compartidos (ventas, decants, compras, gastos y
+        transferencias) más tus propios movimientos personales. Los movimientos personales
+        del otro socio son privados y no aparecen acá.
+      </p>
+
       <GlassCard className="mb-6">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>

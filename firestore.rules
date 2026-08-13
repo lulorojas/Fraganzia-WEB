@@ -106,8 +106,15 @@ service cloud.firestore {
     }
 
     // Auditoría de creación/edición/anulación de movimientos de este módulo.
+    // Las entradas de movimientos personales llevan `socioPrivado` y solo las
+    // lee su dueño: si no, el otro socio vería por acá el detalle que la regla
+    // de movimientosPersonales le oculta. `socioPrivado == null` = compartida.
     match /auditoria/{id} {
-      allow read, write: if isAdmin();
+      allow read: if isAdmin()
+        && (resource.data.socioPrivado == null
+            || resource.data.socioPrivado == socioIdDe(request.auth.uid));
+      allow create: if isAdmin();
+      allow update, delete: if false;
     }
   }
 }
