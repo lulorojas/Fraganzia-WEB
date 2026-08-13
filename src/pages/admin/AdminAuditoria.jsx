@@ -24,8 +24,6 @@ export default function AdminAuditoria() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl text-text">Historial y auditoría</h1>
-
       <GlassCard className="mb-6">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
           <div>

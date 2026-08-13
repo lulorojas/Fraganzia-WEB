@@ -9,6 +9,19 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // Mapea un uid autenticado al socioId correspondiente (docs socios/luciano,
+    // socios/benja), usando `exists()` primero para no fallar si alguno de los
+    // dos documentos todavía no fue dado de alta.
+    function socioIdDe(uid) {
+      return exists(/databases/$(database)/documents/socios/luciano)
+          && get(/databases/$(database)/documents/socios/luciano).data.authUid == uid
+        ? 'luciano'
+        : (exists(/databases/$(database)/documents/socios/benja)
+            && get(/databases/$(database)/documents/socios/benja).data.authUid == uid
+          ? 'benja'
+          : null);
+    }
+
     // Catálogo: lectura pública; escritura solo admin.
     match /perfumes/{perfumeId} {
       allow read: if true;
@@ -58,12 +71,6 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
-    // Costo de referencia de compra por producto. Privado: nunca se mezcla con
-    // el catálogo público `perfumes`.
-    match /costosProductos/{perfumeId} {
-      allow read, write: if isAdmin();
-    }
-
     // Ventas directas de perfumes por los socios (distinto de `pedidos`, que son
     // las compras online del catálogo público).
     match /ventasSocios/{id} {
@@ -85,9 +92,12 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
-    // Aportes/retiros propios de cada socio.
+    // Aportes/retiros propios de cada socio: privados — cada socio solo puede
+    // leer, crear, editar o anular sus propios movimientos, nunca los del otro.
     match /movimientosPersonales/{id} {
-      allow read, write: if isAdmin();
+      allow read: if isAdmin() && resource.data.socioId == socioIdDe(request.auth.uid);
+      allow create: if isAdmin() && request.resource.data.socioId == socioIdDe(request.auth.uid);
+      allow update, delete: if isAdmin() && resource.data.socioId == socioIdDe(request.auth.uid);
     }
 
     // Transferencias de dinero entre socios (solo constancia contable).

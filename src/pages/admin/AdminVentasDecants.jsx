@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useSocios } from '../../hooks/useSocios';
+import { useSocioActual } from '../../hooks/useSocioActual';
 import {
   useVentasDecants, useCrearVentaDecant, useEditarVentaDecant, useAnularVentaDecant,
 } from '../../hooks/useVentasDecants';
@@ -10,16 +10,10 @@ import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { GlassCard } from '../../components/ui/GlassCard';
 
-function useSocioActualId() {
-  const { user } = useAuth();
-  const { data: socios } = useSocios();
-  return socios?.find((s) => s.authUid === user?.uid)?.id ?? socios?.[0]?.id ?? 'luciano';
-}
-
 export default function AdminVentasDecants() {
   const { data: ventas, isLoading } = useVentasDecants();
   const { data: socios } = useSocios();
-  const socioActualId = useSocioActualId();
+  const socioActualId = useSocioActual();
 
   const crear = useCrearVentaDecant();
   const editar = useEditarVentaDecant();
@@ -55,8 +49,7 @@ export default function AdminVentasDecants() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl text-text">Ventas de decants</h1>
+      <div className="mb-6 flex justify-end">
         {!modo && <Button onClick={abrirNuevo}>+ Nueva venta</Button>}
       </div>
       {modo ? (

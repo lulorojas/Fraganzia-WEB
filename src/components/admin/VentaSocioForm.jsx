@@ -11,6 +11,7 @@ import { useDolarBlue } from '../../hooks/useDolarBlue';
 import { usdAArs } from '../../utils/precios';
 import { METODOS_PAGO_SOCIOS, ESTADOS_VENTA_SOCIO } from '../../constants';
 import { Button } from '../ui/Button';
+import { PerfumeSearchSelect } from '../ui/PerfumeSearchSelect';
 
 function Campo({ label, error, children }) {
   return (
@@ -64,9 +65,7 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
   const cantidad = Number(watch('cantidad')) || 0;
   const estado = watch('estado');
 
-  function handlePerfumeChange(e) {
-    const id = e.target.value;
-    const p = perfumes?.find((x) => x.id === id);
+  function handlePerfumeChange(id, p) {
     setValue('perfumeId', id);
     setValue('perfumeNombre', p?.nombre ?? '');
     if (p && dolarMedio) {
@@ -81,10 +80,7 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Campo label="Perfume" error={errors.perfumeId?.message}>
-          <select className={SELECT} value={perfumeId} onChange={handlePerfumeChange}>
-            <option value="">Elegir…</option>
-            {perfumes?.map((p) => <option key={p.id} value={p.id}>{p.nombre}</option>)}
-          </select>
+          <PerfumeSearchSelect perfumes={perfumes} value={perfumeId} onChange={handlePerfumeChange} />
         </Campo>
         <Campo label="Cantidad" error={errors.cantidad?.message}>
           <input type="number" min="1" className={INPUT} {...register('cantidad')} />

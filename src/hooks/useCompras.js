@@ -14,7 +14,6 @@ function useInvalidarCompras() {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: ['compras'] });
-    qc.invalidateQueries({ queryKey: ['costosProductos'] });
     qc.invalidateQueries({ queryKey: ['panelFinanciero'] });
   };
 }

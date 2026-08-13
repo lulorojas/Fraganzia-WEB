@@ -1,11 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { listarMovimientos } from '../services/movimientosService';
-import { crearMovimiento, editarMovimiento, anularMovimiento } from '../services/movimientosPersonalesService';
+import {
+  listarMovimientosPropios, crearMovimiento, editarMovimiento, anularMovimiento,
+} from '../services/movimientosPersonalesService';
 
-export function useMovimientosPersonales() {
+// Requiere socioId: la colección es privada por socio (regla de Firestore),
+// no existe una lectura "de todos" posible.
+export function useMovimientosPersonales(socioId) {
   return useQuery({
-    queryKey: ['movimientosPersonales'],
-    queryFn: () => listarMovimientos('movimientosPersonales'),
+    queryKey: ['movimientosPersonales', socioId],
+    queryFn: () => listarMovimientosPropios(socioId),
+    enabled: Boolean(socioId),
     staleTime: 60 * 1000,
   });
 }

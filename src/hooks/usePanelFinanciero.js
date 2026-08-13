@@ -5,9 +5,9 @@ import { useCompras } from './useCompras';
 import { useGastos } from './useGastos';
 import { useMovimientosPersonales } from './useMovimientosPersonales';
 import { useTransferenciasSocios } from './useTransferenciasSocios';
-import { useCostosProductos } from './useCostosProductos';
+import { useSocioActual } from './useSocioActual';
 import {
-  calcularTotalesPorSocio, calcularSaldoNeto, calcularStockPorProducto, calcularValorStock,
+  calcularTotalesPorSocio, calcularSaldoNeto, calcularStockPorProducto,
 } from '../services/panelFinancieroCalculos';
 
 const VACIO = [];
@@ -17,17 +17,21 @@ const VACIO = [];
  * pantallas individuales — no vuelve a leer Firestore por su cuenta. Así, tener
  * el dashboard y una pantalla de movimientos abiertos en la misma sesión no
  * duplica lecturas: comparten la misma entrada de caché de TanStack Query.
+ *
+ * `movimientosPersonales` solo trae los del socio logueado (regla de Firestore
+ * restringida por privacidad) — `totalesPorSocio[otroSocio]` queda incompleto
+ * a propósito y nunca se muestra; ver `panel/TotalesSocioCard.jsx`.
  */
 export function usePanelFinanciero() {
+  const socioActualId = useSocioActual();
   const ventasSocios = useVentasSocios();
   const ventasDecants = useVentasDecants();
   const compras = useCompras();
   const gastos = useGastos();
-  const movimientosPersonales = useMovimientosPersonales();
+  const movimientosPersonales = useMovimientosPersonales(socioActualId);
   const transferenciasSocios = useTransferenciasSocios();
-  const costos = useCostosProductos();
 
-  const queries = [ventasSocios, ventasDecants, compras, gastos, movimientosPersonales, transferenciasSocios, costos];
+  const queries = [ventasSocios, ventasDecants, compras, gastos, movimientosPersonales, transferenciasSocios];
   const isLoading = queries.some((q) => q.isLoading);
   const error = queries.find((q) => q.error)?.error ?? null;
 
@@ -38,10 +42,8 @@ export function usePanelFinanciero() {
     const g = gastos.data ?? VACIO;
     const mp = movimientosPersonales.data ?? VACIO;
     const t = transferenciasSocios.data ?? VACIO;
-    const co = costos.data ?? VACIO;
 
     const stockPorProducto = calcularStockPorProducto(c, v);
-    const { total: valorStockTotal, porProducto: valorStockPorProducto } = calcularValorStock(stockPorProducto, co);
 
     const movimientosRecientes = [
       ...v.map((m) => ({ ...m, tipo: 'Venta perfume' })),
@@ -62,13 +64,11 @@ export function usePanelFinanciero() {
         ventasSocios: v, ventasDecants: vd, compras: c, gastos: g, transferenciasSocios: t,
       }),
       stockPorProducto,
-      valorStockTotal,
-      valorStockPorProducto,
       movimientosRecientes,
     };
   }, [
     ventasSocios.data, ventasDecants.data, compras.data, gastos.data,
-    movimientosPersonales.data, transferenciasSocios.data, costos.data,
+    movimientosPersonales.data, transferenciasSocios.data,
   ]);
 
   return { data, isLoading, error };

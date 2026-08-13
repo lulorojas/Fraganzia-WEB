@@ -1,24 +1,26 @@
+import { Wallet } from 'lucide-react';
 import { GlassCard } from '../../ui/GlassCard';
 import { formatARS } from '../../../utils/format';
 
-export function TotalesSocioCard({ socios, totalesPorSocio }) {
+// Solo el total del socio logueado — el del otro socio depende de sus
+// movimientos personales, que son privados y no se pueden leer (ver
+// firestore.rules y useMovimientosPersonales).
+export function TotalesSocioCard({ socioActualId, socios, totalesPorSocio }) {
+  const nombre = socios?.find((s) => s.id === socioActualId)?.nombre ?? 'Yo';
+  const t = totalesPorSocio?.[socioActualId] ?? { efectivo: 0, mercadopago: 0, total: 0 };
+
   return (
     <GlassCard>
-      <h3 className="mb-3 font-display text-lg text-text">Totales por socio</h3>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {socios?.map((s) => {
-          const t = totalesPorSocio?.[s.id] ?? { efectivo: 0, mercadopago: 0, total: 0 };
-          return (
-            <div key={s.id} className="rounded-xl border border-border p-3">
-              <p className="font-body text-text-secondary">{s.nombre}</p>
-              <p className="font-display text-xl text-text">{formatARS(t.total)}</p>
-              <p className="text-xs text-text-secondary">
-                Efectivo {formatARS(t.efectivo)} · MP {formatARS(t.mercadopago)}
-              </p>
-            </div>
-          );
-        })}
+      <div className="mb-3 flex items-center gap-2">
+        <div className="rounded-xl bg-lila/10 p-2">
+          <Wallet className="h-5 w-5 text-lila" />
+        </div>
+        <h3 className="font-display text-lg text-text">Mi saldo ({nombre})</h3>
       </div>
+      <p className="font-display text-2xl text-text">{formatARS(t.total)}</p>
+      <p className="text-xs text-text-secondary">
+        Efectivo {formatARS(t.efectivo)} · MP {formatARS(t.mercadopago)}
+      </p>
     </GlassCard>
   );
 }

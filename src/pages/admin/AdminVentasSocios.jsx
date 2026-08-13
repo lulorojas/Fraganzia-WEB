@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useSocios } from '../../hooks/useSocios';
+import { useSocioActual } from '../../hooks/useSocioActual';
 import { useVentasSocios, useCrearVenta, useEditarVenta, useAnularVenta } from '../../hooks/useVentasSocios';
 import { VentaSocioForm } from '../../components/admin/VentaSocioForm';
 import { VentasSociosTable } from '../../components/admin/VentasSociosTable';
@@ -8,16 +8,10 @@ import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { GlassCard } from '../../components/ui/GlassCard';
 
-function useSocioActualId() {
-  const { user } = useAuth();
-  const { data: socios } = useSocios();
-  return socios?.find((s) => s.authUid === user?.uid)?.id ?? socios?.[0]?.id ?? 'luciano';
-}
-
 export default function AdminVentasSocios() {
   const { data: ventas, isLoading } = useVentasSocios();
   const { data: socios } = useSocios();
-  const socioActualId = useSocioActualId();
+  const socioActualId = useSocioActual();
 
   const crear = useCrearVenta();
   const editar = useEditarVenta();
@@ -59,8 +53,7 @@ export default function AdminVentasSocios() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl text-text">Ventas de perfumes</h1>
+      <div className="mb-6 flex justify-end">
         {!modo && <Button onClick={abrirNuevo}>+ Nueva venta</Button>}
       </div>
       {modo ? (

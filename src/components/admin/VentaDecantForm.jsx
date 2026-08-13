@@ -5,6 +5,7 @@ import { ventaDecantSchema } from '../../schemas/ventaDecantSchema';
 import { useSocios } from '../../hooks/useSocios';
 import { usePerfumesAdmin } from '../../hooks/usePerfumesAdmin';
 import { Button } from '../ui/Button';
+import { PerfumeSearchSelect } from '../ui/PerfumeSearchSelect';
 
 function Campo({ label, error, children }) {
   return (
@@ -45,9 +46,7 @@ export function VentaDecantForm({ venta, onSubmit, onCancel, cargando }) {
 
   useEffect(() => { if (venta) reset(toFormValues(venta)); }, [venta, reset]);
 
-  function handlePerfumeChange(e) {
-    const id = e.target.value;
-    const p = perfumes?.find((x) => x.id === id);
+  function handlePerfumeChange(id, p) {
     setValue('perfumeId', id);
     setValue('perfumeNombre', p?.nombre ?? '');
   }
@@ -56,10 +55,7 @@ export function VentaDecantForm({ venta, onSubmit, onCancel, cargando }) {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Campo label="Perfume" error={errors.perfumeId?.message}>
-          <select className={SELECT} value={watch('perfumeId')} onChange={handlePerfumeChange}>
-            <option value="">Elegir…</option>
-            {perfumes?.map((p) => <option key={p.id} value={p.id}>{p.nombre}</option>)}
-          </select>
+          <PerfumeSearchSelect perfumes={perfumes} value={watch('perfumeId')} onChange={handlePerfumeChange} />
         </Campo>
         <Campo label="Tamaño" error={errors.tamano?.message}>
           <input className={INPUT} placeholder="ej. 5ml" {...register('tamano')} />

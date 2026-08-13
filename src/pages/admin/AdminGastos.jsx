@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useSocios } from '../../hooks/useSocios';
+import { useSocioActual } from '../../hooks/useSocioActual';
 import { useGastos, useCrearGasto, useEditarGasto, useAnularGasto } from '../../hooks/useGastos';
 import { GastoForm } from '../../components/admin/GastoForm';
 import { GastosTable } from '../../components/admin/GastosTable';
@@ -8,16 +8,10 @@ import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { GlassCard } from '../../components/ui/GlassCard';
 
-function useSocioActualId() {
-  const { user } = useAuth();
-  const { data: socios } = useSocios();
-  return socios?.find((s) => s.authUid === user?.uid)?.id ?? socios?.[0]?.id ?? 'luciano';
-}
-
 export default function AdminGastos() {
   const { data: gastos, isLoading } = useGastos();
   const { data: socios } = useSocios();
-  const socioActualId = useSocioActualId();
+  const socioActualId = useSocioActual();
 
   const crear = useCrearGasto();
   const editar = useEditarGasto();
@@ -53,8 +47,7 @@ export default function AdminGastos() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl text-text">Gastos</h1>
+      <div className="mb-6 flex justify-end">
         {!modo && <Button onClick={abrirNuevo}>+ Nuevo gasto</Button>}
       </div>
       {modo ? (
