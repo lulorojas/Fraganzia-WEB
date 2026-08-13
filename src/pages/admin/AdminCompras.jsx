@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useSocios } from '../../hooks/useSocios';
+import { useSocioActual } from '../../hooks/useSocioActual';
 import { useCompras, useCrearCompra, useEditarCompra, useAnularCompra } from '../../hooks/useCompras';
 import { CompraForm } from '../../components/admin/CompraForm';
 import { ComprasTable } from '../../components/admin/ComprasTable';
@@ -8,16 +8,10 @@ import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { GlassCard } from '../../components/ui/GlassCard';
 
-function useSocioActualId() {
-  const { user } = useAuth();
-  const { data: socios } = useSocios();
-  return socios?.find((s) => s.authUid === user?.uid)?.id ?? socios?.[0]?.id ?? 'luciano';
-}
-
 export default function AdminCompras() {
   const { data: compras, isLoading } = useCompras();
   const { data: socios } = useSocios();
-  const socioActualId = useSocioActualId();
+  const socioActualId = useSocioActual();
 
   const crear = useCrearCompra();
   const editar = useEditarCompra();
@@ -53,14 +47,13 @@ export default function AdminCompras() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl text-text">Compras</h1>
+      <div className="mb-6 flex justify-end">
         {!modo && <Button onClick={abrirNuevo}>+ Nueva compra</Button>}
       </div>
       {modo ? (
         <GlassCard>
           <h2 className="mb-4 font-display text-xl text-text">
-            {modo === 'nuevo' ? 'Nueva compra' : `Editando: ${compraEditando?.perfumeNombre}`}
+            {modo === 'nuevo' ? 'Nueva compra' : `Editando: ${compraEditando?.proveedor}`}
           </h2>
           {error && <p className="mb-3 text-sm text-error">{error}</p>}
           <CompraForm compra={compraEditando} onSubmit={handleSubmit} onCancel={cerrar} cargando={guardando} />

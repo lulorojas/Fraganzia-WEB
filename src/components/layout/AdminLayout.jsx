@@ -8,13 +8,7 @@ const NAV_ITEMS = [
   { to: '/admin/pedidos', label: 'Pedidos' },
   { to: '/admin/promociones', label: 'Promociones' },
   { to: '/admin/config', label: 'Configuración' },
-  { to: '/admin/ventas', label: 'Ventas' },
-  { to: '/admin/compras', label: 'Compras' },
-  { to: '/admin/decants', label: 'Decants' },
-  { to: '/admin/gastos', label: 'Gastos' },
-  { to: '/admin/movimientos', label: 'Movimientos' },
-  { to: '/admin/auditoria', label: 'Auditoría' },
-  { to: '/admin/analytics', label: 'Analytics' },
+  { to: '/admin/finanzas', label: 'Finanzas' },
 ];
 
 export function AdminLayout({ children }) {

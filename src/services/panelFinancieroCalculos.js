@@ -69,14 +69,16 @@ export function calcularSaldoNeto({
   let saldo = 0;
   const signo = (socioId) => (socioId === 'luciano' ? 1 : -1);
 
+  // Quien vende retiene la plata del cliente: es deudor de la mitad ajena
+  // (signo invertido respecto de gastos/compras, donde quien paga es acreedor).
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
     .forEach((v) => {
-      saldo += signo(v.vendidoPor) * ((v.cantidad * v.precioUnitario) / 2);
+      saldo -= signo(v.vendidoPor) * ((v.cantidad * v.precioUnitario) / 2);
     });
 
   ventasDecants.forEach((v) => {
-    saldo += signo(v.vendidoPor) * ((v.cantidad * v.precioUnitario) / 2);
+    saldo -= signo(v.vendidoPor) * ((v.cantidad * v.precioUnitario) / 2);
   });
 
   gastos.forEach((g) => {
@@ -84,9 +86,8 @@ export function calcularSaldoNeto({
   });
 
   compras.forEach((c) => {
-    const costoTotal = c.costoTotal ?? c.cantidad * c.costoUnitario;
     (c.pagos || []).forEach((p) => {
-      saldo += signo(p.socioId) * (p.monto - costoTotal / 2);
+      saldo += signo(p.socioId) * (p.monto - c.montoTotal / 2);
     });
   });
 
@@ -100,7 +101,9 @@ export function calcularSaldoNeto({
 export function calcularStockPorProducto(compras = [], ventasSocios = []) {
   const stock = {};
   compras.forEach((c) => {
-    stock[c.perfumeId] = (stock[c.perfumeId] || 0) + c.cantidad;
+    (c.items || []).forEach((item) => {
+      stock[item.perfumeId] = (stock[item.perfumeId] || 0) + item.cantidad;
+    });
   });
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
@@ -108,20 +111,6 @@ export function calcularStockPorProducto(compras = [], ventasSocios = []) {
       stock[v.perfumeId] = (stock[v.perfumeId] || 0) - v.cantidad;
     });
   return stock;
-}
-
-export function calcularValorStock(stockPorProducto, costos = []) {
-  const costoPorProducto = Object.fromEntries(
-    costos.map((c) => [c.perfumeId, c.costoUltimaCompra || 0])
-  );
-  let total = 0;
-  const porProducto = {};
-  Object.entries(stockPorProducto).forEach(([perfumeId, cantidad]) => {
-    const valor = cantidad * (costoPorProducto[perfumeId] || 0);
-    porProducto[perfumeId] = valor;
-    total += valor;
-  });
-  return { total, porProducto };
 }
 
 export function calcularRankingPerfumes(ventasSocios = []) {

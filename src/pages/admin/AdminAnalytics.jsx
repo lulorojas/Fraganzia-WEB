@@ -14,7 +14,6 @@ export default function AdminAnalytics() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl text-text">Analytics</h1>
       {isLoading ? <Spinner /> : (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <AnalyticsRankingPerfumes ranking={data?.rankingPerfumes} />

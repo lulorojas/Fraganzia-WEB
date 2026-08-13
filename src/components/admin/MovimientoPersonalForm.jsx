@@ -1,7 +1,7 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { movimientoPersonalSchema } from '../../schemas/movimientoPersonalSchema';
-import { useSocios } from '../../hooks/useSocios';
 import { Button } from '../ui/Button';
 
 function Campo({ label, error, children }) {
@@ -21,31 +21,29 @@ function hoyISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export function MovimientoPersonalForm({ onSubmit, cargando }) {
-  const { data: socios } = useSocios();
+// Sin selector de socio: la regla de Firestore solo deja crear movimientos
+// personales a nombre de uno mismo, así que `socioId` se fija al logueado,
+// no se elige.
+export function MovimientoPersonalForm({ socioActualId, onSubmit, cargando }) {
   const {
-    register, handleSubmit, reset,
+    register, handleSubmit, setValue, reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(movimientoPersonalSchema),
-    defaultValues: { socioId: '', tipo: 'aporte', monto: '', metodo: 'efectivo', fecha: hoyISO() },
+    defaultValues: { socioId: socioActualId, tipo: 'aporte', monto: '', metodo: 'efectivo', fecha: hoyISO() },
   });
+
+  useEffect(() => { setValue('socioId', socioActualId); }, [socioActualId, setValue]);
 
   async function procesar(data) {
     await onSubmit(data);
-    reset({ socioId: '', tipo: 'aporte', monto: '', metodo: 'efectivo', fecha: hoyISO() });
+    reset({ socioId: socioActualId, tipo: 'aporte', monto: '', metodo: 'efectivo', fecha: hoyISO() });
   }
 
   return (
     <form onSubmit={handleSubmit(procesar)} className="flex flex-col gap-4">
-      <h3 className="font-display text-lg text-text">Movimiento personal</h3>
+      <h3 className="font-display text-lg text-text">Mis movimientos personales</h3>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Campo label="Socio" error={errors.socioId?.message}>
-          <select className={SELECT} {...register('socioId')}>
-            <option value="">Elegir…</option>
-            {socios?.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}
-          </select>
-        </Campo>
         <Campo label="Tipo" error={errors.tipo?.message}>
           <select className={SELECT} {...register('tipo')}>
             <option value="aporte">Aporte</option>

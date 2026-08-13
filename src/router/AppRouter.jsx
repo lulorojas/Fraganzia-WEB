@@ -16,13 +16,14 @@ import AdminPerfumes from '../pages/admin/AdminPerfumes';
 import AdminPedidos from '../pages/admin/AdminPedidos';
 import AdminPromociones from '../pages/admin/AdminPromociones';
 import AdminConfig from '../pages/admin/AdminConfig';
+import AdminFinanzasLayout from '../pages/admin/AdminFinanzasLayout';
+import AdminFinanzasResumen from '../pages/admin/AdminFinanzasResumen';
 import AdminVentasSocios from '../pages/admin/AdminVentasSocios';
 import AdminCompras from '../pages/admin/AdminCompras';
 import AdminVentasDecants from '../pages/admin/AdminVentasDecants';
 import AdminGastos from '../pages/admin/AdminGastos';
 import AdminMovimientos from '../pages/admin/AdminMovimientos';
-import AdminAuditoria from '../pages/admin/AdminAuditoria';
-import AdminAnalytics from '../pages/admin/AdminAnalytics';
+import AdminFinanzasHistorial from '../pages/admin/AdminFinanzasHistorial';
 
 function PublicLayout() {
   return (
@@ -64,13 +65,15 @@ export function AppRouter() {
           <Route path="pedidos" element={<AdminPedidos />} />
           <Route path="promociones" element={<AdminPromociones />} />
           <Route path="config" element={<AdminConfig />} />
-          <Route path="ventas" element={<AdminVentasSocios />} />
-          <Route path="compras" element={<AdminCompras />} />
-          <Route path="decants" element={<AdminVentasDecants />} />
-          <Route path="gastos" element={<AdminGastos />} />
-          <Route path="movimientos" element={<AdminMovimientos />} />
-          <Route path="auditoria" element={<AdminAuditoria />} />
-          <Route path="analytics" element={<AdminAnalytics />} />
+          <Route path="finanzas" element={<AdminFinanzasLayout />}>
+            <Route index element={<AdminFinanzasResumen />} />
+            <Route path="ventas" element={<AdminVentasSocios />} />
+            <Route path="decants" element={<AdminVentasDecants />} />
+            <Route path="compras" element={<AdminCompras />} />
+            <Route path="gastos" element={<AdminGastos />} />
+            <Route path="movimientos" element={<AdminMovimientos />} />
+            <Route path="historial" element={<AdminFinanzasHistorial />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

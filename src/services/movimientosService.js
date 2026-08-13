@@ -20,7 +20,7 @@ export async function listarMovimientos(coleccion) {
 }
 
 // ─── Primitivas a nivel de batch (para servicios que necesitan agregar
-// escrituras adicionales al mismo batch, ej. comprasService + costosProductos) ──
+// escrituras adicionales al mismo batch antes de comitear) ──────────────────
 
 export function crearMovimientoEnBatch(batch, coleccion, datos, socioId) {
   const ref = doc(collection(db, coleccion));

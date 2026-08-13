@@ -11,7 +11,7 @@ export function ComprasTable({ compras, socios, onEditar, onAnular }) {
   }
 
   function confirmarAnular(c) {
-    if (window.confirm(`¿Anular la compra de "${c.perfumeNombre}"? El stock que generó se resta.`)) {
+    if (window.confirm(`¿Anular la compra a "${c.proveedor}"? El stock que generó se resta.`)) {
       onAnular(c);
     }
   }
@@ -22,9 +22,8 @@ export function ComprasTable({ compras, socios, onEditar, onAnular }) {
         <thead>
           <tr className="border-b border-border text-text-secondary">
             <th className="pb-2 pr-4">Proveedor</th>
-            <th className="pb-2 pr-4">Perfume</th>
-            <th className="pb-2 pr-4">Cant.</th>
-            <th className="pb-2 pr-4">Costo total</th>
+            <th className="pb-2 pr-4">Perfumes</th>
+            <th className="pb-2 pr-4">Monto total</th>
             <th className="pb-2 pr-4">Pagos</th>
             <th className="pb-2">Acciones</th>
           </tr>
@@ -33,9 +32,10 @@ export function ComprasTable({ compras, socios, onEditar, onAnular }) {
           {compras.map((c) => (
             <tr key={c.id} className="border-b border-border">
               <td className="py-2 pr-4 font-body">{c.proveedor}</td>
-              <td className="py-2 pr-4">{c.perfumeNombre}</td>
-              <td className="py-2 pr-4">{c.cantidad}</td>
-              <td className="py-2 pr-4 font-luxury">{formatARS(c.costoTotal)}</td>
+              <td className="py-2 pr-4">
+                {(c.items || []).map((i) => `${i.perfumeNombre} ×${i.cantidad}`).join(' · ')}
+              </td>
+              <td className="py-2 pr-4 font-luxury">{formatARS(c.montoTotal)}</td>
               <td className="py-2 pr-4 text-xs text-text-secondary">
                 {(c.pagos || []).map((p) => `${nombreSocio(p.socioId)}: ${formatARS(p.monto)}`).join(' · ')}
               </td>
