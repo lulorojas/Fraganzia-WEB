@@ -76,7 +76,7 @@ export function GastoForm({ gasto, onSubmit, onCancel, cargando }) {
         <input className={INPUT} {...register('descripcion')} />
       </Campo>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={cargando}>
           {cargando ? 'Guardando…' : gasto ? 'Guardar cambios' : 'Cargar gasto'}
         </Button>

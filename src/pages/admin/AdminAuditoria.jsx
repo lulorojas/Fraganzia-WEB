@@ -25,7 +25,7 @@ export default function AdminAuditoria() {
   return (
     <div>
       <GlassCard className="mb-6">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label className="text-sm text-text-secondary">Tipo de movimiento</label>
             <select className={SELECT} value={filtros.coleccion} onChange={(e) => actualizarFiltro('coleccion', e.target.value)}>

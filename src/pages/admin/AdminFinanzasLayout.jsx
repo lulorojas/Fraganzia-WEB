@@ -16,20 +16,22 @@ const TABS = [
 export default function AdminFinanzasLayout() {
   return (
     <div>
-      <h1 className="mb-4 font-display text-2xl text-text">Administración Financiera</h1>
-      <nav className="glass mb-6 flex flex-wrap gap-2 p-2">
+      <h1 className="mb-4 font-display text-xl text-text sm:text-2xl">Administración Financiera</h1>
+
+      {/* En mobile scrollea horizontal en una sola fila; en desktop envuelve. */}
+      <nav className="glass mb-6 -mx-1 flex gap-2 overflow-x-auto p-2 sm:mx-0 sm:flex-wrap sm:overflow-visible">
         {TABS.map(({ to, label, Icon, end }) => (
           <NavLink
             key={to}
             to={to}
             end={end}
             className={({ isActive }) =>
-              `flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-body transition-base ${
+              `flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-body transition-base ${
                 isActive ? 'gradient-violet text-text glow' : 'text-text-secondary hover:text-text'
               }`
             }
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-4 w-4 shrink-0" />
             {label}
           </NavLink>
         ))}

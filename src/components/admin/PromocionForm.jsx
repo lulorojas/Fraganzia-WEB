@@ -44,7 +44,7 @@ export function PromocionForm({ promocion, onSubmit, onCancel, cargando }) {
           <input type="checkbox" {...register('activa')} /> Activa
         </label>
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={cargando}>
           {cargando ? 'Guardando…' : promocion ? 'Guardar cambios' : 'Crear promoción'}
         </Button>

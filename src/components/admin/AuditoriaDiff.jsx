@@ -23,7 +23,7 @@ export function AuditoriaDiff({ entrada }) {
 
   return (
     <GlassCard>
-      <h3 className="mb-3 font-display text-lg text-text">
+      <h3 className="mb-3 break-all font-display text-lg text-text">
         {entrada.coleccion} · {entrada.documentoId}
       </h3>
       <div className="overflow-x-auto">

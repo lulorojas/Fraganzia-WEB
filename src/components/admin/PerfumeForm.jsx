@@ -117,7 +117,7 @@ export function PerfumeForm({ perfume, onSubmit, onCancel, cargando }) {
         </label>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={cargando}>
           {cargando ? 'Guardando…' : perfume ? 'Guardar cambios' : 'Crear perfume'}
         </Button>

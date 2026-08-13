@@ -47,6 +47,15 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
     [compras, ventasSocios]
   );
 
+  // Solo se puede vender lo que hay en stock. Al editar, el perfume ya elegido
+  // se mantiene disponible aunque su stock haya llegado a 0 con esta misma venta.
+  const perfumesVendibles = useMemo(() => {
+    const idEditando = venta?.perfumeId;
+    return (perfumes ?? []).filter(
+      (p) => (stockPorProducto[p.id] ?? 0) > 0 || p.id === idEditando
+    );
+  }, [perfumes, stockPorProducto, venta]);
+
   const {
     register, handleSubmit, watch, setValue, reset,
     formState: { errors },
@@ -66,7 +75,7 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
   const estado = watch('estado');
 
   function handlePerfumeChange(id, p) {
-    setValue('perfumeId', id);
+    setValue('perfumeId', id, { shouldValidate: true });
     setValue('perfumeNombre', p?.nombre ?? '');
     if (p && dolarMedio) {
       setValue('precioUnitario', Math.round(usdAArs(p.precioUSD, dolarMedio)));
@@ -80,7 +89,13 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Campo label="Perfume" error={errors.perfumeId?.message}>
-          <PerfumeSearchSelect perfumes={perfumes} value={perfumeId} onChange={handlePerfumeChange} />
+          <PerfumeSearchSelect
+            perfumes={perfumesVendibles}
+            value={perfumeId}
+            onChange={handlePerfumeChange}
+            stockPorProducto={stockPorProducto}
+            mensajeVacio="No hay perfumes en stock. Cargá una compra primero."
+          />
         </Campo>
         <Campo label="Cantidad" error={errors.cantidad?.message}>
           <input type="number" min="1" className={INPUT} {...register('cantidad')} />
@@ -112,14 +127,18 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
         </Campo>
       </div>
 
+      {perfumeId && (
+        <p className="text-sm text-text-secondary">Stock disponible: {stockActual}</p>
+      )}
+
       {excedeStock && (
         <p className="text-sm text-error">
-          Atención: estás cobrando {cantidad} unidades pero el stock calculado de este perfume es
+          Atención: estás cobrando {cantidad} unidades pero el stock de este perfume es
           {' '}{stockActual}. Podés guardar igual si el negocio real lo permite.
         </p>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={cargando}>
           {cargando ? 'Guardando…' : venta ? 'Guardar cambios' : 'Cargar venta'}
         </Button>

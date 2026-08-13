@@ -7,19 +7,14 @@ const itemSchema = z.object({
   cantidad: z.coerce.number().int().positive('La cantidad debe ser mayor a 0'),
 });
 
-const pagoSchema = z.object({
-  socioId: z.string().min(1),
-  monto: z.coerce.number().min(0),
-  metodo: z.enum(METODOS_PAGO_SOCIOS),
-});
-
+// Un solo monto y un solo pagador, igual que gastoSchema. No hay split de pago
+// por socio: el desbalance 50/50 se deriva de quién pagó, no de cuánto puso
+// cada uno.
 export const compraSchema = z.object({
   proveedor: z.string().min(1, 'El proveedor es obligatorio'),
   items: z.array(itemSchema).min(1, 'Agregá al menos un perfume'),
   montoTotal: z.coerce.number().positive('El monto debe ser mayor a 0'),
-  pagos: z.array(pagoSchema).min(1, 'Agregá al menos un pago'),
+  pagadoPor: z.string().min(1, 'Elegí quién pagó'),
+  metodoPago: z.enum(METODOS_PAGO_SOCIOS, { errorMap: () => ({ message: 'Elegí un método de pago válido' }) }),
   fecha: z.coerce.date(),
-}).refine(
-  (data) => Math.abs(data.pagos.reduce((acc, p) => acc + p.monto, 0) - data.montoTotal) < 0.01,
-  { message: 'La suma de los pagos no coincide con el monto total', path: ['pagos'] }
-);
+});

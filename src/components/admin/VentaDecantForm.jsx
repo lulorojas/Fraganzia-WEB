@@ -83,7 +83,7 @@ export function VentaDecantForm({ venta, onSubmit, onCancel, cargando }) {
         </Campo>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={cargando}>
           {cargando ? 'Guardando…' : venta ? 'Guardar cambios' : 'Cargar venta'}
         </Button>
