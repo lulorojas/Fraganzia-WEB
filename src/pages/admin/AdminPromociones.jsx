@@ -34,8 +34,8 @@ export default function AdminPromociones() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl text-text">Promociones</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-xl text-text sm:text-2xl">Promociones</h1>
         {!modo && <Button onClick={abrirNuevo}>+ Nueva promoción</Button>}
       </div>
       {modo ? (

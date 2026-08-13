@@ -54,8 +54,8 @@ export default function AdminPerfumes() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl text-text">Perfumes</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-xl text-text sm:text-2xl">Perfumes</h1>
         {!modo && <Button onClick={abrirNuevo}>+ Nuevo perfume</Button>}
       </div>
       {modo ? (

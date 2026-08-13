@@ -3,10 +3,17 @@ import { Search } from 'lucide-react';
 
 const INPUT = 'w-full rounded-xl border border-border bg-transparent px-3 py-2 pl-9 text-text';
 
-// Buscador simple de perfume: input de texto + lista desplegable filtrada en
-// vivo. No hay ninguna librería de combobox en el proyecto — se implementa a
-// mano con useState, sin dependencias nuevas.
-export function PerfumeSearchSelect({ perfumes, value, onChange, placeholder = 'Buscar perfume…' }) {
+/**
+ * Buscador de perfume: input de texto + lista desplegable filtrada en vivo.
+ * No hay librería de combobox en el proyecto — se implementa a mano, sin
+ * dependencias nuevas.
+ *
+ * `stockPorProducto` es opcional: si se pasa, muestra las unidades disponibles
+ * al lado de cada nombre (para elegir qué vender).
+ */
+export function PerfumeSearchSelect({
+  perfumes, value, onChange, placeholder = 'Buscar perfume…', stockPorProducto, mensajeVacio = 'Sin resultados.',
+}) {
   const [abierto, setAbierto] = useState(false);
   const [texto, setTexto] = useState('');
   const ref = useRef(null);
@@ -53,20 +60,25 @@ export function PerfumeSearchSelect({ perfumes, value, onChange, placeholder = '
         />
       </div>
       {abierto && (
-        <div className="glass absolute z-10 mt-1 max-h-56 w-full overflow-y-auto py-1">
+        <div className="glass absolute z-20 mt-1 max-h-56 w-full overflow-y-auto py-1">
           {filtrados.length === 0 ? (
-            <p className="px-3 py-2 text-sm text-text-secondary">Sin resultados.</p>
+            <p className="px-3 py-2 text-sm text-text-secondary">{mensajeVacio}</p>
           ) : (
             filtrados.map((p) => (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => elegir(p)}
-                className={`block w-full px-3 py-2 text-left text-sm transition-base hover:bg-white/5 ${
+                className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm transition-base hover:bg-white/5 ${
                   p.id === value ? 'text-lila' : 'text-text'
                 }`}
               >
-                {p.nombre}
+                <span className="truncate">{p.nombre}</span>
+                {stockPorProducto && (
+                  <span className="shrink-0 text-xs text-text-secondary">
+                    {stockPorProducto[p.id] ?? 0} en stock
+                  </span>
+                )}
               </button>
             ))
           )}

@@ -21,7 +21,7 @@ function StatCard({ Icon, label, value, sub }) {
       </div>
       <div>
         <p className="text-xs text-text-secondary uppercase tracking-wide">{label}</p>
-        <p className="font-display text-2xl text-text">{value}</p>
+        <p className="font-display text-xl text-text sm:text-2xl">{value}</p>
         {sub && <p className="text-xs text-text-secondary">{sub}</p>}
       </div>
     </GlassCard>
@@ -38,7 +38,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl text-text">Panel de administración</h1>
+      <h1 className="mb-6 font-display text-xl text-text sm:text-2xl">Panel de administración</h1>
 
       {/* Estadísticas */}
       <h2 className="mb-3 font-display text-lg text-text-secondary">Estadísticas de pedidos</h2>

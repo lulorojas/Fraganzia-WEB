@@ -12,7 +12,7 @@ export default function AdminConfig() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl text-text">Configuración general</h1>
+      <h1 className="mb-6 font-display text-xl text-text sm:text-2xl">Configuración general</h1>
       {isLoading ? <Spinner /> : (
         <ConfigForm config={config} onSubmit={handleSubmit} cargando={isPending} />
       )}

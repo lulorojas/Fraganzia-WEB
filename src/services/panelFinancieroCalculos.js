@@ -48,7 +48,7 @@ export function calcularTotalesPorSocio({
 
   gastos.forEach((g) => sumar(g.pagadoPor, g.metodoPago, -g.monto));
 
-  compras.forEach((c) => (c.pagos || []).forEach((p) => sumar(p.socioId, p.metodo, -p.monto)));
+  compras.forEach((c) => sumar(c.pagadoPor, c.metodoPago, -c.montoTotal));
 
   return Object.fromEntries(
     Object.entries(totales).map(([socioId, t]) => [
@@ -85,10 +85,9 @@ export function calcularSaldoNeto({
     saldo += signo(g.pagadoPor) * (g.monto / 2);
   });
 
+  // Quien paga la compra pone plata por los dos: es acreedor de la mitad.
   compras.forEach((c) => {
-    (c.pagos || []).forEach((p) => {
-      saldo += signo(p.socioId) * (p.monto - c.montoTotal / 2);
-    });
+    saldo += signo(c.pagadoPor) * (c.montoTotal / 2);
   });
 
   transferenciasSocios.forEach((t) => {
@@ -98,6 +97,12 @@ export function calcularSaldoNeto({
   return saldo;
 }
 
+/**
+ * Stock = comprado − vendido, por producto. Nunca es negativo: si se vendió
+ * más de lo comprado (venta cargada sin su compra previa), el piso es 0 —
+ * "no queda nada", que es lo que representa el mundo real. Solo aparecen
+ * productos que efectivamente se compraron alguna vez.
+ */
 export function calcularStockPorProducto(compras = [], ventasSocios = []) {
   const stock = {};
   compras.forEach((c) => {
@@ -108,9 +113,12 @@ export function calcularStockPorProducto(compras = [], ventasSocios = []) {
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
     .forEach((v) => {
-      stock[v.perfumeId] = (stock[v.perfumeId] || 0) - v.cantidad;
+      if (stock[v.perfumeId] === undefined) return;
+      stock[v.perfumeId] -= v.cantidad;
     });
-  return stock;
+  return Object.fromEntries(
+    Object.entries(stock).map(([perfumeId, cantidad]) => [perfumeId, Math.max(0, cantidad)])
+  );
 }
 
 export function calcularRankingPerfumes(ventasSocios = []) {
@@ -162,28 +170,31 @@ export function calcularIngresoTotal(ventasSocios = [], ventasDecants = []) {
   return ingresoVentas + ingresoDecants;
 }
 
-export function calcularActividadPorSocio({
-  ventasSocios = [],
-  ventasDecants = [],
-  compras = [],
-  gastos = [],
-  movimientosPersonales = [],
-  transferenciasSocios = [],
-}) {
+/**
+ * Unidades efectivamente vendidas por cada socio (perfumes cobrados + decants),
+ * no cantidad de movimientos cargados en el sistema. Se atribuye a `vendidoPor`
+ * (quién hizo la venta), no a `creadoPor` (quién la tipeó).
+ */
+export function calcularActividadPorSocio({ ventasSocios = [], ventasDecants = [] }) {
   const actividad = SOCIOS.reduce((acc, s) => {
-    acc[s.id] = 0;
+    acc[s.id] = { perfumes: 0, decants: 0, total: 0 };
     return acc;
   }, {});
-  const contar = (socioId) => {
-    if (actividad[socioId] === undefined) return;
-    actividad[socioId] += 1;
-  };
-  [...ventasSocios].forEach((v) => contar(v.creadoPor));
-  [...ventasDecants].forEach((v) => contar(v.creadoPor));
-  [...compras].forEach((c) => contar(c.creadoPor));
-  [...gastos].forEach((g) => contar(g.creadoPor));
-  [...movimientosPersonales].forEach((m) => contar(m.creadoPor));
-  [...transferenciasSocios].forEach((t) => contar(t.creadoPor));
+
+  ventasSocios
+    .filter((v) => v.estado === 'cobrada')
+    .forEach((v) => {
+      if (!actividad[v.vendidoPor]) return;
+      actividad[v.vendidoPor].perfumes += v.cantidad;
+      actividad[v.vendidoPor].total += v.cantidad;
+    });
+
+  ventasDecants.forEach((v) => {
+    if (!actividad[v.vendidoPor]) return;
+    actividad[v.vendidoPor].decants += v.cantidad;
+    actividad[v.vendidoPor].total += v.cantidad;
+  });
+
   return actividad;
 }
 
