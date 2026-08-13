@@ -58,6 +58,16 @@ service cloud.firestore {
         .hasOnly(['perfumeId', 'vistas', 'agregadosCarrito', 'updatedAt']);
     }
 
+    // Términos buscados en el catálogo. Mismo trade-off consciente que
+    // `estadisticas` (nota crítica #7 de la constitución): sin backend, el
+    // contador lo incrementa el navegador y la regla se limita a restringir
+    // los campos escribibles. Lectura solo admin.
+    match /busquedas/{termino} {
+      allow read: if isAdmin();
+      allow write: if request.resource.data.keys()
+        .hasOnly(['termino', 'conteo', 'sinResultados', 'updatedAt']);
+    }
+
     // Admins: solo admins leen; alta/baja se hace manualmente (consola).
     match /admins/{uid} {
       allow read: if isAdmin();
