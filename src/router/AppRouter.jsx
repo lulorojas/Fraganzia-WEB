@@ -16,6 +16,7 @@ import AdminPerfumes from '../pages/admin/AdminPerfumes';
 import AdminPedidos from '../pages/admin/AdminPedidos';
 import AdminPromociones from '../pages/admin/AdminPromociones';
 import AdminConfig from '../pages/admin/AdminConfig';
+import AdminUsuarios from '../pages/admin/AdminUsuarios';
 import AdminFinanzasLayout from '../pages/admin/AdminFinanzasLayout';
 import AdminFinanzasResumen from '../pages/admin/AdminFinanzasResumen';
 import AdminVentasSocios from '../pages/admin/AdminVentasSocios';
@@ -51,6 +52,7 @@ export function AppRouter() {
           <Route path="/contacto" element={<Contacto />} />
         </Route>
 
+        {/* Login solo para admin */}
         <Route path="/login" element={<Login />} />
 
         <Route
@@ -65,6 +67,7 @@ export function AppRouter() {
           <Route path="perfumes" element={<AdminPerfumes />} />
           <Route path="pedidos" element={<AdminPedidos />} />
           <Route path="promociones" element={<AdminPromociones />} />
+          <Route path="usuarios" element={<AdminUsuarios />} />
           <Route path="config" element={<AdminConfig />} />
           <Route path="finanzas" element={<AdminFinanzasLayout />}>
             <Route index element={<AdminFinanzasResumen />} />

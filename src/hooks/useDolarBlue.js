@@ -21,13 +21,14 @@ export function useDolarBlue() {
 
   const cargando = cargandoDolar || cargandoConfig;
 
-  if (!isError && dolar) {
-    return { dolarMedio: valorDolarMedio(dolar), esFallback: false, cargando };
+  // Si el admin fijó una tasa manual, siempre tiene prioridad sobre la API
+  const manualRate = config?.dolarBlueManual;
+  if (manualRate) {
+    return { dolarMedio: manualRate, esFallback: true, cargando: cargandoConfig };
   }
 
-  const fallback = config?.dolarBlueManual;
-  if (fallback) {
-    return { dolarMedio: fallback, esFallback: true, cargando };
+  if (!isError && dolar) {
+    return { dolarMedio: valorDolarMedio(dolar), esFallback: false, cargando };
   }
 
   return { dolarMedio: null, esFallback: true, cargando };

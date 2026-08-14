@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import { incrementarAgregadoCarrito } from '../services/estadisticasService';
 import { registrarBusqueda } from '../services/busquedasService';
 import { Filtros } from '../components/perfumes/Filtros';
@@ -13,6 +14,7 @@ export default function Catalogo() {
   const { data: perfumes, isLoading } = usePerfumes(filtros);
   const { dolarMedio } = useDolarBlue();
   const { dispatch } = useCart();
+  const { showToast } = useToast();
 
   const busqueda = filtros.busqueda ?? '';
 
@@ -36,15 +38,20 @@ export default function Catalogo() {
         nombre: perfume.nombre,
         marca: perfume.marca,
         precioUSD: perfume.precioUSD,
+        imagenes: perfume.imagenes,
         cantidad: 1,
       },
     });
     incrementarAgregadoCarrito(perfume.id);
+    showToast(`${perfume.marca} ${perfume.nombre}`, 'success');
   }
 
   return (
-    <div className="p-4 sm:p-6">
-      <h1 className="mb-4 font-display text-xl text-text sm:text-2xl">Catálogo</h1>
+    <div className="px-6 py-10">
+      <div className="mb-8">
+        <p className="tracking-luxury mb-2 font-body text-xs uppercase text-lila">Colección completa</p>
+        <h1 className="font-display text-3xl text-text">Catálogo</h1>
+      </div>
       <Filtros filtros={filtros} onChange={setFiltros} />
       <div className="mt-6">
         {isLoading ? (

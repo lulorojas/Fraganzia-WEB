@@ -7,26 +7,34 @@ import { useCrearPedido } from '../hooks/usePedidos';
 import { usePromocionesActivas } from '../hooks/usePromociones';
 import { useAuth } from '../context/AuthContext';
 import { obtenerPerfumePorId } from '../services/perfumesService';
+import { notificarNuevoPedido } from '../services/emailService';
 import { CartItem } from '../components/cart/CartItem';
 import { SelectorPago } from '../components/cart/SelectorPago';
 import { ResumenCheckout } from '../components/cart/ResumenCheckout';
 import { Button } from '../components/ui/Button';
-import { usdAArs } from '../utils/precios';
-import { generarLinkWhatsApp } from '../utils/whatsapp';
-import { FACTOR_EFECTIVO, WHATSAPP_NUMERO } from '../constants';
+import { GlassCard } from '../components/ui/GlassCard';
+import { preciosPorMetodo, calcularTotal2x1 } from '../utils/precios';
+import { formatARS } from '../utils/format';
+import { construirLinkWhatsApp } from '../utils/whatsapp';
+import { WHATSAPP_NUMERO } from '../constants';
 
 export default function Carrito() {
   const { state, dispatch } = useCart();
   const { dolarMedio } = useDolarBlue();
   const { data: config } = useConfig();
-  const { mutateAsync: crearPedido, isPending } = useCrearPedido();
+  const { mutate: crearPedidoMutation, isPending } = useCrearPedido();
   const { data: promociones } = usePromocionesActivas();
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Mejor descuento entre todas las promociones activas
+  // Promo 2x1 activa
+  const promo2x1Activa = promociones?.find((p) => p.tipo === '2x1');
+  const totalUnidades = state.items.reduce((sum, i) => sum + i.cantidad, 0);
+  const tienePromo2x1 = Boolean(promo2x1Activa) && totalUnidades >= 2;
+
+  // Mejor descuento entre todas las promociones activas (tipo descuento)
   const mejorPromo = promociones
-    ?.filter((p) => (p.descuentoPorcentaje ?? 0) > 0)
+    ?.filter((p) => p.tipo !== '2x1' && (p.descuentoPorcentaje ?? 0) > 0)
     ?.reduce((best, p) => (!best || p.descuentoPorcentaje > best.descuentoPorcentaje ? p : best), null);
   const promoDescuentoPct = mejorPromo?.descuentoPorcentaje ?? 0;
 
@@ -36,12 +44,14 @@ export default function Carrito() {
 
   if (state.items.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-4 p-12 text-center">
-        <h1 className="font-display text-2xl text-text">Tu carrito está vacío</h1>
-        <p className="text-text-secondary">Todavía no agregaste ningún perfume.</p>
-        <Link to="/catalogo">
-          <Button>Ir al catálogo</Button>
-        </Link>
+      <div className="mx-auto max-w-2xl px-4 py-16 flex flex-col items-center">
+        <GlassCard className="flex flex-col items-center gap-4 p-10 text-center w-full max-w-sm">
+          <h1 className="font-display text-2xl text-text">Tu carrito está vacío</h1>
+          <p className="font-body text-text-secondary">Todavía no agregaste ningún perfume.</p>
+          <Link to="/catalogo">
+            <Button>Ir al catálogo</Button>
+          </Link>
+        </GlassCard>
       </div>
     );
   }
@@ -95,21 +105,22 @@ export default function Carrito() {
       return;
     }
 
-    const itemsConPrecio = state.items.map((item) => ({
-      ...item,
-      precioARS: usdAArs(item.precioUSD, dolarMedio),
-    }));
+    const esEfectivo = state.metodoPago === 'Efectivo';
+    const itemsConPrecio = state.items.map((item) => {
+      const { precioTransferencia, precioEfectivo } = preciosPorMetodo(item.precioUSD, dolarMedio);
+      return {
+        ...item,
+        precioARS: esEfectivo ? precioEfectivo : precioTransferencia,
+      };
+    });
     const subtotalARS = itemsConPrecio.reduce(
       (acc, item) => acc + item.precioARS * item.cantidad,
       0
     );
-    // Descuento promo (si existe) + descuento efectivo (si corresponde)
-    const descuentoPromoARS = subtotalARS * (promoDescuentoPct / 100);
-    const subtotalConPromo = subtotalARS - descuentoPromoARS;
-    const esEfectivo = state.metodoPago === 'Efectivo';
-    const descuentoEfectivoARS = esEfectivo ? subtotalConPromo * (1 - FACTOR_EFECTIVO) : 0;
-    const totalARS = subtotalConPromo - descuentoEfectivoARS;
-    const descuentoARS = descuentoPromoARS + descuentoEfectivoARS;
+    const totalARS = tienePromo2x1
+      ? calcularTotal2x1(itemsConPrecio)
+      : Math.round((subtotalARS * (1 - promoDescuentoPct / 100)) / 1000) * 1000;
+    const descuentoARS = subtotalARS - totalARS;
 
     const pedido = {
       items: itemsConPrecio,
@@ -122,36 +133,66 @@ export default function Carrito() {
       estado: 'confirmado',
     };
 
-    await crearPedido(pedido);
+    // Generar mensaje de notificación para el admin
+    const mensajeAdmin = [
+      '🔔 NUEVO PEDIDO - Fraganzia',
+      '',
+      `👤 Cliente: ${pedido.clienteNombre}`,
+      '',
+      '🛍️ Productos:',
+      ...itemsConPrecio.map(it => `  • ${it.cantidad}x ${it.marca} ${it.nombre} - ${formatARS(it.precioARS)}`),
+      '',
+      `💳 Método: ${pedido.metodoPago}`,
+      `💰 Total: ${formatARS(totalARS)}`,
+      '',
+      `ID: ${Date.now()}`,
+    ].join('\n');
 
-    const link = generarLinkWhatsApp({
-      clienteNombre: pedido.clienteNombre,
-      items: itemsConPrecio,
-      metodoPago: pedido.metodoPago,
-      total: totalARS,
-      numero: config?.whatsappNumero ?? WHATSAPP_NUMERO,
+    const linkNotificacion = construirLinkWhatsApp(WHATSAPP_NUMERO, mensajeAdmin);
+
+    crearPedidoMutation(pedido, {
+      onSuccess: (pedidoId) => {
+        dispatch({ type: 'CLEAR_CART' });
+        setClienteNombre('');
+        notificarNuevoPedido(
+          null,
+          pedido.clienteNombre,
+          itemsConPrecio,
+          formatARS(totalARS)
+        ).catch(() => {});
+        
+        // Abrir WhatsApp para notificar al admin
+        window.location.href = linkNotificacion;
+      },
+      onError: (error) => {
+        setAvisoDisponibilidad(`Error: ${error.message || 'Hubo un error al procesar tu pedido'}`);
+      }
     });
-    window.open(link, '_blank');
-
-    dispatch({ type: 'CLEAR_CART' });
-    navigate('/');
   }
 
   return (
-    <div className="mx-auto max-w-2xl p-6">
-      <h1 className="mb-4 font-display text-2xl text-text">Tu carrito</h1>
+    <div className="mx-auto max-w-2xl px-4 py-10">
+      {/* Header */}
+      <div className="mb-8">
+        <p className="tracking-luxury mb-2 font-body text-xs uppercase text-lila">Tu pedido</p>
+        <h1 className="font-display text-3xl text-text">Tu carrito</h1>
+      </div>
 
-      {state.items.map((item) => (
-        <CartItem
-          key={item.perfumeId}
-          item={item}
-          precioARS={dolarMedio ? usdAArs(item.precioUSD, dolarMedio) : 0}
-          onCambiarCantidad={handleCambiarCantidad}
-          onQuitar={handleQuitar}
-        />
-      ))}
+      {/* Productos */}
+      <div className="flex flex-col gap-3">
+        {state.items.map((item) => (
+          <CartItem
+            key={item.perfumeId}
+            item={item}
+            precioARS={dolarMedio ? (state.metodoPago === 'Efectivo' ? preciosPorMetodo(item.precioUSD, dolarMedio).precioEfectivo : preciosPorMetodo(item.precioUSD, dolarMedio).precioTransferencia) : 0}
+            onCambiarCantidad={handleCambiarCantidad}
+            onQuitar={handleQuitar}
+          />
+        ))}
+      </div>
 
-      <div className="mt-6">
+      {/* Checkout */}
+      <GlassCard className="mt-6 flex flex-col gap-5 p-6">
         <ResumenCheckout
           items={state.items}
           metodoPago={state.metodoPago}
@@ -159,31 +200,40 @@ export default function Carrito() {
           whatsappNumero={config?.whatsappNumero}
           promoDescuentoPct={promoDescuentoPct}
           promoNombre={mejorPromo?.titulo}
+          promo2x1={tienePromo2x1}
+          promo2x1Nombre={promo2x1Activa?.titulo}
         />
-      </div>
 
-      <div className="mt-6 flex flex-col gap-4">
         <SelectorPago value={state.metodoPago} onChange={handleMetodoPago} />
 
-        <div>
+        {/* Campo de nombre */}
+        <div className="flex flex-col gap-2">
+          <label htmlFor="clienteNombre" className="font-body text-sm text-text-secondary">
+            Tu nombre
+          </label>
           <input
+            id="clienteNombre"
             type="text"
-            placeholder="Tu nombre"
             value={clienteNombre}
             onChange={(e) => setClienteNombre(e.target.value)}
-            className="w-full rounded-xl border border-border bg-transparent px-3 py-2 text-text"
+            placeholder="Ingresá tu nombre"
+            className="rounded-xl border border-border bg-white/[0.03] px-4 py-3 font-body text-sm text-text placeholder:text-text-secondary/50 focus:border-violet focus:outline-none transition-colors"
+            required
           />
-          {errorNombre && <p className="mt-1 text-sm text-error">{errorNombre}</p>}
+          {errorNombre && <p className="mt-1 text-xs text-error">{errorNombre}</p>}
         </div>
 
         {avisoDisponibilidad && (
           <p className="text-sm text-error">{avisoDisponibilidad}</p>
         )}
 
-        <Button onClick={handleConfirmar} disabled={isPending}>
-          Confirmar pedido por WhatsApp
+        <Button
+          onClick={handleConfirmar}
+          disabled={isPending || !clienteNombre.trim()}
+        >
+          Confirmar pedido
         </Button>
-      </div>
+      </GlassCard>
     </div>
   );
 }

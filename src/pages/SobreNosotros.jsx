@@ -44,8 +44,8 @@ export default function SobreNosotros() {
           para quienes valoran el arte de oler bien.
         </p>
         <p className="font-body text-text-secondary leading-relaxed mt-3">
-          Hoy ofrecemos una selección de perfumes de las mejores marcas orientales y nicho,
-          con envíos a todo el país y atención personalizada vía WhatsApp.
+          Hoy ofrecemos una selección de perfumes de las mejores marcas orientales,
+          con envíos al AMBA y atención personalizada vía WhatsApp.
         </p>
       </GlassCard>
 

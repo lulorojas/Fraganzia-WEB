@@ -6,11 +6,15 @@ export function usdAArs(precioUSD, dolarMedio) {
   return precioUSD * dolarMedio;
 }
 
+function redondearMiles(n) {
+  return Math.round(n / 1000) * 1000;
+}
+
 export function preciosPorMetodo(precioUSD, dolarMedio) {
-  const precioARS = usdAArs(precioUSD, dolarMedio);
+  const precioBase = usdAArs(precioUSD, dolarMedio);
   return {
-    precioTransferencia: precioARS,
-    precioEfectivo: precioARS * 0.95,
+    precioTransferencia: redondearMiles(precioBase * 1.40),
+    precioEfectivo: redondearMiles(precioBase * 1.35),
   };
 }
 
@@ -31,4 +35,26 @@ export function getMejorPromo(perfumeId, promociones) {
   return aplicables.reduce((best, p) =>
     p.descuentoPorcentaje > best.descuentoPorcentaje ? p : best
   );
+}
+
+/**
+ * Calcula el total con promo 2x1: por cada 2 unidades, la más barata es gratis.
+ * Items pueden tener precioARS (ya calculado) o precioUSD (usa esEfectivo + dolarMedio).
+ */
+export function calcularTotal2x1(items, esEfectivo, dolarMedio) {
+  const units = [];
+  for (const item of items) {
+    const precio = item.precioARS != null
+      ? item.precioARS
+      : (esEfectivo
+          ? preciosPorMetodo(item.precioUSD, dolarMedio).precioEfectivo
+          : preciosPorMetodo(item.precioUSD, dolarMedio).precioTransferencia);
+    for (let i = 0; i < item.cantidad; i++) units.push(precio);
+  }
+  units.sort((a, b) => b - a);
+  let total = 0;
+  for (let i = 0; i < units.length; i++) {
+    if (i % 2 === 0) total += units[i];
+  }
+  return Math.round(total / 1000) * 1000;
 }

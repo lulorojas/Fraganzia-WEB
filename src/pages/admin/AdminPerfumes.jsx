@@ -4,6 +4,7 @@ import {
   listarTodosLosPerfumes, crearPerfume, editarPerfume,
   actualizarDisponibilidad, actualizarActivo, eliminarPerfume,
 } from '../../services/perfumesService';
+import { notificarNuevoPerfume } from '../../services/emailService';
 import { PerfumesTable } from '../../components/admin/PerfumesTable';
 import { PerfumeForm } from '../../components/admin/PerfumeForm';
 import { Button } from '../../components/ui/Button';
@@ -29,8 +30,15 @@ export default function AdminPerfumes() {
   async function handleSubmit(datos) {
     setGuardando(true); setError(null);
     try {
-      if (modo === 'nuevo') await crearPerfume(datos);
-      else await editarPerfume(perfumeEditando.id, datos);
+      if (modo === 'nuevo') {
+        await crearPerfume(datos);
+        // Notificar al admin del nuevo perfume (no bloqueante)
+        notificarNuevoPerfume(datos).catch(err => {
+          console.warn('No se pudo notificar nuevo perfume:', err);
+        });
+      } else {
+        await editarPerfume(perfumeEditando.id, datos);
+      }
       qc.invalidateQueries({ queryKey: ['perfumes'] });
       cerrar();
     } catch (e) { setError(e.message); }

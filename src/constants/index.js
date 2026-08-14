@@ -1,10 +1,15 @@
 export const WHATSAPP_NUMERO = '5491130097370'; // +54 9 11 3009-7370
 
-export const GENEROS = ['Masculino', 'Femenino', 'Kids'];
+export const GENEROS = ['Masculino', 'Femenino', 'Unisex', 'Kids'];
 
 export const FAMILIAS_OLFATIVAS = [
-  'Floral', 'Amaderado', 'Oriental', 'Cítrico', 'Acuático', 'Aromático',
-  'Gourmand', 'Chipre', 'Fougère', 'Especiado', 'Aldehídico', 'Verde',
+  'Oriental',
+  'Floral',
+  'Amaderado',
+  'Aromático',
+  'Acuático',
+  'Gourmand',
+  'Cítrico',
 ];
 
 export const MARCAS = [
@@ -19,7 +24,7 @@ export const METODOS_PAGO = ['Transferencia', 'Efectivo'];
 export const DESCUENTO_EFECTIVO = 0.05;
 export const FACTOR_EFECTIVO = 0.95;
 
-export const ESTADOS_PEDIDO = ['confirmado'];
+export const ESTADOS_PEDIDO = ['en_proceso', 'confirmado', 'cancelado'];
 
 export const DOLAR_BLUE_API = 'https://dolarapi.com/v1/dolares/blue';
 

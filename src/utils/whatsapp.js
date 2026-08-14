@@ -1,8 +1,14 @@
 import { WHATSAPP_NUMERO } from '../constants';
 import { formatARS } from './format';
 
+// Formato correcto para WhatsApp Web y mobile
 export function construirLinkWhatsApp(numero, mensaje) {
-  return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+  // Asegurar que el número no tenga espacios, guiones ni símbolos
+  const numeroLimpio = numero.replace(/\D/g, '');
+  
+  // Usar api.whatsapp.com que funciona tanto en web como mobile
+  const mensajeCodificado = encodeURIComponent(mensaje);
+  return `https://api.whatsapp.com/send?phone=${numeroLimpio}&text=${mensajeCodificado}`;
 }
 
 export function generarLinkConsultaPrecio(nombrePerfume, numero = WHATSAPP_NUMERO) {
@@ -10,6 +16,8 @@ export function generarLinkConsultaPrecio(nombrePerfume, numero = WHATSAPP_NUMER
 }
 
 export function generarLinkWhatsApp({ clienteNombre, items, metodoPago, total, numero = WHATSAPP_NUMERO }) {
+  const metodoFormateado = metodoPago === 'Transferencia' ? 'Transferencia' : 'Efectivo';
+  
   const lineas = [
     '¡Hola Fraganzia! Quiero hacer un pedido:',
     '',
@@ -17,7 +25,7 @@ export function generarLinkWhatsApp({ clienteNombre, items, metodoPago, total, n
       (it) => `• ${it.cantidad}x ${it.marca} - ${it.nombre} (${formatARS(it.precioARS)} c/u)`
     ),
     '',
-    `Método de pago: ${metodoPago}`,
+    `Método de pago: ${metodoFormateado}`,
     `Total: ${formatARS(total)}`,
     '',
     `Cliente: ${clienteNombre}`,

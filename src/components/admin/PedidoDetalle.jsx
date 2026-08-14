@@ -17,6 +17,12 @@ export function PedidoDetalle({ pedido, onCerrar }) {
           <p className="text-text-secondary text-sm">{formatFecha(pedido.createdAt)}</p>
           <h3 className="font-display text-xl text-text">{pedido.clienteNombre}</h3>
           <p className="text-text-secondary text-sm">Método: {pedido.metodoPago}</p>
+          <p className="text-sm mt-1">
+            Estado:{' '}
+            <span className={pedido.estado === 'confirmado' ? 'text-success' : pedido.estado === 'cancelado' ? 'text-error' : 'text-yellow-400'}>
+              {pedido.estado === 'en_proceso' ? 'En proceso' : pedido.estado === 'confirmado' ? 'Confirmado' : pedido.estado === 'cancelado' ? 'Cancelado' : pedido.estado}
+            </span>
+          </p>
         </div>
         <Button variant="ghost" onClick={onCerrar}>✕</Button>
       </div>

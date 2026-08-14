@@ -20,5 +20,6 @@ export const pedidoSchema = z.object({
   descuentoARS: z.number(),
   totalARS: z.number(),
   clienteNombre: z.string().min(1, 'El nombre es obligatorio'),
-  estado: z.literal('confirmado'),
+  clienteEmail: z.string().optional(),
+  estado: z.enum(['en_proceso', 'confirmado', 'cancelado']),
 });

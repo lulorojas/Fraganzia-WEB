@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useReducer } from 'react';
 import { leerCarrito, guardarCarrito } from '../utils/cartStorage';
+import { obtenerPerfumePorId } from '../services/perfumesService';
 
 const initialState = {
   items: [],
@@ -40,6 +41,8 @@ function cartReducer(state, action) {
       return { ...state, metodoPago: action.payload };
     case 'CLEAR_CART':
       return initialState;
+    case 'MIGRATE_ITEMS':
+      return { ...state, items: action.payload };
     default:
       return state;
   }
@@ -52,6 +55,35 @@ export function CartProvider({ children }) {
     const guardado = leerCarrito();
     return guardado ?? init;
   });
+
+  // Migración: actualizar items sin imagenes desde Firestore
+  useEffect(() => {
+    async function migrateItems() {
+      const itemsSinImagenes = state.items.filter(item => !item.imagenes || item.imagenes.length === 0);
+      
+      if (itemsSinImagenes.length > 0) {
+        const itemsActualizados = await Promise.all(
+          state.items.map(async (item) => {
+            if (!item.imagenes || item.imagenes.length === 0) {
+              try {
+                const perfume = await obtenerPerfumePorId(item.perfumeId);
+                if (perfume?.imagenes) {
+                  return { ...item, imagenes: perfume.imagenes };
+                }
+              } catch (err) {
+                console.warn('No se pudo cargar imagen para', item.perfumeId);
+              }
+            }
+            return item;
+          })
+        );
+        
+        dispatch({ type: 'MIGRATE_ITEMS', payload: itemsActualizados });
+      }
+    }
+    
+    migrateItems();
+  }, []); // Solo ejecutar una vez al montar
 
   useEffect(() => {
     guardarCarrito(state);

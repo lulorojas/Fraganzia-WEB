@@ -4,6 +4,7 @@ import { usePerfume } from '../hooks/usePerfume';
 import { incrementarVista, incrementarAgregadoCarrito } from '../services/estadisticasService';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import { useConfig } from '../hooks/useConfig';
 import { usePromocionesActivas } from '../hooks/usePromociones';
 import { NotasOlfativas } from '../components/perfumes/NotasOlfativas';
@@ -20,6 +21,7 @@ export default function PerfumeDetalle() {
   const { data: config } = useConfig();
   const { data: promociones } = usePromocionesActivas();
   const { dispatch } = useCart();
+  const { showToast } = useToast();
   const [cantidad, setCantidad] = useState(1);
 
   // Registra la vista una sola vez por perfume por sesión (ver
@@ -52,12 +54,18 @@ export default function PerfumeDetalle() {
   }
 
   const tieneCotizacion = Boolean(dolarMedio);
-  const precios = tieneCotizacion ? preciosPorMetodo(perfume.precioUSD, dolarMedio) : null;
+  const preciosLive = tieneCotizacion ? preciosPorMetodo(perfume.precioUSD, dolarMedio) : null;
+  const precios = preciosLive ?? (
+    perfume.precioTransferencia
+      ? { precioTransferencia: perfume.precioTransferencia, precioEfectivo: perfume.precioEfectivo }
+      : null
+  );
+  const tienePrecios = Boolean(precios);
 
   const promo = getMejorPromo(perfume.id, promociones);
   const pct = promo?.descuentoPorcentaje ?? 0;
-  const precioTransConPromo = precios && pct ? precios.precioTransferencia * (1 - pct / 100) : null;
-  const precioEfecConPromo  = precios && pct ? precios.precioEfectivo  * (1 - pct / 100) : null;
+  const precioTransConPromo = precios && pct ? Math.round(precios.precioTransferencia * (1 - pct / 100) / 1000) * 1000 : null;
+  const precioEfecConPromo  = precios && pct ? Math.round(precios.precioEfectivo      * (1 - pct / 100) / 1000) * 1000 : null;
 
   return (
     <div className="mx-auto max-w-3xl p-6">
@@ -65,13 +73,13 @@ export default function PerfumeDetalle() {
         <img
           src={perfume.imagenes[0]}
           alt={perfume.nombre}
-          className="mb-4 aspect-video w-full rounded-2xl object-cover"
+          className="mb-4 aspect-square w-full max-w-sm mx-auto rounded-2xl object-contain bg-[#0e0a1a] p-6"
         />
       )}
       <h1 className="font-display text-3xl text-text">{perfume.nombre}</h1>
       <p className="text-text-secondary">{perfume.marca} · {perfume.volumenML} ml</p>
 
-      {tieneCotizacion ? (
+      {tienePrecios ? (
         <div className="mt-4 font-luxury">
           {pct > 0 ? (
             <>
@@ -121,10 +129,12 @@ export default function PerfumeDetalle() {
                 nombre: perfume.nombre,
                 marca: perfume.marca,
                 precioUSD: perfume.precioUSD,
+                imagenes: perfume.imagenes,
                 cantidad,
               },
             });
             incrementarAgregadoCarrito(perfume.id);
+            showToast(`${cantidad}x ${perfume.marca} ${perfume.nombre}`, 'success');
           }}
         >
           Agregar al carrito
@@ -138,6 +148,7 @@ export default function PerfumeDetalle() {
           notasSalida={perfume.notasSalida}
           notasCorazon={perfume.notasCorazon}
           notasFondo={perfume.notasFondo}
+          nombre={perfume.nombre}
         />
       </div>
     </div>

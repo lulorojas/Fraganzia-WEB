@@ -1,0 +1,58 @@
+{
+  "fecha": "2026-07-24T17:22:40.198Z",
+  "total": 326,
+  "problemas": {
+    "generoIncorrecto": [
+      {
+        "nombre": "LATTAFA THE KINGDOM FEMENINO 100ML",
+        "actual": "Femenino",
+        "sugerido": "Masculino"
+      },
+      {
+        "nombre": "LATTAFA QIMMAH WOMAN 100ML",
+        "actual": "Femenino",
+        "sugerido": "Masculino"
+      },
+      {
+        "nombre": "RAVE NOW WOMEN 100ML",
+        "actual": "Femenino",
+        "sugerido": "Masculino"
+      },
+      {
+        "nombre": "ARMAF CLUB DE NUIT INTENSE FEMENINO 105ML",
+        "actual": "Femenino",
+        "sugerido": "Masculino"
+      },
+      {
+        "nombre": "AL WATANIAH ROSE MYSTERY INTENSE 100ML",
+        "actual": "Masculino",
+        "sugerido": "Femenino"
+      },
+      {
+        "nombre": "ARMAF CLUB DE NUIT WOMAN 105ML",
+        "actual": "Femenino",
+        "sugerido": "Masculino"
+      }
+    ],
+    "familiaIncorrecta": [
+      {
+        "nombre": "AL HARAMAIN AMBER OUD ULTRA VIOLET 120ML",
+        "actual": "Oriental",
+        "sugerido": "Floral",
+        "razon": "VIOLET"
+      },
+      {
+        "nombre": "AL HARAMAIN AMBER OUD AQUA DUBAI 100ML",
+        "actual": "Acuático",
+        "sugerido": "Oriental",
+        "razon": "OUD"
+      },
+      {
+        "nombre": "AL HARAMAIN AMBER OUD CARBON EDITION 100ML",
+        "actual": "Amaderado",
+        "sugerido": "Oriental",
+        "razon": "OUD"
+      }
+    ]
+  }
+}

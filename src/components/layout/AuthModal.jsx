@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../../firebase/config';
+import { enviarEmailBienvenida, notificarNuevoRegistro } from '../../services/emailService';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 
@@ -69,6 +70,17 @@ function FormRegistro({ onSuccess }) {
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(user, { displayName: nombre });
+      
+      // Enviar email de bienvenida al usuario (no bloqueante)
+      enviarEmailBienvenida(email, nombre).catch(err => {
+        console.warn('No se pudo enviar email de bienvenida:', err);
+      });
+      
+      // Notificar al admin del nuevo registro (no bloqueante)
+      notificarNuevoRegistro(email, nombre).catch(err => {
+        console.warn('No se pudo notificar registro al admin:', err);
+      });
+      
       onSuccess();
     } catch (e) {
       if (e.code === 'auth/email-already-in-use') {
@@ -105,7 +117,7 @@ function FormRegistro({ onSuccess }) {
   );
 }
 
-export function AuthModal({ isOpen, onClose }) {
+export function AuthModal({ open, onClose }) {
   const [tab, setTab] = useState('login');
 
   function handleClose() {
@@ -114,7 +126,7 @@ export function AuthModal({ isOpen, onClose }) {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose}>
+    <Modal isOpen={open} onClose={handleClose}>
       <div className="flex flex-col gap-4">
         <h2 className="font-display text-xl text-text">
           {tab === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}

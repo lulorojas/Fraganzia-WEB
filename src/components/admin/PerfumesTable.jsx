@@ -1,9 +1,14 @@
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { GlassCard } from '../ui/GlassCard';
 
 export function PerfumesTable({ perfumes, onEditar, onToggleDisponible, onToggleActivo, onEliminar }) {
   if (!perfumes?.length) {
-    return <p className="text-text-secondary">No hay perfumes cargados.</p>;
+    return (
+      <GlassCard className="py-10 text-center">
+        <p className="font-body text-text-secondary">No hay perfumes cargados.</p>
+      </GlassCard>
+    );
   }
 
   function confirmarEliminar(p) {
@@ -13,8 +18,9 @@ export function PerfumesTable({ perfumes, onEditar, onToggleDisponible, onToggle
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm text-text">
+    <GlassCard>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm text-text">
         <thead>
           <tr className="border-b border-border text-text-secondary">
             <th className="pb-2 pr-4">Nombre</th>
@@ -78,7 +84,8 @@ export function PerfumesTable({ perfumes, onEditar, onToggleDisponible, onToggle
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+        </table>
+      </div>
+    </GlassCard>
   );
 }

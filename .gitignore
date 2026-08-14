@@ -4,3 +4,6 @@ dist
 .DS_Store
 *.log
 scripts/serviceAccount.json
+
+pdf-viewer.html
+pdf-viewer-light.html

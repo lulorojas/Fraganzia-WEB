@@ -1,0 +1,80 @@
+﻿node : Warning: Please use the `legacy` build in Node.js environments.
+En línea: 1 Carácter: 1
++ node scripts/find-product-pages.mjs 2>&1 | Out-File -FilePath "script ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Warning: Please...s environments. 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+PDF: 44 p├íginas
+
+P├ígina 6: KENZ AL MALIK
+  Texto: FRAGANCIAS MASCULINAS  MODELO   PRECIO  AL HARAMAIN L'AVENTURE  100ML   42 USD  AL WATANIAH AL LAYL 100ML   20 USD  AL WATANIAH ATTAR AL WESAL  100ML   21 USD  AL WATANIAH BAREEQ AL  DHAHAB 100ML   18...
+  Ô£à Guardado: KENZ_AL_MALIK_p6_0.png (806├ù697)
+  Ô£à Guardado: KENZ_AL_MALIK_p6_1.png (781├ù951)
+  Ô£à Guardado: KENZ_AL_MALIK_p6_2.png (612├ù612)
+  Ô£à Guardado: KENZ_AL_MALIK_p6_3.png (517├ù442)
+  Ô£à Guardado: KENZ_AL_MALIK_p6_4.png (894├ù763)
+  Ô£à Guardado: KENZ_AL_MALIK_p6_5.png (631├ù760)
+  Ô£à Guardado: KENZ_AL_MALIK_p6_6.png (624├ù556)
+  Ô£à Guardado: KENZ_AL_MALIK_p6_7.png (556├ù504)
+
+P├ígina 7: WATANI NOIR, SULTAN AL LAIL
+  Texto: FRAGANCIAS MASCULINAS  MODELO   PRECIO  AL WATANIAH SULTAN AL LAIL  100ML   19 USD  AL WATANIAH WATANI NOIR  100ML   20 USD  ANFAR ROYAL IMPERIAL 100ML   47 USD  ARMAF CLUB DE NUIT BLING  75ML   51 US...
+  Ô£à Guardado: WATANI_NOIR_p7_0.png (590├ù600)
+  Ô£à Guardado: SULTAN_AL_LAIL_p7_0.png (590├ù600)
+  Ô£à Guardado: WATANI_NOIR_p7_1.png (452├ù474)
+  Ô£à Guardado: SULTAN_AL_LAIL_p7_1.png (452├ù474)
+  Ô£à Guardado: WATANI_NOIR_p7_2.png (600├ù480)
+  Ô£à Guardado: SULTAN_AL_LAIL_p7_2.png (600├ù480)
+  Ô£à Guardado: WATANI_NOIR_p7_3.png (1115├ù932)
+  Ô£à Guardado: SULTAN_AL_LAIL_p7_3.png (1115├ù932)
+  Ô£à Guardado: WATANI_NOIR_p7_4.png (508├ù418)
+  Ô£à Guardado: SULTAN_AL_LAIL_p7_4.png (508├ù418)
+  Ô£à Guardado: WATANI_NOIR_p7_5.png (800├ù800)
+  Ô£à Guardado: SULTAN_AL_LAIL_p7_5.png (800├ù800)
+  Ô£à Guardado: WATANI_NOIR_p7_6.png (856├ù677)
+  Ô£à Guardado: SULTAN_AL_LAIL_p7_6.png (856├ù677)
+
+P├ígina 11: BHARARA CHOCOLATE
+  Texto: FRAGANCIAS MASCULINAS  MODELO   PRECIO  BHARARA CHOCOLATE 100ML   50 USD  BHARARA DOUBLE BLEU 100ML   50 USD  BHARARA KING EDP 100ML   68 USD  BHARARA KING EDP 150ML   81 USD  BHARARA KING GOLD 100ML ...
+  Ô£à Guardado: BHARARA_CHOCOLATE_p11_0.png (587├ù600)
+  Ô£à Guardado: BHARARA_CHOCOLATE_p11_1.png (685├ù605)
+  Ô£à Guardado: BHARARA_CHOCOLATE_p11_2.png (1020├ù1082)
+  Ô£à Guardado: BHARARA_CHOCOLATE_p11_3.png (486├ù457)
+  Ô£à Guardado: BHARARA_CHOCOLATE_p11_4.png (485├ù539)
+  Ô£à Guardado: BHARARA_CHOCOLATE_p11_5.png (540├ù503)
+  Ô£à Guardado: BHARARA_CHOCOLATE_p11_6.png (591├ù597)
+
+P├ígina 31: SABAH AL WARD, THAHAANI
+  Texto: FRAGANCIAS FEMENINAS  MODELO   PRECIO  AL WATANIAH AMEERATI 100ML   20 USD  AL WATANIAH DURRAT AL  AROOS 85ML   21 USD  AL WATANIAH GHALA 100ML   22 USD  AL WATANIAH SABAH AL WARD  100ML   21 USD  AL ...
+  Ô£à Guardado: SABAH_AL_WARD_p31_0.png (1000├ù734)
+  Ô£à Guardado: THAHAANI_p31_0.png (1000├ù734)
+  Ô£à Guardado: SABAH_AL_WARD_p31_1.png (1024├ù1024)
+  Ô£à Guardado: THAHAANI_p31_1.png (1024├ù1024)
+  Ô£à Guardado: SABAH_AL_WARD_p31_2.png (1024├ù1024)
+  Ô£à Guardado: THAHAANI_p31_2.png (1024├ù1024)
+  Ô£à Guardado: SABAH_AL_WARD_p31_3.png (800├ù800)
+  Ô£à Guardado: THAHAANI_p31_3.png (800├ù800)
+  Ô£à Guardado: SABAH_AL_WARD_p31_4.png (450├ù391)
+  Ô£à Guardado: THAHAANI_p31_4.png (450├ù391)
+  Ô£à Guardado: SABAH_AL_WARD_p31_5.png (734├ù589)
+  Ô£à Guardado: THAHAANI_p31_5.png (734├ù589)
+
+P├ígina 42: RASASI HAWAS FOR HER
+  Texto: FRAGANCIAS FEMENINAS  MODELO   PRECIO  PARIS CORNER KHAIR PISTACHIO  100ML   26 USD  PARIS CORNER TASKEEN  CARAMEL CASCADE 100ML   27 USD  RASASI HAWAS FOR HER 100ML   26 USD  RAVE NOW WOMEN 100ML   2...
+  Ô£à Guardado: RASASI_HAWAS_FOR_HER_p42_0.png (472├ù483)
+  Ô£à Guardado: RASASI_HAWAS_FOR_HER_p42_1.png (935├ù751)
+  Ô£à Guardado: RASASI_HAWAS_FOR_HER_p42_2.png (736├ù807)
+  Ô£à Guardado: RASASI_HAWAS_FOR_HER_p42_3.png (353├ù318)
+  Ô£à Guardado: RASASI_HAWAS_FOR_HER_p42_4.png (487├ù428)
+
+=== RESUMEN ===
+RASASI HAWAS FOR HER: RASASI_HAWAS_FOR_HER_p42_0.png, RASASI_HAWAS_FOR_HER_p42_1.png, RASASI_HAWAS_FOR_HER_p42_2.png, RASASI_HAWAS_FOR_HER_p42_3.png, RASASI_HAWAS_FOR_HER_p42_4.png
+WATANI NOIR: WATANI_NOIR_p7_0.png, WATANI_NOIR_p7_1.png, WATANI_NOIR_p7_2.png, WATANI_NOIR_p7_3.png, WATANI_NOIR_p7_4.png, WATANI_NOIR_p7_5.png, WATANI_NOIR_p7_6.png
+KENZ AL MALIK: KENZ_AL_MALIK_p6_0.png, KENZ_AL_MALIK_p6_1.png, KENZ_AL_MALIK_p6_2.png, KENZ_AL_MALIK_p6_3.png, KENZ_AL_MALIK_p6_4.png, KENZ_AL_MALIK_p6_5.png, KENZ_AL_MALIK_p6_6.png, KENZ_AL_MALIK_p6_7.png
+BHARARA CHOCOLATE: BHARARA_CHOCOLATE_p11_0.png, BHARARA_CHOCOLATE_p11_1.png, BHARARA_CHOCOLATE_p11_2.png, BHARARA_CHOCOLATE_p11_3.png, BHARARA_CHOCOLATE_p11_4.png, BHARARA_CHOCOLATE_p11_5.png, BHARARA_CHOCOLATE_p11_6.png
+ROSE MYSTERY INTENSE: ÔØî NO ENCONTRADO
+SABAH AL WARD: SABAH_AL_WARD_p31_0.png, SABAH_AL_WARD_p31_1.png, SABAH_AL_WARD_p31_2.png, SABAH_AL_WARD_p31_3.png, SABAH_AL_WARD_p31_4.png, SABAH_AL_WARD_p31_5.png
+THAHAANI: THAHAANI_p31_0.png, THAHAANI_p31_1.png, THAHAANI_p31_2.png, THAHAANI_p31_3.png, THAHAANI_p31_4.png, THAHAANI_p31_5.png
+SULTAN AL LAIL: SULTAN_AL_LAIL_p7_0.png, SULTAN_AL_LAIL_p7_1.png, SULTAN_AL_LAIL_p7_2.png, SULTAN_AL_LAIL_p7_3.png, SULTAN_AL_LAIL_p7_4.png, SULTAN_AL_LAIL_p7_5.png, SULTAN_AL_LAIL_p7_6.png

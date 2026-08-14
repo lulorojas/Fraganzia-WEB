@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flyers Fraganzia - Vista Previa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+        
+        .instructions {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            color: #ccc;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .instructions h2 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .instructions code {
+            background: #3a3a3a;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #f7a34b;
+        }
+        
+        .flyers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .flyer-card {
+            background: #2a2a2a;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .flyer-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .flyer-preview {
+            position: relative;
+            width: 100%;
+            padding-bottom: 177.78%; /* 9:16 ratio */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: white;
+        }
+        
+        .flyer-preview iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .flyer-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #F7A34B 0%, #E95950 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 163, 75, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #3a3a3a;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4a4a4a;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #888;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Flyers Fraganzia - Historias Instagram</h1>
+        
+        <div class="instructions">
+            <h2>📋 Instrucciones de uso:</h2>
+            <ul>
+                <li><strong>Para capturar:</strong> Abrí cada flyer en una nueva pestaña y usá la herramienta de captura de pantalla (o screenshot) de tu navegador</li>
+                <li><strong>Dimensiones:</strong> Cada flyer está optimizado para historias de Instagram (1080x1920px)</li>
+                <li><strong>Recomendación:</strong> Abrí los archivos en tu celular y hacé screenshots directamente para mejor calidad</li>
+                <li><strong>Archivos:</strong> También podés abrir los archivos HTML directamente desde la carpeta <code>/public/flyers/</code></li>
+            </ul>
+        </div>
+        
+        <div class="flyers-grid">
+            <div class="flyer-card">
+                <h3 class="flyer-title">🎉 Aniversario</h3>
+                <div class="flyer-preview">
+                    <iframe src="story-aniversario.html"></iframe>
+                </div>
+                <div class="flyer-actions">
+                    <a href="story-aniversario.html" target="_blank" class="btn btn-primary">Abrir completo</a>
+                </div>
+            </div>
+            
+            <div class="flyer-card">
+                <h3 class="flyer-title">🛒 Pedidos Online</h3>
+                <div class="flyer-preview">
+                    <iframe src="story-pedidos.html"></iframe>
+                </div>
+                <div class="flyer-actions">
+                    <a href="story-pedidos.html" target="_blank" class="btn btn-primary">Abrir completo</a>
+                </div>
+            </div>
+            
+            <div class="flyer-card">
+                <h3 class="flyer-title">💝 20% Descuento</h3>
+                <div class="flyer-preview">
+                    <iframe src="story-descuento.html"></iframe>
+                </div>
+                <div class="flyer-actions">
+                    <a href="story-descuento.html" target="_blank" class="btn btn-primary">Abrir completo</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>✨ Listos para lanzar Fraganzia al mundo ✨</p>
+        </div>
+    </div>
+</body>
+</html>

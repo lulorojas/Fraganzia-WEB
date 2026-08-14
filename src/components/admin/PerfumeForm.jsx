@@ -8,15 +8,15 @@ import { Button } from '../ui/Button';
 function Campo({ label, error, children }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm text-text-secondary">{label}</label>
+      <label className="font-body text-sm text-text-secondary">{label}</label>
       {children}
       {error && <p className="text-xs text-error">{error}</p>}
     </div>
   );
 }
 
-const INPUT = 'w-full rounded-xl border border-border bg-transparent px-3 py-2 text-text';
-const SELECT = 'w-full rounded-xl border border-border bg-bg px-3 py-2 text-text';
+const INPUT = 'w-full rounded-xl border border-border bg-white/[0.03] px-3 py-2 font-body text-sm text-text placeholder:text-text-secondary/50 focus:border-violet focus:outline-none transition-colors';
+const SELECT = 'w-full rounded-xl border border-border bg-bg px-3 py-2 font-body text-sm text-text focus:border-violet focus:outline-none transition-colors';
 
 // Convierte un array a string para mostrar en el input
 function arr(v, sep = ', ') {

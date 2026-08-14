@@ -1,0 +1,1632 @@
+{
+  "LATTAFA YARA TOUS 100ML": {
+    "notasSalida": ["Pera", "Bergamota", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lirio del Valle"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro", "Sándalo blanco", "Vainilla"]
+  },
+  "LATTAFA YARA ROSA 100ML": {
+    "notasSalida": ["Pera", "Frambuesa", "Bergamota"],
+    "notasCorazon": ["Rosa", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Sándalo", "Cedro", "Vainilla"]
+  },
+  "LATTAFA YARA MOI 100ML": {
+    "notasSalida": ["Pera", "Bergamota", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Flor del naranjo"],
+    "notasFondo": ["Almizcle", "Sándalo", "Cedro", "Vainilla"]
+  },
+  "LATTAFA YARA CANDY 100ML": {
+    "notasSalida": ["Fresa", "Bergamota", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Peonía", "Caramelo"],
+    "notasFondo": ["Vainilla", "Almizcle", "Tonka"]
+  },
+  "LATTAFA YARA ELIXIR 100ML": {
+    "notasSalida": ["Pera", "Frambuesa", "Bergamota"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Vainilla", "Almizcle", "Ámbar", "Sándalo"]
+  },
+  "LATTAFA ANA ABIYEDH 60ML": {
+    "notasSalida": ["Limón", "Bergamota", "Aldeídos"],
+    "notasCorazon": ["Rosa", "Jazmín", "Orquídea"],
+    "notasFondo": ["Almizcle blanco", "Vainilla", "Ámbar"]
+  },
+  "LATTAFA ANA ABIYEDH ROUGE 60ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Ciruela"],
+    "notasCorazon": ["Rosa, Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Pachulí", "Vainilla"]
+  },
+  "LATTAFA KHAMRAH 100ML": {
+    "notasSalida": ["Canela", "Bergamota", "Pimienta negra"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso", "Pachulí"],
+    "notasFondo": ["Ámbar", "Almizcle", "Vainilla", "Sándalo"]
+  },
+  "LATTAFA KHAMRAH DUKHAN 100ML": {
+    "notasSalida": ["Cuero", "Humo", "Incienso"],
+    "notasCorazon": ["Oud", "Rosa", "Pachulí", "Cuero ahumado"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo ahumado"]
+  },
+  "LATTAFA KHAMRAH QAHWA 100ML": {
+    "notasSalida": ["Café", "Cardamomo", "Canela"],
+    "notasCorazon": ["Oud", "Café árabe", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Vainilla", "Sándalo"]
+  },
+  "LATTAFA KHAMRAH WAHA 100ML": {
+    "notasSalida": ["Piña", "Coco", "Bergamota"],
+    "notasCorazon": ["Flor del naranjo", "Jazmín", "Rosa"],
+    "notasFondo": ["Almizcle", "Sándalo", "Vainilla", "Ámbar"]
+  },
+  "LATTAFA ASAD 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta de Sichuan", "Pimienta negra"],
+    "notasCorazon": ["Lavanda", "Pachulí", "Geranio"],
+    "notasFondo": ["Ambroxan", "Cedro", "Vetiver", "Almizcle"]
+  },
+  "LATTAFA ASAD ZANZIBAR 100ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Cardamomo"],
+    "notasCorazon": ["Pachulí", "Geranio", "Nuez moscada"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo", "Vetiver"]
+  },
+  "LATTAFA ASAD BOURBON 100ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Pimienta negra"],
+    "notasCorazon": ["Whisky", "Pachulí", "Cuero"],
+    "notasFondo": ["Madera de Oud", "Almizcle", "Vainilla", "Ámbar"]
+  },
+  "LATTAFA ASAD ELIXIR 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cardamomo"],
+    "notasCorazon": ["Pachulí", "Oud", "Geranio"],
+    "notasFondo": ["Ambroxan", "Cedro", "Vetiver", "Almizcle oscuro"]
+  },
+  "LATTAFA MAAHIR BLACK 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Canela"],
+    "notasCorazon": ["Rosa", "Azafrán", "Pachulí", "Oud"],
+    "notasFondo": ["Ámbar", "Almizcle", "Incienso", "Sándalo"]
+  },
+  "LATTAFA MAAHIR GOLD 100ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Azafrán"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar dorado", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA MAAHIR LEGACY 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Azafrán"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso", "Cuero"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Pachulí"]
+  },
+  "LATTAFA FAKHAR BLACK 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta rosada", "Limón"],
+    "notasCorazon": ["Rosa", "Incienso", "Geranio", "Oud"],
+    "notasFondo": ["Almizcle", "Vetiver", "Pachulí", "Cedro"]
+  },
+  "LATTAFA FAKHAR PLATIN 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Mandarina"],
+    "notasCorazon": ["Oud", "Rosa", "Geranio"],
+    "notasFondo": ["Almizcle", "Vetiver", "Sándalo", "Cedro"]
+  },
+  "LATTAFA FAKHAR ROSE 100ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Rosa"],
+    "notasCorazon": ["Rosa turca", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar rosado"]
+  },
+  "LATTAFA FAKHAR EXTRAIT GOLD 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Pachulí"]
+  },
+  "LATTAFA QAED AL FURSAN 90ML": {
+    "notasSalida": ["Notas marinas", "Lavanda", "Bergamota"],
+    "notasCorazon": ["Cardamomo", "Notas acuáticas", "Incienso"],
+    "notasFondo": ["Almizcle", "Amberwood", "Musgo de roble"]
+  },
+  "LATTAFA QAED AL FURSAN UNLIMITED 90ML": {
+    "notasSalida": ["Notas marinas", "Bergamota", "Notas acuáticas"],
+    "notasCorazon": ["Cardamomo", "Notas acuáticas", "Lavanda"],
+    "notasFondo": ["Almizcle blanco", "Amberwood", "Cedro"]
+  },
+  "LATTAFA BADE'E AL OUD HONOR & GLORY 100ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Incienso"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "LATTAFA BADE'E AL OUD SUBLIME 100ML": {
+    "notasSalida": ["Oud", "Bergamota", "Incienso"],
+    "notasCorazon": ["Rosa", "Oud", "Cuero"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "LATTAFA BADE'E AL OUD NOBLE BLUSH 100ML": {
+    "notasSalida": ["Rosa", "Frambuesa", "Bergamota"],
+    "notasCorazon": ["Rosa", "Oud", "Peonía"],
+    "notasFondo": ["Ámbar rosado", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA BADE'E AL OUD FOR GLORY 100ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Canela"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Vainilla", "Almizcle"]
+  },
+  "LATTAFA BADE'E AL OUD AMETHYST 100ML": {
+    "notasSalida": ["Bergamota", "Rosa", "Uva"],
+    "notasCorazon": ["Rosa", "Oud", "Violeta"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA AMEER AL OUDH INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Incienso"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Pachulí"]
+  },
+  "LATTAFA ASDAAF AMEER AL ARAB IMPERIUM 100ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Azafrán"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Vainilla", "Sándalo"]
+  },
+  "LATTAFA ASDAAF AMEERAT AL ARAB 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA ASDAAF AMEERAT AL ARAB PRIVE ROSE 100ML": {
+    "notasSalida": ["Rosa", "Frambuesa", "Bergamota"],
+    "notasCorazon": ["Rosa de Taif", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar rosado", "Sándalo"]
+  },
+  "LATTAFA NEBRAS 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Lirio"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lichi"],
+    "notasFondo": ["Almizcle", "Sándalo", "Cedro", "Vainilla"]
+  },
+  "LATTAFA NEBRAS ELIXIR 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Violeta"],
+    "notasCorazon": ["Rosa", "Jazmín", "Vainilla"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar", "Tonka"]
+  },
+  "LATTAFA ECLAIRE 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Pera"],
+    "notasCorazon": ["Peonía", "Rosa", "Jazmín"],
+    "notasFondo": ["Almizcle blanco", "Sándalo", "Cedro"]
+  },
+  "LATTAFA ECLAIRE BANOFFI 100ML": {
+    "notasSalida": ["Banana", "Caramelo", "Vainilla"],
+    "notasCorazon": ["Caramelo", "Toffee", "Crema"],
+    "notasFondo": ["Vainilla", "Tonka", "Almizcle dulce"]
+  },
+  "LATTAFA LIAM BLUE SHINE 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Notas marinas"],
+    "notasCorazon": ["Notas acuáticas", "Geranio", "Cardamomo"],
+    "notasFondo": ["Almizcle", "Cedro", "Amberwood"]
+  },
+  "LATTAFA LIAM GREY 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Geranio", "Incienso", "Pachulí"],
+    "notasFondo": ["Vetiver", "Cedro", "Almizcle", "Tonka"]
+  },
+  "LATTAFA WAJOOD 100ML": {
+    "notasSalida": ["Bergamota", "Oud", "Incienso"],
+    "notasCorazon": ["Rosa", "Oud", "Pachulí"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "LATTAFA LAIL MALEKI 100ML": {
+    "notasSalida": ["Azafrán", "Bergamota", "Incienso"],
+    "notasCorazon": ["Rosa", "Oud", "Geranio"],
+    "notasFondo": ["Ámbar", "Almizcle", "Pachulí", "Sándalo"]
+  },
+  "LATTAFA AL QIAM GOLD 100ML": {
+    "notasSalida": ["Azafrán", "Bergamota", "Resinas"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar dorado", "Almizcle", "Vainilla", "Sándalo"]
+  },
+  "LATTAFA MASHRABYA 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Resinas"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA ATLAS 55ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Pachulí", "Geranio", "Incienso"],
+    "notasFondo": ["Cedro", "Vetiver", "Almizcle", "Tonka"]
+  },
+  "LATTAFA HAYAATI 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Naranja"],
+    "notasCorazon": ["Rosa", "Jazmín", "Pachulí"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar", "Vainilla"]
+  },
+  "LATTAFA HAYAATI GOLD ELIXIR 100ML": {
+    "notasSalida": ["Bergamota", "Canela", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Jazmín"],
+    "notasFondo": ["Ámbar dorado", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA HAYAATI FLORENCE 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Sándalo", "Cedro", "Vainilla"]
+  },
+  "LATTAFA HAYAATI AL MALEKY 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Canela"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA ISHQ AL SHUYUKH GOLD 100ML": {
+    "notasSalida": ["Bergamota", "Incienso", "Resinas"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA ISHQ AL SHUYUKH SILVER 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo"]
+  },
+  "LATTAFA AJWAD 60ML": {
+    "notasSalida": ["Bergamota", "Limón", "Violeta"],
+    "notasCorazon": ["Rosa", "Jazmín", "Oud"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "LATTAFA AJWAA 90ML": {
+    "notasSalida": ["Bergamota", "Pera", "Limón"],
+    "notasCorazon": ["Rosa", "Oud", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro", "Sándalo"]
+  },
+  "LATTAFA AJWAD PINK TO PINK 60ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Peonía"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lichi"],
+    "notasFondo": ["Almizcle rosado", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA MAYAR 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Peonía"],
+    "notasCorazon": ["Rosa", "Jazmín", "Iris"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro", "Pachulí"]
+  },
+  "LATTAFA MAYAR NATURAL INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Jazmín"],
+    "notasCorazon": ["Rosa", "Jazmín", "Iris"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "LATTAFA MAYAR CHERRY 100ML": {
+    "notasSalida": ["Cereza", "Frambuesa", "Bergamota"],
+    "notasCorazon": ["Rosa", "Cereza negra", "Jazmín"],
+    "notasFondo": ["Almizcle", "Vainilla", "Sándalo"]
+  },
+  "LATTAFA EMAAN 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Violeta"],
+    "notasCorazon": ["Rosa", "Jazmín", "Oud"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "LATTAFA HAYA 100ML": {
+    "notasSalida": ["Pera", "Bergamota", "Mandarina"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lichi"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro"]
+  },
+  "LATTAFA VICTORIA 100ML": {
+    "notasSalida": ["Bergamota", "Peonía", "Pera"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "LATTAFA ATHEERI 100ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Peonía"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lichi"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA AFEEF 100ML": {
+    "notasSalida": ["Bergamota", "Jazmín", "Oud"],
+    "notasCorazon": ["Rosa", "Incienso", "Oud"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "LATTAFA THE KINGDOM MASCULINO 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cardamomo"],
+    "notasCorazon": ["Oud", "Cedro", "Geranio"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar", "Vetiver"]
+  },
+  "LATTAFA THE KINGDOM FEMENINO 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Mandarina"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo blanco"]
+  },
+  "LATTAFA VINTAGE RADIO 100ML": {
+    "notasSalida": ["Bergamota", "Romero", "Cardamomo"],
+    "notasCorazon": ["Incienso", "Geranio", "Rosa"],
+    "notasFondo": ["Vetiver", "Cedro", "Almizcle", "Ámbar"]
+  },
+  "LATTAFA ART OF NATURE I 100ML": {
+    "notasSalida": ["Bergamota", "Salvia", "Cardamomo"],
+    "notasCorazon": ["Geranio", "Incienso", "Cedro"],
+    "notasFondo": ["Vetiver", "Cedro", "Almizcle"]
+  },
+  "LATTAFA ART OF NATURE II 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cedro"],
+    "notasCorazon": ["Cedro", "Vetiver", "Incienso"],
+    "notasFondo": ["Sándalo", "Oud", "Almizcle"]
+  },
+  "LATTAFA ART OF UNIVERSE 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Azafrán"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA ANSAAM GOLD 100ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Azafrán"],
+    "notasCorazon": ["Rosa", "Jazmín", "Oud"],
+    "notasFondo": ["Ámbar dorado", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA ANSAAM SILVER 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Mandarina"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lilio"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA QIMMAH 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vetiver"]
+  },
+  "LATTAFA QIMMAH WOMAN 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Jazmín"],
+    "notasCorazon": ["Rosa", "Jazmín", "Tuberosa"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro"]
+  },
+  "LATTAFA TERIAQ 100ML": {
+    "notasSalida": ["Bergamota", "Oud", "Azafrán"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA TERIAQ INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Oud"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso intenso"],
+    "notasFondo": ["Ámbar oscuro", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA EMEER 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Azafrán"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA HIS CONFESSION 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cardamomo"],
+    "notasCorazon": ["Cuero", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Sándalo", "Almizcle"]
+  },
+  "LATTAFA HER CONFESSION 100ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Pera"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lirio"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo", "Vainilla"]
+  },
+  "LATTAFA ANGHAM 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Oud"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "LATTAFA ANGHAM SECOND SONG 100ML": {
+    "notasSalida": ["Bergamota", "Ciruela", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Oud"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA SAKEENA 100ML": {
+    "notasSalida": ["Bergamota", "Jazmín", "Pera"],
+    "notasCorazon": ["Rosa", "Jazmín", "Oud"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "LATTAFA PRIDE PISA 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Limón"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA SHAHEEN GOLD 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Naranja amarga"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar dorado", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA SHAHEEN SILVER 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Cedro", "Geranio", "Incienso"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo"]
+  },
+  "LATTAFA RAMZ SILVER 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Lavanda"],
+    "notasCorazon": ["Geranio", "Oud", "Cedro"],
+    "notasFondo": ["Sándalo", "Almizcle", "Amberwood"]
+  },
+  "LATTAFA AL NOBLE AMEER 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA AL NOBLE WAZEER 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Naranja amarga"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA AL NOBLE SAFEER 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Oud", "Geranio", "Incienso"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo"]
+  },
+  "LATTAFA OPULENT DUBAI 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Rosa"],
+    "notasCorazon": ["Rosa", "Oud", "Jazmín"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA OPULENT OUD 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Incienso"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "LATTAFA NICHE EMARATI AL DANA 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Azafrán"],
+    "notasCorazon": ["Rosa de Taif", "Oud", "Jazmín"],
+    "notasFondo": ["Oud", "Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA CONFIDENTIAL PRIVATE GOLD 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar dorado", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA SEHR MAGIC OF 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Mandarina"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lichi"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro"]
+  },
+  "LATTAFA ADEEB 80ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "LATTAFA KHANJAR 85ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Incienso"],
+    "notasCorazon": ["Oud", "Rosa", "Cuero"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "LATTAFA MUSAMAM 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Rosa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Oud"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "LATTAFA MUSAMAM WHITE INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Vainilla", "Pera"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lirio"],
+    "notasFondo": ["Almizcle blanco", "Ámbar", "Sándalo"]
+  },
+  "AL HARAMAIN L'AVENTURE 100ML": {
+    "notasSalida": ["Naranja amarga", "Lavanda", "Bergamota", "Limón"],
+    "notasCorazon": ["Jazmín", "Geranio", "Almizcle"],
+    "notasFondo": ["Almizcle", "Sándalo", "Cedro", "Vetiver", "Oud"]
+  },
+  "AL HARAMAIN L'AVENTURE FEMME 100ML": {
+    "notasSalida": ["Casis", "Bergamota", "Limón"],
+    "notasCorazon": ["Peonía", "Jazmín", "Rosa"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro", "Pachulí"]
+  },
+  "AL HARAMAIN L'AVENTURE GOLD 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Neroli"],
+    "notasCorazon": ["Peonía", "Jazmín", "Rosa"],
+    "notasFondo": ["Almizcle", "Ámbar dorado", "Sándalo", "Vainilla"]
+  },
+  "AL HARAMAIN AMBER OUD ULTRA VIOLET 120ML": {
+    "notasSalida": ["Bergamota", "Violeta", "Pera"],
+    "notasCorazon": ["Rosa", "Violeta", "Jazmín", "Oud"],
+    "notasFondo": ["Ámbar", "Pachulí", "Almizcle"]
+  },
+  "AL HARAMAIN AMBER OUD AQUA DUBAI 100ML": {
+    "notasSalida": ["Bergamota", "Oud", "Notas acuáticas"],
+    "notasCorazon": ["Notas marinas", "Cardamomo", "Oud"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "AL HARAMAIN AMBER OUD CARBON EDITION 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso", "Cedro"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vetiver"]
+  },
+  "AL HARAMAIN AMBER OUD TOBACCO 60ML": {
+    "notasSalida": ["Clavo", "Pimienta negra", "Bergamota"],
+    "notasCorazon": ["Tabaco", "Oud", "Rosa"],
+    "notasFondo": ["Ámbar", "Sándalo", "Almizcle", "Pachulí"]
+  },
+  "AL HARAMAIN AMBER OUD BLACK 60ML": {
+    "notasSalida": ["Bergamota", "Rosa", "Incienso"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso", "Cuero"],
+    "notasFondo": ["Ámbar oscuro", "Almizcle", "Sándalo", "Pachulí"]
+  },
+  "AL HARAMAIN AMBER OUD ROUGE 120ML": {
+    "notasSalida": ["Bergamota", "Rosa", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Oud", "Jazmín"],
+    "notasFondo": ["Ámbar rojo", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "AL HARAMAIN AMBER OUD GOLD EDITION 120ML": {
+    "notasSalida": ["Bergamota", "Limón", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Azafrán"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "AL HARAMAIN AMBER OUD GOLD EDITION 200ML": {
+    "notasSalida": ["Bergamota", "Limón", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Azafrán"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "AL HARAMAIN AMBER OUD EXCLUSIF EMERALD 60ML": {
+    "notasSalida": ["Bergamota", "Pomelo", "Menta"],
+    "notasCorazon": ["Oud verde", "Cardamomo", "Rosa"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "AL HARAMAIN AMBER OUD EXCLUSIF PARFUM CLASSIC 60ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Incienso"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar clásico", "Almizcle", "Sándalo"]
+  },
+  "AL HARAMAIN AMBER OUD PRIVATE EDITION 120ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar privado", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "AL HARAMAIN AMBER OUD DUBAI NIGHT 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Incienso"],
+    "notasCorazon": ["Oud", "Rosa", "Cuero"],
+    "notasFondo": ["Ámbar oscuro", "Almizcle", "Sándalo"]
+  },
+  "AL HARAMAIN DETOUR NOIR 100ML": {
+    "notasSalida": ["Bergamota", "Cedro", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Sándalo", "Cuero"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "AL HARAMAIN DETOUR NOIR EXCLUSIF 100ML": {
+    "notasSalida": ["Bergamota", "Oud", "Incienso"],
+    "notasCorazon": ["Oud", "Cuero", "Rosa"],
+    "notasFondo": ["Sándalo", "Musgo de roble", "Almizcle"]
+  },
+  "AL HARAMAIN DETOUR NOIR INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Incienso"],
+    "notasCorazon": ["Oud intenso", "Cuero", "Rosa"],
+    "notasFondo": ["Sándalo oscuro", "Almizcle", "Ámbar"]
+  },
+  "AL HARAMAIN DETOUR ECO 100ML": {
+    "notasSalida": ["Bergamota", "Cítricos", "Notas verdes"],
+    "notasCorazon": ["Cedro", "Geranio", "Vetiver"],
+    "notasFondo": ["Sándalo", "Almizcle", "Musgo"]
+  },
+  "ARMAF CLUB DE NUIT INTENSE 105ML": {
+    "notasSalida": ["Limón", "Grosella negra", "Manzana"],
+    "notasCorazon": ["Abedul", "Jazmín", "Rosa"],
+    "notasFondo": ["Ambergris", "Almizcle", "Pachulí", "Vainilla"]
+  },
+  "ARMAF CLUB DE NUIT INTENSE FEMENINO 105ML": {
+    "notasSalida": ["Bergamota", "Limón", "Piña"],
+    "notasCorazon": ["Rosa", "Jazmín", "Nectarina"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro"]
+  },
+  "ARMAF CLUB DE NUIT WOMAN 105ML": {
+    "notasSalida": ["Bergamota", "Limón", "Naranja"],
+    "notasCorazon": ["Rosa", "Jazmín", "Nectarina", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro", "Sándalo"]
+  },
+  "ARMAF CLUB DE NUIT UNTOLD 105ML": {
+    "notasSalida": ["Bergamota", "Limón", "Pomelo"],
+    "notasCorazon": ["Iris", "Rosa", "Neroli"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo", "Vainilla"]
+  },
+  "ARMAF CLUB DE NUIT SILLAGE 105ML": {
+    "notasSalida": ["Bergamota", "Limón", "Menta"],
+    "notasCorazon": ["Jazmín", "Rosa", "Geranio"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar", "Vainilla"]
+  },
+  "ARMAF CLUB DE NUIT MALEKA 105ML": {
+    "notasSalida": ["Bergamota", "Rosa", "Pera"],
+    "notasCorazon": ["Rosa turca", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "ARMAF CLUB DE NUIT ICONIC 105ML": {
+    "notasSalida": ["Bergamota", "Limón", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "ARMAF CLUB DE NUIT OUD PARFUM 105ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Oud"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "ARMAF CLUB DE NUIT LIONHEART MAN 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Manzana"],
+    "notasCorazon": ["Rosa", "Cedro", "Geranio"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "ARMAF CLUB DE NUIT MILESTONE 105ML": {
+    "notasSalida": ["Bergamota", "Limón", "Piña"],
+    "notasCorazon": ["Abedul", "Jazmín", "Rosa"],
+    "notasFondo": ["Almizcle", "Ámbar gris", "Sándalo"]
+  },
+  "ARMAF CLUB DE NUIT URBAN MAN ELIXIR 105ML": {
+    "notasSalida": ["Bergamota", "Limón", "Cardamomo"],
+    "notasCorazon": ["Oud", "Cedro", "Geranio"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo", "Vainilla"]
+  },
+  "ARMAF CLUB DE NUIT PRECIEUX I 55ML": {
+    "notasSalida": ["Bergamota", "Oud", "Pachulí"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "ARMAF CLUB DE NUIT PRECIEUX IV 55ML": {
+    "notasSalida": ["Bergamota", "Pera", "Limón"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "ARMAF CLUB DE NUIT BLING 75ML": {
+    "notasSalida": ["Bergamota", "Limón", "Casis"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lirio"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "ARMAF CLUB DE NUIT IMPERIALE 105ML": {
+    "notasSalida": ["Bergamota", "Limón", "Manzana"],
+    "notasCorazon": ["Oud", "Rosa", "Geranio"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo oscuro"]
+  },
+  "ARMAF TAG HIM 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Limón"],
+    "notasCorazon": ["Geranio", "Cardamomo", "Pachulí"],
+    "notasFondo": ["Almizcle", "Vetiver", "Cedro", "Madera de cachemira"]
+  },
+  "ARMAF TAG HIM UOMO ROSSO 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta rosada", "Cardamomo"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "ARMAF ODYSSEY GO MANGO 100ML": {
+    "notasSalida": ["Mango", "Bergamota", "Naranja"],
+    "notasCorazon": ["Neroli", "Jazmín", "Pachulí"],
+    "notasFondo": ["Cedro", "Almizcle", "Amberwood"]
+  },
+  "ARMAF ODYSSEY REVOLUTION 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Geranio", "Pachulí"],
+    "notasFondo": ["Vetiver", "Cedro", "Almizcle"]
+  },
+  "ARMAF ODYSSEY TYRANT 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Incienso"],
+    "notasCorazon": ["Oud", "Cuero", "Geranio"],
+    "notasFondo": ["Sándalo", "Almizcle", "Amberwood"]
+  },
+  "ARMAF ODYSSEY SPECTRA 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Geranio", "Rosa", "Incienso"],
+    "notasFondo": ["Almizcle", "Vetiver", "Sándalo"]
+  },
+  "ARMAF ODYSSEY ARTISTO 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Incienso"],
+    "notasCorazon": ["Oud", "Cedro", "Geranio"],
+    "notasFondo": ["Musgo de roble", "Sándalo", "Almizcle"]
+  },
+  "ARMAF ODYSSEY HOMME WHITE 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Cardamomo"],
+    "notasCorazon": ["Lavanda", "Geranio", "Rosa"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo"]
+  },
+  "ARMAF ODYSSEY MANDARIN SKY 100ML": {
+    "notasSalida": ["Mandarina", "Bergamota", "Limón"],
+    "notasCorazon": ["Neroli", "Jazmín", "Petit grain"],
+    "notasFondo": ["Almizcle blanco", "Cedro", "Amberwood"]
+  },
+  "ARMAF ODYSSEY MANDARIN SKY VINTAGE 100ML": {
+    "notasSalida": ["Mandarina", "Bergamota", "Limón"],
+    "notasCorazon": ["Neroli", "Jazmín", "Petit grain"],
+    "notasFondo": ["Almizcle blanco", "Cedro", "Amberwood"]
+  },
+  "ARMAF ODYSSEY MANDARIN SKY ELIXIR 100ML": {
+    "notasSalida": ["Mandarina", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Oud", "Rosa", "Neroli"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "ARMAF ODYSSEY MEGA LE 100ML": {
+    "notasSalida": ["Bergamota", "Geranio", "Romero"],
+    "notasCorazon": ["Lavanda", "Geranio", "Cardamomo"],
+    "notasFondo": ["Vetiver", "Cedro", "Almizcle"]
+  },
+  "ARMAF ODYSSEY BAHAMAS 100ML": {
+    "notasSalida": ["Bergamota", "Coco", "Piña"],
+    "notasCorazon": ["Tiara", "Jazmín", "Notas tropicales"],
+    "notasFondo": ["Almizcle", "Sándalo", "Cedro"]
+  },
+  "ARMAF ODYSSEY CANDEE 100ML": {
+    "notasSalida": ["Fresa", "Vainilla", "Caramelo"],
+    "notasCorazon": ["Praliné", "Caramelo", "Rosa"],
+    "notasFondo": ["Vainilla", "Almizcle dulce", "Tonka"]
+  },
+  "ARMAF ODYSSEY EAU DE MONTAGNE 100ML": {
+    "notasSalida": ["Bergamota", "Menta", "Notas verdes"],
+    "notasCorazon": ["Lavanda", "Geranio", "Incienso"],
+    "notasFondo": ["Cedro", "Almizcle", "Musgo"]
+  },
+  "ARMAF ODYSSEY AQUA 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Notas marinas"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Geranio"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar gris"]
+  },
+  "ARMAF ODYSSEY LIMONI 100ML": {
+    "notasSalida": ["Limón", "Bergamota", "Lima"],
+    "notasCorazon": ["Neroli", "Limón italiano", "Jazmín"],
+    "notasFondo": ["Almizcle blanco", "Cedro", "Vetiver"]
+  },
+  "ARMAF ODYSSEY HOMME FOR MEN 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cardamomo"],
+    "notasCorazon": ["Pachulí", "Geranio", "Incienso"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo"]
+  },
+  "ARMAF ODYSSEY AOUD 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Oud"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "ARMAF ODYSSEY MARSHMALLOW 100ML": {
+    "notasSalida": ["Vainilla", "Fresa", "Caramelo"],
+    "notasCorazon": ["Malvavisco", "Rosa", "Jazmín"],
+    "notasFondo": ["Vainilla", "Tonka", "Almizcle dulce"]
+  },
+  "ARMAF ODYSSEY DUBAI CHOCOLAT 100ML": {
+    "notasSalida": ["Chocolate", "Bergamota", "Canela"],
+    "notasCorazon": ["Chocolate negro", "Café", "Praliné"],
+    "notasFondo": ["Vainilla", "Almizcle", "Benzoin"]
+  },
+  "ARMAF MISS ARMAF ATTITUDE 100ML": {
+    "notasSalida": ["Bergamota", "Violeta", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "ARMAF MISS ARMAF CATWALK 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Pera"],
+    "notasCorazon": ["Rosa", "Jazmín", "Violeta"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo blanco"]
+  },
+  "ARMAF YUM YUM 100ML": {
+    "notasSalida": ["Fresa", "Frambuesa", "Vainilla"],
+    "notasCorazon": ["Praliné", "Café", "Cacao"],
+    "notasFondo": ["Vainilla", "Tonka", "Almizcle dulce"]
+  },
+  "ARMAF ETER DESERT ROSE 100ML": {
+    "notasSalida": ["Rosa", "Bergamota", "Mandarina"],
+    "notasCorazon": ["Rosa de desierto", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar"]
+  },
+  "ARMAF ETER DESERT NIGHT 100ML": {
+    "notasSalida": ["Bergamota", "Oud", "Incienso"],
+    "notasCorazon": ["Oud", "Rosa", "Cuero"],
+    "notasFondo": ["Ámbar oscuro", "Almizcle", "Sándalo"]
+  },
+  "ARMAF ETER DESERT BREEZE 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Mandarina"],
+    "notasCorazon": ["Notas acuáticas", "Geranio", "Jazmín"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo"]
+  },
+  "ARMAF ETER MAGICAL OUD 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Oud"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "ARMAF ETER ARABIAN SKY 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Cardamomo"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Rosa"],
+    "notasFondo": ["Almizcle", "Ámbar gris", "Cedro"]
+  },
+  "ARMAF ISLAND BLISS 100ML": {
+    "notasSalida": ["Bergamota", "Coco", "Piña tropical"],
+    "notasCorazon": ["Flor de tiaré", "Jazmín", "Frangipani"],
+    "notasFondo": ["Almizcle", "Vainilla", "Sándalo"]
+  },
+  "RASASI HAWAS FOR HIM 100ML": {
+    "notasSalida": ["Notas marinas", "Notas acuáticas", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Cardamomo", "Geranio"],
+    "notasFondo": ["Amberwood", "Almizcle", "Sándalo", "Vetiver"]
+  },
+  "RASASI HAWAS FOR HER 100ML": {
+    "notasSalida": ["Violeta", "Bergamota", "Casis"],
+    "notasCorazon": ["Orquídea", "Rosa", "Lirio del Valle"],
+    "notasFondo": ["Almizcle", "Ámbar", "Cedro", "Sándalo"]
+  },
+  "RASASI HAWAS BLACK 100ML": {
+    "notasSalida": ["Bergamota", "Rosa", "Pachulí"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "RASASI HAWAS FOR HIM TROPICAL 100ML": {
+    "notasSalida": ["Piña", "Bergamota", "Notas tropicales"],
+    "notasCorazon": ["Coco", "Flor del naranjo", "Jazmín"],
+    "notasFondo": ["Almizcle", "Amberwood", "Sándalo"]
+  },
+  "RASASI HAWAS FOR HIM ICE 100ML": {
+    "notasSalida": ["Menta", "Bergamota", "Eucalipto"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Cardamomo"],
+    "notasFondo": ["Almizcle", "Amberwood", "Cedro"]
+  },
+  "RASASI HAWAS FOR HIM MALIBU 100ML": {
+    "notasSalida": ["Coco", "Bergamota", "Notas tropicales"],
+    "notasCorazon": ["Flor del naranjo", "Notas marinas", "Jazmín"],
+    "notasFondo": ["Almizcle", "Sándalo", "Vainilla"]
+  },
+  "RASASI HAWAS FIRE 100ML": {
+    "notasSalida": ["Pimienta roja", "Bergamota", "Cardamomo"],
+    "notasCorazon": ["Incienso", "Oud", "Geranio"],
+    "notasFondo": ["Almizcle", "Amberwood", "Sándalo"]
+  },
+  "RASASI HAWAS ELIXIR 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Notas acuáticas", "Geranio"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "RASASI HAWAS FOR HIM KOBRA 100ML": {
+    "notasSalida": ["Pimienta negra", "Cardamomo", "Bergamota"],
+    "notasCorazon": ["Oud", "Pachulí", "Incienso"],
+    "notasFondo": ["Ámbar oscuro", "Almizcle", "Sándalo"]
+  },
+  "RASASI SHUHRAH 90ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Lavanda"],
+    "notasCorazon": ["Oud", "Pachulí", "Vetiver"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "AFNAN 9PM 100ML": {
+    "notasSalida": ["Canela", "Nuez moscada", "Cardamomo"],
+    "notasCorazon": ["Iris", "Pachulí", "Bergamota"],
+    "notasFondo": ["Vainilla", "Ámbar", "Almizcle", "Sándalo"]
+  },
+  "AFNAN 9PM POUR FEMME 100ML": {
+    "notasSalida": ["Naranja", "Canela", "Bergamota"],
+    "notasCorazon": ["Rosa", "Jazmín", "Iris"],
+    "notasFondo": ["Vainilla", "Ámbar", "Almizcle"]
+  },
+  "AFNAN 9PM ELIXIR PARFUM 100ML": {
+    "notasSalida": ["Canela", "Bergamota", "Oud"],
+    "notasCorazon": ["Vainilla", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "AFNAN 9PM REBEL 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Cuero", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "AFNAN 9PM NIGHT OUT 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Cardamomo"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "AFNAN 9AM POUR FEMME 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Manzana"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lichi"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar blanco", "Sándalo"]
+  },
+  "AFNAN 9AM BLANCO 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Flores blancas"],
+    "notasCorazon": ["Jazmín", "Rosa blanca", "Iris"],
+    "notasFondo": ["Almizcle blanco", "Ámbar", "Sándalo"]
+  },
+  "AFNAN 9AM DIVE 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Jazmín", "Rosa"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar gris"]
+  },
+  "AFNAN SUPREMACY COLLECTOR'S EDITION 100ML": {
+    "notasSalida": ["Bergamota", "Cuero", "Azafrán"],
+    "notasCorazon": ["Rosa", "Oud", "Geranio"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Pachulí"]
+  },
+  "AFNAN SUPREMACY NOT ONLY INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Cuero", "Cardamomo"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar oscuro", "Almizcle", "Sándalo"]
+  },
+  "AFNAN HISTORIC DORIA 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Mandarina"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo blanco"]
+  },
+  "AFNAN HISTORIC OLMEDA 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cardamomo"],
+    "notasCorazon": ["Oud", "Cedro", "Geranio"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar"]
+  },
+  "AFNAN TURATHI ELECTRIC 90ML": {
+    "notasSalida": ["Bergamota", "Limón", "Mandarina"],
+    "notasCorazon": ["Notas eléctricas", "Lavanda", "Geranio"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar"]
+  },
+  "AFNAN TURATHI BLUE 90ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Iris"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar gris"]
+  },
+  "MAISON ALHAMBRA JEAN LOWE IMMORTAL 100ML": {
+    "notasSalida": ["Bergamota", "Manzana", "Piña"],
+    "notasCorazon": ["Abedul", "Pachulí", "Jazmín", "Rosa"],
+    "notasFondo": ["Almizcle", "Ámbar gris", "Sándalo", "Vetiver", "Incienso"]
+  },
+  "MAISON ALHAMBRA JEAN LOWE NOIR 100ML": {
+    "notasSalida": ["Bergamota", "Manzana ahumada", "Oud"],
+    "notasCorazon": ["Abedul", "Oud", "Incienso"],
+    "notasFondo": ["Almizcle", "Ámbar oscuro", "Sándalo"]
+  },
+  "MAISON ALHAMBRA JEAN LOWE NOUVEAU 100ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Manzana"],
+    "notasCorazon": ["Abedul", "Jazmín", "Rosa"],
+    "notasFondo": ["Almizcle", "Ámbar", "Vetiver"]
+  },
+  "MAISON ALHAMBRA BAROQUE ROUGE EXTREME 100ML": {
+    "notasSalida": ["Jazmín", "Azafrán", "Bergamota"],
+    "notasCorazon": ["Rosa", "Cedro", "Furfural"],
+    "notasFondo": ["Ámbar", "Almizcle", "Madera de Oud"]
+  },
+  "MAISON ALHAMBRA BAROQUE ROUGE 540 100ML": {
+    "notasSalida": ["Jazmín", "Azafrán"],
+    "notasCorazon": ["Rosa", "Cedro rojo"],
+    "notasFondo": ["Furfural", "Ámbar", "Almizcle"]
+  },
+  "MAISON ALHAMBRA VICTORIOSO 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Lavanda"],
+    "notasCorazon": ["Geranio", "Incienso", "Lavanda"],
+    "notasFondo": ["Ambroxan", "Vetiver", "Cedro"]
+  },
+  "MAISON ALHAMBRA VICTORIOSO NERO 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Geranio", "Incienso", "Oud"],
+    "notasFondo": ["Ambroxan", "Vetiver", "Cedro", "Almizcle"]
+  },
+  "MAISON ALHAMBRA SCEPTRE MALACHITE 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cardamomo"],
+    "notasCorazon": ["Cedro verde", "Vetiver", "Pachulí"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "MAISON ALHAMBRA DELILAH 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Lirio"],
+    "notasCorazon": ["Rosa", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Sándalo blanco", "Cedro"]
+  },
+  "MAISON ALHAMBRA LA VITA 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Mandarina"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "MAISON ALHAMBRA PHILOS PURA 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Flores blancas"],
+    "notasCorazon": ["Jazmín", "Rosa", "Tuberosa"],
+    "notasFondo": ["Almizcle blanco", "Sándalo", "Vainilla"]
+  },
+  "MAISON ALHAMBRA PHILOS ROSSO 100ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Rosa"],
+    "notasCorazon": ["Rosa roja", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar rosado", "Sándalo"]
+  },
+  "MAISON ALHAMBRA TERRA 50ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Cardamomo"],
+    "notasCorazon": ["Cedro", "Vetiver", "Incienso"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "MAISON ALHAMBRA SALVO EDP 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Mandarina"],
+    "notasCorazon": ["Neroli", "Petit grain", "Jazmín"],
+    "notasFondo": ["Almizcle blanco", "Cedro", "Vetiver"]
+  },
+  "MAISON ALHAMBRA SALVO ELIXIR 60ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Cardamomo"],
+    "notasCorazon": ["Oud", "Neroli", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "MAISON ALHAMBRA FLAMING ELIXIR 80ML": {
+    "notasSalida": ["Jengibre", "Cardamomo", "Azafrán"],
+    "notasCorazon": ["Oud", "Canela", "Rosa"],
+    "notasFondo": ["Ámbar", "Almizcle", "Pachulí"]
+  },
+  "MAISON ALHAMBRA OPULENCE LEATHER 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cardamomo"],
+    "notasCorazon": ["Cuero", "Oud", "Rosa"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "MAISON ALHAMBRA THE MYTH 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "MAISON ALHAMBRA ALPINE HOMME SPORT 100ML": {
+    "notasSalida": ["Bergamota", "Menta", "Notas verdes alpinas"],
+    "notasCorazon": ["Lavanda", "Geranio", "Cedro"],
+    "notasFondo": ["Almizcle", "Cedro", "Musgo"]
+  },
+  "MAISON ALHAMBRA PACIFIC BLUE 80ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Geranio"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar gris"]
+  },
+  "MAISON ALHAMBRA JORGE DI PROFUMO DEEP BLUE 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Cardamomo"],
+    "notasCorazon": ["Notas acuáticas", "Geranio", "Cedro"],
+    "notasFondo": ["Almizcle", "Ámbar gris", "Sándalo"]
+  },
+  "MAISON ALHAMBRA JORGE DI PROFUMO AQUA 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Notas marinas"],
+    "notasCorazon": ["Notas acuáticas", "Neroli", "Jazmín"],
+    "notasFondo": ["Almizcle blanco", "Cedro", "Vetiver"]
+  },
+  "MAISON ALHAMBRA GLACIER BELLA 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Flores blancas"],
+    "notasCorazon": ["Rosa", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Sándalo", "Vainilla"]
+  },
+  "MAISON ALHAMBRA GLACIER BOLD 100ML": {
+    "notasSalida": ["Bergamota", "Menta", "Notas marinas"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Cedro"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar gris"]
+  },
+  "MAISON ALHAMBRA GLACIER POUR HOMME 100ML": {
+    "notasSalida": ["Bergamota", "Menta", "Notas frescas"],
+    "notasCorazon": ["Lavanda", "Geranio", "Notas acuáticas"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo"]
+  },
+  "MAISON ALHAMBRA LIBRE LEONIE 100ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Lavanda"],
+    "notasCorazon": ["Rosa", "Jazmín", "Incienso"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar"]
+  },
+  "MAISON ALHAMBRA LOVE SPARK 80ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Peonía"],
+    "notasCorazon": ["Rosa", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar rosado", "Sándalo"]
+  },
+  "MAISON ALHAMBRA REYNA 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Mandarina"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "MAISON ALHAMBRA SENSUAL VANILLA 80ML": {
+    "notasSalida": ["Vainilla", "Bergamota", "Mandarina"],
+    "notasCorazon": ["Vainilla cremosa", "Jazmín", "Rosa"],
+    "notasFondo": ["Vainilla", "Almizcle", "Tonka", "Sándalo"]
+  },
+  "MAISON ALHAMBRA PINK VELVET 80ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Rosa"],
+    "notasCorazon": ["Rosa", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Sándalo", "Vainilla"]
+  },
+  "MAISON ALHAMBRA COMO MOISELLE 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Flores blancas"],
+    "notasCorazon": ["Rosa", "Jazmín", "Iris"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar"]
+  },
+  "MAISON ALHAMBRA LA VIVACITE 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Limón"],
+    "notasCorazon": ["Rosa", "Jazmín", "Flores de azahar"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar"]
+  },
+  "MAISON ALHAMBRA KISMET FOR MEN 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Cuero", "Incienso"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "MAISON ALHAMBRA ROSE SEDUCTION VIP FEMME 100ML": {
+    "notasSalida": ["Rosa", "Bergamota", "Frambuesa"],
+    "notasCorazon": ["Rosa de Taif", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar rosado", "Sándalo"]
+  },
+  "MAISON ALHAMBRA YEAH! PARFUM EDP 100ML": {
+    "notasSalida": ["Bergamota", "Frutas rojas", "Pera"],
+    "notasCorazon": ["Rosa", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar", "Vainilla"]
+  },
+  "MAISON ALHAMBRA YEAH! MAN EDP 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Cardamomo"],
+    "notasCorazon": ["Lavanda", "Geranio", "Incienso"],
+    "notasFondo": ["Cedro", "Almizcle", "Ámbar"]
+  },
+  "MAISON ALHAMBRA ALIVE NOW 100ML": {
+    "notasSalida": ["Bergamota", "Limón", "Mandarina"],
+    "notasCorazon": ["Lavanda", "Geranio", "Rosa"],
+    "notasFondo": ["Almizcle", "Cedro", "Sándalo"]
+  },
+  "NAUTICA VOYAGE 100ML": {
+    "notasSalida": ["Manzana", "Menta", "Verde"],
+    "notasCorazon": ["Loto de agua", "Mímosa", "Jazmín"],
+    "notasFondo": ["Cedro", "Musgo de roble", "Almizcle"]
+  },
+  "BHARARA KING EDP 150ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Azafrán"],
+    "notasCorazon": ["Rosa", "Oud", "Jazmín"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "BHARARA KING EDP 100ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Azafrán"],
+    "notasCorazon": ["Rosa", "Oud", "Jazmín"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "BHARARA KING PARFUM 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar intenso", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "BHARARA KING SOLEIL 100ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Limón"],
+    "notasCorazon": ["Rosa", "Jazmín", "Neroli"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar"]
+  },
+  "BHARARA KING GOLD 100ML": {
+    "notasSalida": ["Bergamota", "Rosa", "Incienso"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar dorado", "Almizcle", "Sándalo"]
+  },
+  "BHARARA CHOCOLATE 100ML": {
+    "notasSalida": ["Chocolate negro", "Bergamota", "Caramelo"],
+    "notasCorazon": ["Cacao", "Praliné", "Café"],
+    "notasFondo": ["Vainilla", "Almizcle", "Benzoin"]
+  },
+  "BHARARA ROSE 100ML": {
+    "notasSalida": ["Rosa", "Bergamota", "Frambuesa"],
+    "notasCorazon": ["Rosa turca", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar rosado"]
+  },
+  "BHARARA NICHE FEMME 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar"]
+  },
+  "BHARARA NICHE PARFUM 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "BHARARA DOUBLE BLEU 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Geranio", "Lavanda"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar gris"]
+  },
+  "BHARARA VIKING DUBAI 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Oud", "Cuero", "Incienso"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "BHARARA VIKING BEIRUT 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Limón"],
+    "notasCorazon": ["Rosa", "Oud", "Geranio"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar"]
+  },
+  "BHARARA MAST PERFUME ROME POUR HOMME 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Naranja"],
+    "notasCorazon": ["Cedro", "Geranio", "Incienso"],
+    "notasFondo": ["Sándalo", "Almizcle", "Vetiver"]
+  },
+  "ORIENTICA AMBER ROUGE 80ML": {
+    "notasSalida": ["Jazmín", "Azafrán", "Bergamota"],
+    "notasCorazon": ["Rosa", "Furfural", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Cedro"]
+  },
+  "ORIENTICA ROYAL AMBER 80ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Limón"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar real", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "AL WATANIAH WATANI NOIR 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cedro"],
+    "notasCorazon": ["Oud", "Pachulí", "Vetiver"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "AL WATANIAH WATANI PURPLE 100ML": {
+    "notasSalida": ["Bergamota", "Violeta", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Violeta", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar violáceo", "Sándalo"]
+  },
+  "AL WATANIAH KENZ AL MALIK 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Rosa"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "AL WATANIAH AL LAYL 100ML": {
+    "notasSalida": ["Bergamota", "Canela", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Vainilla", "Sándalo"]
+  },
+  "AL WATANIAH SPECIAL OUD 100ML": {
+    "notasSalida": ["Oud", "Bergamota", "Incienso"],
+    "notasCorazon": ["Oud intenso", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "AL WATANIAH BAREEQ AL DHAHAB 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar dorado", "Almizcle", "Sándalo"]
+  },
+  "AL WATANIAH ROSE MYSTERY INTENSE 100ML": {
+    "notasSalida": ["Rosa", "Bergamota", "Frambuesa"],
+    "notasCorazon": ["Rosa turca", "Oud", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "AL WATANIAH DURRAT AL AROOS 85ML": {
+    "notasSalida": ["Bergamota", "Rosa", "Mandarina"],
+    "notasCorazon": ["Rosa", "Jazmín", "Oud"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "AL WATANIAH OUD MYSTERY INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Oud", "Incienso"],
+    "notasCorazon": ["Oud intenso", "Rosa", "Cuero"],
+    "notasFondo": ["Ámbar oscuro", "Almizcle", "Sándalo"]
+  },
+  "AL WATANIAH AMEERATI 100ML": {
+    "notasSalida": ["Bergamota", "Rosa", "Pera"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lili"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "AL WATANIAH SULTAN AL LAIL 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Resinas"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "AL WATANIAH SHAGAF AL WARD 100ML": {
+    "notasSalida": ["Rosa", "Bergamota", "Frambuesa"],
+    "notasCorazon": ["Rosa de Taif", "Oud", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo rosado"]
+  },
+  "AL WATANIAH GHALA 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Flores blancas"],
+    "notasCorazon": ["Rosa", "Jazmín", "Oud"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "AL WATANIAH SABAH AL WARD 100ML": {
+    "notasSalida": ["Rosa fresca", "Bergamota", "Pera"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Sándalo", "Cedro"]
+  },
+  "AL WATANIAH ATTAR AL WESAL 100ML": {
+    "notasSalida": ["Rosa", "Azafrán", "Bergamota"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "AL WATANIAH THAHAANI 100ML": {
+    "notasSalida": ["Bergamota", "Rosa", "Canela"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "GRANDEUR TUBBEES STRAWBERRY CHEESECAKE 50ML": {
+    "notasSalida": ["Fresa", "Limón", "Frambuesa"],
+    "notasCorazon": ["Queso crema", "Caramelo", "Bizcocho"],
+    "notasFondo": ["Vainilla", "Almizcle dulce", "Tonka"]
+  },
+  "GRANDEUR TUBBEES CHERRY LUXE 50ML": {
+    "notasSalida": ["Cereza", "Frambuesa", "Bergamota"],
+    "notasCorazon": ["Cereza negra", "Caramelo", "Rosa"],
+    "notasFondo": ["Vainilla", "Almizcle dulce", "Tonka"]
+  },
+  "GRANDEUR TUBBEES CANDY POP 50ML": {
+    "notasSalida": ["Frambuesa", "Fresa", "Pomelo"],
+    "notasCorazon": ["Caramelo", "Chicle", "Cereza"],
+    "notasFondo": ["Vainilla dulce", "Almizcle", "Azúcar"]
+  },
+  "GRANDEUR TUBBEES BUBBLE GUM 50ML": {
+    "notasSalida": ["Chicle", "Fresa", "Frambuesa"],
+    "notasCorazon": ["Caramelo", "Frambuesa", "Rosa"],
+    "notasFondo": ["Vainilla", "Almizcle dulce", "Azúcar"]
+  },
+  "GRANDEUR TUBBEES UNICORN VANILLA 50ML": {
+    "notasSalida": ["Vainilla", "Frambuesa", "Flores silvestres"],
+    "notasCorazon": ["Vainilla cremosa", "Iris", "Rosa"],
+    "notasFondo": ["Vainilla", "Almizcle", "Tonka"]
+  },
+  "GRANDEUR TUBBEES PINK SUGAR 50ML": {
+    "notasSalida": ["Fresa", "Bergamota", "Pomelo"],
+    "notasCorazon": ["Rosa", "Jazmín", "Lirio del Valle"],
+    "notasFondo": ["Azúcar algodón", "Almizcle", "Vainilla"]
+  },
+  "GRANDEUR TUBBEES CHOCOLATE FUDGE 50ML": {
+    "notasSalida": ["Chocolate", "Caramelo", "Naranja"],
+    "notasCorazon": ["Praliné", "Cacao", "Café"],
+    "notasFondo": ["Vainilla", "Tonka", "Almizcle dulce"]
+  },
+  "GRANDEUR TUBBEES COOKIES & CREAM 50ML": {
+    "notasSalida": ["Vainilla", "Galleta", "Crema"],
+    "notasCorazon": ["Crema batida", "Praliné", "Leche"],
+    "notasFondo": ["Vainilla", "Almizcle dulce", "Tonka"]
+  },
+  "ZIMAYA AMBER IS GREAT 100ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Cardamomo"],
+    "notasCorazon": ["Ámbar", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar real", "Almizcle", "Vainilla", "Sándalo"]
+  },
+  "ZIMAYA OUD IS GREAT 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Incienso"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Oud oscuro", "Almizcle", "Sándalo"]
+  },
+  "ZIMAYA TIRAMISU COCO 100ML": {
+    "notasSalida": ["Coco", "Vainilla", "Bergamota"],
+    "notasCorazon": ["Tiramisú", "Cacao", "Café"],
+    "notasFondo": ["Vainilla", "Tonka", "Almizcle dulce"]
+  },
+  "ZIMAYA TIRAMISU CARAMEL 100ML": {
+    "notasSalida": ["Caramelo", "Vainilla", "Bergamota"],
+    "notasCorazon": ["Café", "Caramelo", "Cacao"],
+    "notasFondo": ["Vainilla", "Tonka", "Almizcle dulce"]
+  },
+  "FRENCH AVENUE MERINGUE 100ML": {
+    "notasSalida": ["Limón", "Bergamota", "Crema"],
+    "notasCorazon": ["Merengue", "Vainilla", "Crema batida"],
+    "notasFondo": ["Vainilla", "Almizcle dulce", "Tonka"]
+  },
+  "FRENCH AVENUE GENESIS CAPRICORN 90ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Salvia"],
+    "notasCorazon": ["Geranio", "Incienso", "Cardamomo"],
+    "notasFondo": ["Vetiver", "Cedro", "Ámbar"]
+  },
+  "FRENCH AVENUE GENESIS SCORPIO 90ML": {
+    "notasSalida": ["Nuez moscada", "Pimienta negra", "Bergamota"],
+    "notasCorazon": ["Incienso", "Rosa", "Pachulí"],
+    "notasFondo": ["Oud", "Ámbar", "Almizcle"]
+  },
+  "FRENCH AVENUE GENESIS VIRGO 90ML": {
+    "notasSalida": ["Bergamota", "Violeta", "Galbanum"],
+    "notasCorazon": ["Jazmín", "Geranio", "Hiedra"],
+    "notasFondo": ["Vetiver", "Cedro", "Musgo"]
+  },
+  "FRENCH AVENUE GENESIS AQUARIUS 90ML": {
+    "notasSalida": ["Bergamota", "Menta", "Limón"],
+    "notasCorazon": ["Lavanda", "Romero", "Salvia"],
+    "notasFondo": ["Cedro", "Almizcle", "Vetiver"]
+  },
+  "FRENCH AVENUE GENESIS SAGITTARIUS 90ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Jengibre", "Canela", "Rosa"],
+    "notasFondo": ["Sándalo", "Ámbar", "Almizcle"]
+  },
+  "FRENCH AVENUE GENESIS LIBRA 90ML": {
+    "notasSalida": ["Bergamota", "Limón", "Lavanda"],
+    "notasCorazon": ["Geranio", "Incienso", "Vetiver"],
+    "notasFondo": ["Cedro", "Almizcle", "Ámbar"]
+  },
+  "FRENCH AVENUE GENESIS ARIES 90ML": {
+    "notasSalida": ["Bergamota", "Limón", "Naranja"],
+    "notasCorazon": ["Lavanda", "Geranio", "Incienso"],
+    "notasFondo": ["Cedro", "Ambroxan", "Almizcle"]
+  },
+  "FRENCH AVENUE GENESIS GEMINI 90ML": {
+    "notasSalida": ["Bergamota", "Cítricos", "Cardamomo"],
+    "notasCorazon": ["Lavanda", "Rosa", "Geranio"],
+    "notasFondo": ["Cedro", "Vetiver", "Almizcle"]
+  },
+  "FRENCH AVENUE GENESIS LEO 90ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Canela"],
+    "notasCorazon": ["Rosa", "Incienso", "Pachulí"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "FRENCH AVENUE GENESIS CANCER 90ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Geranio", "Rosa"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar gris"]
+  },
+  "FRENCH AVENUE GENESIS TAURUS 90ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Salvia"],
+    "notasCorazon": ["Geranio", "Rosa", "Incienso"],
+    "notasFondo": ["Almizcle", "Vetiver", "Cedro"]
+  },
+  "FRENCH AVENUE GENESIS PISCES 90ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Jazmín"],
+    "notasFondo": ["Cedro", "Almizcle", "Ámbar gris"]
+  },
+  "FRENCH AVENUE LIQUID BRUN 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Canela"],
+    "notasCorazon": ["Tabaco", "Cuero", "Oud"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "FRENCH AVENUE AZZURE AOUD 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Oud"],
+    "notasCorazon": ["Oud", "Notas acuáticas", "Cardamomo"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "FRENCH AVENUE ATLANTIS EXTRAIT 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Incienso"],
+    "notasCorazon": ["Oud marino", "Rosa", "Cardamomo"],
+    "notasFondo": ["Ámbar gris", "Almizcle", "Sándalo"]
+  },
+  "FRENCH AVENUE AETHER EXTRAIT 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Azafrán"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "FRENCH AVENUE PINNACE 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Jazmín", "Cedro"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar gris"]
+  },
+  "FRENCH AVENUE PINNACE NOIR 100ML": {
+    "notasSalida": ["Bergamota", "Oud", "Incienso"],
+    "notasCorazon": ["Oud", "Cuero", "Notas ahumadas"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar oscuro"]
+  },
+  "FRENCH AVENUE VULCAN FEU 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Incienso"],
+    "notasCorazon": ["Oud", "Cuero", "Canela"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo ahumado"]
+  },
+  "FRENCH AVENUE AVE SWEET PARADISE 100ML": {
+    "notasSalida": ["Coco", "Piña", "Bergamota"],
+    "notasCorazon": ["Flor de tiaré", "Jazmín", "Vainilla"],
+    "notasFondo": ["Almizcle", "Vainilla", "Sándalo"]
+  },
+  "FRENCH AVENUE ESSENCE DE BLANC 100ML": {
+    "notasSalida": ["Bergamota", "Flores blancas", "Limón"],
+    "notasCorazon": ["Jazmín blanco", "Rosa blanca", "Tuberosa"],
+    "notasFondo": ["Almizcle blanco", "Sándalo", "Ámbar"]
+  },
+  "FRENCH AVENUE COCOA MORADO 100ML": {
+    "notasSalida": ["Bergamota", "Cacao", "Ciruela"],
+    "notasCorazon": ["Chocolate", "Violeta", "Rosa"],
+    "notasFondo": ["Vainilla", "Almizcle", "Ámbar"]
+  },
+  "FRENCH AVENUE SPECTRE GHOST 80ML": {
+    "notasSalida": ["Bergamota", "Menta", "Notas verdes"],
+    "notasCorazon": ["Lavanda", "Geranio", "Incienso"],
+    "notasFondo": ["Cedro", "Almizcle", "Ámbar"]
+  },
+  "FRENCH AVENUE SPECTRE WRAITH 80ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Incienso"],
+    "notasCorazon": ["Oud", "Cuero", "Rosa"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar oscuro"]
+  },
+  "EMPER UOMO INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Salvia", "Cardamomo"],
+    "notasCorazon": ["Geranio", "Pachulí", "Cedro"],
+    "notasFondo": ["Vetiver", "Almizcle", "Ámbar"]
+  },
+  "EMPER DONNA INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Mandarina", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Sándalo", "Vainilla"]
+  },
+  "EMPER STALLION 53 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Pimienta negra"],
+    "notasCorazon": ["Pachulí", "Geranio", "Lavanda"],
+    "notasFondo": ["Cedro", "Vetiver", "Almizcle"]
+  },
+  "EMPER BLUE STALLION 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Geranio"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar gris"]
+  },
+  "EMPER PHANTOM MY HERO 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Lavanda", "Geranio", "Incienso"],
+    "notasFondo": ["Vetiver", "Cedro", "Almizcle"]
+  },
+  "EMPER MANDORA 100ML": {
+    "notasSalida": ["Bergamota", "Mandarina", "Naranja"],
+    "notasCorazon": ["Neroli", "Jazmín", "Petit grain"],
+    "notasFondo": ["Almizcle", "Cedro", "Vetiver"]
+  },
+  "PARIS CORNER VOUX ELEGANTE 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cardamomo"],
+    "notasCorazon": ["Cedro", "Vetiver", "Cuero"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "PARIS CORNER VOUX TURQUOISE 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Cedro"],
+    "notasFondo": ["Almizcle", "Sándalo", "Ámbar gris"]
+  },
+  "PARIS CORNER KHAIR PISTACHIO 100ML": {
+    "notasSalida": ["Pistacho", "Vainilla", "Bergamota"],
+    "notasCorazon": ["Pistacho cremoso", "Praliné", "Almendra"],
+    "notasFondo": ["Vainilla", "Almizcle dulce", "Tonka"]
+  },
+  "PARIS CORNER KHAIR CONFECTION 100ML": {
+    "notasSalida": ["Vainilla", "Bergamota", "Caramelo"],
+    "notasCorazon": ["Praliné", "Caramelo", "Crema"],
+    "notasFondo": ["Vainilla", "Tonka", "Almizcle dulce"]
+  },
+  "PARIS CORNER TASKEEN CARAMEL CASCADE 100ML": {
+    "notasSalida": ["Caramelo", "Bergamota", "Mandarina"],
+    "notasCorazon": ["Caramelo salado", "Iris", "Rosa"],
+    "notasFondo": ["Vainilla", "Tonka", "Almizcle"]
+  },
+  "PARIS CORNER MARSHMALLOW BLUSH 100ML": {
+    "notasSalida": ["Frambuesa", "Bergamota", "Rosa"],
+    "notasCorazon": ["Malvavisco", "Rosa", "Peonía"],
+    "notasFondo": ["Almizcle", "Vainilla", "Sándalo rosado"]
+  },
+  "RAYHAAN TROPICAL VIBES 100ML": {
+    "notasSalida": ["Limón", "Bergamota", "Piña tropical"],
+    "notasCorazon": ["Coco", "Flor del naranjo", "Jazmín"],
+    "notasFondo": ["Almizcle blanco", "Cedro", "Vetiver"]
+  },
+  "RAYHAAN AZUL 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Limón"],
+    "notasCorazon": ["Notas marinas", "Geranio", "Cardamomo"],
+    "notasFondo": ["Almizcle", "Ámbar gris", "Cedro"]
+  },
+  "RAYHAAN WOLF 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Cardamomo"],
+    "notasCorazon": ["Cuero", "Oud", "Pachulí"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar"]
+  },
+  "RAYHAAN LION 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta negra", "Naranja amarga"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "RAYHAAN DIVINE 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo", "Vainilla"]
+  },
+  "RAYHAAN PACIFIC ALOHA 100ML": {
+    "notasSalida": ["Coco", "Piña", "Bergamota"],
+    "notasCorazon": ["Flor de tiaré", "Frangipani", "Jazmín"],
+    "notasFondo": ["Almizcle", "Sándalo", "Vainilla"]
+  },
+  "RAYHAAN ELIXIR 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo oscuro"]
+  },
+  "RAYHAAN ITALIA 100ML": {
+    "notasSalida": ["Bergamota", "Limón italiano", "Mandarina"],
+    "notasCorazon": ["Neroli", "Jazmín", "Agua de mar"],
+    "notasFondo": ["Almizcle", "Cedro", "Vetiver"]
+  },
+  "RAYHAAN JUNGLE VIBE 100ML": {
+    "notasSalida": ["Bergamota", "Notas verdes", "Bambú"],
+    "notasCorazon": ["Vetiver", "Notas forestales", "Geranio"],
+    "notasFondo": ["Sándalo", "Almizcle", "Musgo"]
+  },
+  "RIIFFS MOMENTO 100ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "DUMONT NITRO INTENSE 100ML": {
+    "notasSalida": ["Bergamota", "Oud", "Pimienta negra"],
+    "notasCorazon": ["Oud intenso", "Cuero", "Incienso"],
+    "notasFondo": ["Sándalo", "Almizcle", "Ámbar oscuro"]
+  },
+  "DUMONT NITRO RED 100ML": {
+    "notasSalida": ["Bergamota", "Pimienta roja", "Cardamomo"],
+    "notasCorazon": ["Oud", "Rosa", "Incienso"],
+    "notasFondo": ["Ámbar rojo", "Almizcle", "Sándalo"]
+  },
+  "DUMONT NITRO WHITE 100ML": {
+    "notasSalida": ["Bergamota", "Flores blancas", "Limón"],
+    "notasCorazon": ["Jazmín blanco", "Rosa", "Oud claro"],
+    "notasFondo": ["Almizcle blanco", "Sándalo", "Ámbar"]
+  },
+  "FRAGRANCE WORLD JUST AZRAQ 100ML": {
+    "notasSalida": ["Bergamota", "Notas marinas", "Limón"],
+    "notasCorazon": ["Notas acuáticas", "Lavanda", "Jazmín"],
+    "notasFondo": ["Almizcle", "Cedro", "Ámbar gris"]
+  },
+  "FRAGRANCE WORLD IMPERIUM 100ML": {
+    "notasSalida": ["Bergamota", "Naranja amarga", "Nuez moscada"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "FRAGRANCE WORLD SEDLEY 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Geranio", "Incienso", "Cedro"],
+    "notasFondo": ["Vetiver", "Almizcle", "Ámbar"]
+  },
+  "FRAGRANCE WORLD HAYAATI BEAU 100ML": {
+    "notasSalida": ["Bergamota", "Pera", "Frambuesa"],
+    "notasCorazon": ["Rosa", "Jazmín", "Peonía"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "FRAGRANCE WORLD HAYAATI 100ML": {
+    "notasSalida": ["Bergamota", "Naranja", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo"]
+  },
+  "FRAGRANCE WORLD STAR MEN NEBULA 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Cardamomo"],
+    "notasCorazon": ["Geranio", "Incienso", "Cedro"],
+    "notasFondo": ["Vetiver", "Almizcle", "Ámbar"]
+  },
+  "FRAGRANCE WORLD PROUD OF YOU ABSOLUTE 100ML": {
+    "notasSalida": ["Bergamota", "Cardamomo", "Azafrán"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo"]
+  },
+  "RAVE NOW WOMEN 100ML": {
+    "notasSalida": ["Bergamota", "Frambuesa", "Pera"],
+    "notasCorazon": ["Rosa", "Peonía", "Jazmín"],
+    "notasFondo": ["Almizcle", "Ámbar", "Sándalo blanco"]
+  },
+  "RAVE NOW MEN 100ML": {
+    "notasSalida": ["Bergamota", "Lavanda", "Pimienta negra"],
+    "notasCorazon": ["Geranio", "Cardamomo", "Cedro"],
+    "notasFondo": ["Vetiver", "Almizcle", "Ámbar"]
+  },
+  "L'AFFAIR SUMMER SHOCKWAVE 100ML": {
+    "notasSalida": ["Bergamota", "Notas tropicales", "Limón"],
+    "notasCorazon": ["Flor de tiaré", "Jazmín", "Coco"],
+    "notasFondo": ["Almizcle", "Sándalo", "Vainilla"]
+  },
+  "ANFAR ROYAL IMPERIAL 100ML": {
+    "notasSalida": ["Bergamota", "Azafrán", "Cardamomo"],
+    "notasCorazon": ["Rosa", "Oud", "Incienso"],
+    "notasFondo": ["Ámbar", "Almizcle", "Sándalo real"]
+  },
+  "KHADLAJ ISLAND 100ML": {
+    "notasSalida": ["Bergamota", "Coco", "Piña"],
+    "notasCorazon": ["Flor de tiaré", "Frangipani", "Jazmín"],
+    "notasFondo": ["Almizcle", "Sándalo", "Vainilla"]
+  }
+}

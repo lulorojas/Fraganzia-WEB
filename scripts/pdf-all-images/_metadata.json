@@ -1,0 +1,2864 @@
+[
+  {
+    "page": 1,
+    "images": [
+      {
+        "file": "p1_0.png",
+        "width": 547,
+        "height": 456,
+        "index": 0
+      },
+      {
+        "file": "p1_1.png",
+        "width": 522,
+        "height": 624,
+        "index": 1
+      },
+      {
+        "file": "p1_2.png",
+        "width": 521,
+        "height": 625,
+        "index": 2
+      },
+      {
+        "file": "p1_3.png",
+        "width": 520,
+        "height": 470,
+        "index": 3
+      },
+      {
+        "file": "p1_4.png",
+        "width": 521,
+        "height": 625,
+        "index": 4
+      },
+      {
+        "file": "p1_5.png",
+        "width": 600,
+        "height": 504,
+        "index": 5
+      },
+      {
+        "file": "p1_6.png",
+        "width": 514,
+        "height": 607,
+        "index": 6
+      },
+      {
+        "file": "p1_7.png",
+        "width": 604,
+        "height": 551,
+        "index": 7
+      },
+      {
+        "file": "p1_8.png",
+        "width": 481,
+        "height": 478,
+        "index": 8
+      },
+      {
+        "file": "p1_9.png",
+        "width": 1000,
+        "height": 913,
+        "index": 9
+      },
+      {
+        "file": "p1_10.png",
+        "width": 849,
+        "height": 819,
+        "index": 10
+      },
+      {
+        "file": "p1_11.png",
+        "width": 521,
+        "height": 624,
+        "index": 11
+      },
+      {
+        "file": "p1_12.png",
+        "width": 520,
+        "height": 625,
+        "index": 12
+      },
+      {
+        "file": "p1_13.png",
+        "width": 1000,
+        "height": 811,
+        "index": 13
+      },
+      {
+        "file": "p1_14.png",
+        "width": 890,
+        "height": 754,
+        "index": 14
+      },
+      {
+        "file": "p1_15.png",
+        "width": 462,
+        "height": 376,
+        "index": 15
+      },
+      {
+        "file": "p1_16.png",
+        "width": 583,
+        "height": 475,
+        "index": 16
+      }
+    ],
+    "products": [],
+    "imagenBrands": []
+  },
+  {
+    "page": 2,
+    "images": [
+      {
+        "file": "p2_0.png",
+        "width": 465,
+        "height": 417,
+        "index": 0
+      }
+    ],
+    "products": [],
+    "imagenBrands": []
+  },
+  {
+    "page": 3,
+    "images": [
+      {
+        "file": "p3_0.png",
+        "width": 600,
+        "height": 557,
+        "index": 0
+      },
+      {
+        "file": "p3_1.png",
+        "width": 514,
+        "height": 607,
+        "index": 1
+      },
+      {
+        "file": "p3_2.png",
+        "width": 480,
+        "height": 600,
+        "index": 2
+      },
+      {
+        "file": "p3_3.png",
+        "width": 737,
+        "height": 563,
+        "index": 3
+      },
+      {
+        "file": "p3_4.png",
+        "width": 1000,
+        "height": 710,
+        "index": 4
+      },
+      {
+        "file": "p3_5.png",
+        "width": 640,
+        "height": 853,
+        "index": 5
+      },
+      {
+        "file": "p3_6.png",
+        "width": 434,
+        "height": 516,
+        "index": 6
+      },
+      {
+        "file": "p3_7.png",
+        "width": 912,
+        "height": 924,
+        "index": 7
+      }
+    ],
+    "products": [
+      "AFNAN 9AM DIVE 100ML \t34 USD",
+      "AFNAN 9PM 100ML \t30 USD",
+      "AFNAN 9PM NIGHT OUT 100ML \t65 USD",
+      "AFNAN 9PM REBEL 100ML \t45 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 4,
+    "images": [
+      {
+        "file": "p4_0.png",
+        "width": 815,
+        "height": 680,
+        "index": 0
+      },
+      {
+        "file": "p4_1.png",
+        "width": 562,
+        "height": 600,
+        "index": 1
+      },
+      {
+        "file": "p4_2.png",
+        "width": 600,
+        "height": 520,
+        "index": 2
+      },
+      {
+        "file": "p4_3.png",
+        "width": 556,
+        "height": 600,
+        "index": 3
+      },
+      {
+        "file": "p4_4.png",
+        "width": 931,
+        "height": 1001,
+        "index": 4
+      },
+      {
+        "file": "p4_5.png",
+        "width": 667,
+        "height": 710,
+        "index": 5
+      },
+      {
+        "file": "p4_6.png",
+        "width": 662,
+        "height": 495,
+        "index": 6
+      },
+      {
+        "file": "p4_7.png",
+        "width": 553,
+        "height": 458,
+        "index": 7
+      }
+    ],
+    "products": [
+      "AFNAN TURATHI BLUE 90ML \t39 USD",
+      "AFNAN TURATHI ELECTRIC 90ML 41 USD"
+    ],
+    "imagenBrands": [
+      "HARAMAIN",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 5,
+    "images": [
+      {
+        "file": "p5_0.png",
+        "width": 600,
+        "height": 462,
+        "index": 0
+      },
+      {
+        "file": "p5_1.png",
+        "width": 517,
+        "height": 459,
+        "index": 1
+      },
+      {
+        "file": "p5_2.png",
+        "width": 600,
+        "height": 451,
+        "index": 2
+      },
+      {
+        "file": "p5_3.png",
+        "width": 606,
+        "height": 525,
+        "index": 3
+      },
+      {
+        "file": "p5_4.png",
+        "width": 931,
+        "height": 940,
+        "index": 4
+      },
+      {
+        "file": "p5_5.png",
+        "width": 1094,
+        "height": 798,
+        "index": 5
+      },
+      {
+        "file": "p5_6.png",
+        "width": 969,
+        "height": 757,
+        "index": 6
+      },
+      {
+        "file": "p5_7.png",
+        "width": 897,
+        "height": 709,
+        "index": 7
+      },
+      {
+        "file": "p5_8.png",
+        "width": 459,
+        "height": 359,
+        "index": 8
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 6,
+    "images": [
+      {
+        "file": "p6_0.png",
+        "width": 806,
+        "height": 697,
+        "index": 0
+      },
+      {
+        "file": "p6_1.png",
+        "width": 781,
+        "height": 951,
+        "index": 1
+      },
+      {
+        "file": "p6_2.png",
+        "width": 612,
+        "height": 612,
+        "index": 2
+      },
+      {
+        "file": "p6_3.png",
+        "width": 517,
+        "height": 442,
+        "index": 3
+      },
+      {
+        "file": "p6_4.png",
+        "width": 894,
+        "height": 763,
+        "index": 4
+      },
+      {
+        "file": "p6_5.png",
+        "width": 631,
+        "height": 760,
+        "index": 5
+      },
+      {
+        "file": "p6_6.png",
+        "width": 624,
+        "height": 556,
+        "index": 6
+      },
+      {
+        "file": "p6_7.png",
+        "width": 556,
+        "height": 504,
+        "index": 7
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "WATANIAH",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 7,
+    "images": [
+      {
+        "file": "p7_0.png",
+        "width": 590,
+        "height": 600,
+        "index": 0
+      },
+      {
+        "file": "p7_1.png",
+        "width": 452,
+        "height": 474,
+        "index": 1
+      },
+      {
+        "file": "p7_2.png",
+        "width": 600,
+        "height": 480,
+        "index": 2
+      },
+      {
+        "file": "p7_3.png",
+        "width": 1115,
+        "height": 932,
+        "index": 3
+      },
+      {
+        "file": "p7_4.png",
+        "width": 508,
+        "height": 418,
+        "index": 4
+      },
+      {
+        "file": "p7_5.png",
+        "width": 800,
+        "height": 800,
+        "index": 5
+      },
+      {
+        "file": "p7_6.png",
+        "width": 856,
+        "height": 677,
+        "index": 6
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "ARMAF",
+      "ANFAR",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 8,
+    "images": [
+      {
+        "file": "p8_0.png",
+        "width": 917,
+        "height": 848,
+        "index": 0
+      },
+      {
+        "file": "p8_1.png",
+        "width": 512,
+        "height": 484,
+        "index": 1
+      },
+      {
+        "file": "p8_2.png",
+        "width": 519,
+        "height": 475,
+        "index": 2
+      },
+      {
+        "file": "p8_3.png",
+        "width": 600,
+        "height": 523,
+        "index": 3
+      },
+      {
+        "file": "p8_4.png",
+        "width": 825,
+        "height": 789,
+        "index": 4
+      },
+      {
+        "file": "p8_5.png",
+        "width": 855,
+        "height": 797,
+        "index": 5
+      },
+      {
+        "file": "p8_6.png",
+        "width": 917,
+        "height": 827,
+        "index": 6
+      },
+      {
+        "file": "p8_7.png",
+        "width": 938,
+        "height": 868,
+        "index": 7
+      },
+      {
+        "file": "p8_8.png",
+        "width": 718,
+        "height": 492,
+        "index": 8
+      }
+    ],
+    "products": [
+      "ARMAF ODYSSEY AOUD 100ML \t27 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 9,
+    "images": [
+      {
+        "file": "p9_0.png",
+        "width": 500,
+        "height": 427,
+        "index": 0
+      },
+      {
+        "file": "p9_1.png",
+        "width": 416,
+        "height": 346,
+        "index": 1
+      },
+      {
+        "file": "p9_2.png",
+        "width": 559,
+        "height": 381,
+        "index": 2
+      },
+      {
+        "file": "p9_3.png",
+        "width": 408,
+        "height": 406,
+        "index": 3
+      },
+      {
+        "file": "p9_4.png",
+        "width": 604,
+        "height": 551,
+        "index": 4
+      },
+      {
+        "file": "p9_5.png",
+        "width": 512,
+        "height": 448,
+        "index": 5
+      },
+      {
+        "file": "p9_6.png",
+        "width": 600,
+        "height": 555,
+        "index": 6
+      },
+      {
+        "file": "p9_7.png",
+        "width": 539,
+        "height": 523,
+        "index": 7
+      },
+      {
+        "file": "p9_8.png",
+        "width": 377,
+        "height": 290,
+        "index": 8
+      }
+    ],
+    "products": [
+      "ARMAF ODYSSEY AQUA 100ML \t39 USD",
+      "ARMAF ODYSSEY LIMONI 100ML 26 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 10,
+    "images": [
+      {
+        "file": "p10_0.png",
+        "width": 697,
+        "height": 616,
+        "index": 0
+      },
+      {
+        "file": "p10_1.png",
+        "width": 686,
+        "height": 434,
+        "index": 1
+      },
+      {
+        "file": "p10_2.png",
+        "width": 424,
+        "height": 376,
+        "index": 2
+      },
+      {
+        "file": "p10_3.png",
+        "width": 1023,
+        "height": 666,
+        "index": 3
+      },
+      {
+        "file": "p10_4.png",
+        "width": 450,
+        "height": 262,
+        "index": 4
+      },
+      {
+        "file": "p10_5.png",
+        "width": 499,
+        "height": 587,
+        "index": 5
+      },
+      {
+        "file": "p10_6.png",
+        "width": 366,
+        "height": 587,
+        "index": 6
+      },
+      {
+        "file": "p10_7.png",
+        "width": 350,
+        "height": 334,
+        "index": 7
+      }
+    ],
+    "products": [
+      "ARMAF ODYSSEY TYRANT 100ML 26 USD",
+      "ARMAF TAG HIM 100ML \t31 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 11,
+    "images": [
+      {
+        "file": "p11_0.png",
+        "width": 587,
+        "height": 600,
+        "index": 0
+      },
+      {
+        "file": "p11_1.png",
+        "width": 685,
+        "height": 605,
+        "index": 1
+      },
+      {
+        "file": "p11_2.png",
+        "width": 1020,
+        "height": 1082,
+        "index": 2
+      },
+      {
+        "file": "p11_3.png",
+        "width": 486,
+        "height": 457,
+        "index": 3
+      },
+      {
+        "file": "p11_4.png",
+        "width": 485,
+        "height": 539,
+        "index": 4
+      },
+      {
+        "file": "p11_5.png",
+        "width": 540,
+        "height": 503,
+        "index": 5
+      },
+      {
+        "file": "p11_6.png",
+        "width": 591,
+        "height": 597,
+        "index": 6
+      },
+      {
+        "file": "p11_7.png",
+        "width": 485,
+        "height": 539,
+        "index": 7
+      }
+    ],
+    "products": [
+      "BHARARA CHOCOLATE 100ML \t50 USD",
+      "BHARARA DOUBLE BLEU 100ML \t50 USD",
+      "BHARARA KING EDP 100ML \t68 USD",
+      "BHARARA KING EDP 150ML \t81 USD",
+      "BHARARA KING GOLD 100ML \t80 USD",
+      "BHARARA KING PARFUM 100ML 72 USD",
+      "BHARARA KING SOLEIL 100ML \t78 USD"
+    ],
+    "imagenBrands": [
+      "BHARARA",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 12,
+    "images": [
+      {
+        "file": "p12_0.png",
+        "width": 1200,
+        "height": 993,
+        "index": 0
+      },
+      {
+        "file": "p12_1.png",
+        "width": 997,
+        "height": 788,
+        "index": 1
+      },
+      {
+        "file": "p12_2.png",
+        "width": 792,
+        "height": 792,
+        "index": 2
+      },
+      {
+        "file": "p12_3.png",
+        "width": 480,
+        "height": 375,
+        "index": 3
+      },
+      {
+        "file": "p12_4.png",
+        "width": 405,
+        "height": 458,
+        "index": 4
+      },
+      {
+        "file": "p12_5.png",
+        "width": 955,
+        "height": 781,
+        "index": 5
+      }
+    ],
+    "products": [
+      "BHARARA VIKING BEIRUT 100ML 58 USD",
+      "BHARARA VIKING DUBAI 100ML \t69 USD",
+      "DUMONT NITRO INTENSE 100ML 36 USD",
+      "DUMONT NITRO RED 100ML \t45 USD",
+      "DUMONT NITRO WHITE 100ML \t42 USD",
+      "EMPER BLUE STALLION 100ML \t30 USD"
+    ],
+    "imagenBrands": [
+      "EMPER",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 13,
+    "images": [
+      {
+        "file": "p13_0.png",
+        "width": 556,
+        "height": 497,
+        "index": 0
+      },
+      {
+        "file": "p13_1.png",
+        "width": 512,
+        "height": 460,
+        "index": 1
+      },
+      {
+        "file": "p13_2.png",
+        "width": 428,
+        "height": 489,
+        "index": 2
+      },
+      {
+        "file": "p13_3.png",
+        "width": 454,
+        "height": 460,
+        "index": 3
+      },
+      {
+        "file": "p13_4.png",
+        "width": 810,
+        "height": 688,
+        "index": 4
+      },
+      {
+        "file": "p13_5.png",
+        "width": 708,
+        "height": 496,
+        "index": 5
+      },
+      {
+        "file": "p13_6.png",
+        "width": 643,
+        "height": 527,
+        "index": 6
+      },
+      {
+        "file": "p13_7.png",
+        "width": 1000,
+        "height": 811,
+        "index": 7
+      }
+    ],
+    "products": [
+      "EMPER MANDORA 100ML \t30 USD",
+      "EMPER STALLION 53 100ML \t26 USD",
+      "EMPER UOMO INTENSE 100ML \t30 USD"
+    ],
+    "imagenBrands": [
+      "FRAGRANCE",
+      "WORLD",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 14,
+    "images": [
+      {
+        "file": "p14_0.png",
+        "width": 592,
+        "height": 600,
+        "index": 0
+      },
+      {
+        "file": "p14_1.png",
+        "width": 500,
+        "height": 484,
+        "index": 1
+      },
+      {
+        "file": "p14_2.png",
+        "width": 480,
+        "height": 474,
+        "index": 2
+      },
+      {
+        "file": "p14_3.png",
+        "width": 888,
+        "height": 850,
+        "index": 3
+      },
+      {
+        "file": "p14_4.png",
+        "width": 940,
+        "height": 1000,
+        "index": 4
+      },
+      {
+        "file": "p14_5.png",
+        "width": 470,
+        "height": 500,
+        "index": 5
+      },
+      {
+        "file": "p14_6.png",
+        "width": 485,
+        "height": 408,
+        "index": 6
+      },
+      {
+        "file": "p14_7.png",
+        "width": 1000,
+        "height": 759,
+        "index": 7
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "FRENCH",
+      "AVENUE",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 15,
+    "images": [
+      {
+        "file": "p15_0.png",
+        "width": 389,
+        "height": 500,
+        "index": 0
+      },
+      {
+        "file": "p15_1.png",
+        "width": 1200,
+        "height": 784,
+        "index": 1
+      },
+      {
+        "file": "p15_2.png",
+        "width": 744,
+        "height": 484,
+        "index": 2
+      },
+      {
+        "file": "p15_3.png",
+        "width": 549,
+        "height": 389,
+        "index": 3
+      },
+      {
+        "file": "p15_4.png",
+        "width": 940,
+        "height": 1000,
+        "index": 4
+      },
+      {
+        "file": "p15_5.png",
+        "width": 940,
+        "height": 1000,
+        "index": 5
+      },
+      {
+        "file": "p15_6.png",
+        "width": 470,
+        "height": 500,
+        "index": 6
+      },
+      {
+        "file": "p15_7.png",
+        "width": 470,
+        "height": 500,
+        "index": 7
+      },
+      {
+        "file": "p15_8.png",
+        "width": 512,
+        "height": 508,
+        "index": 8
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 16,
+    "images": [
+      {
+        "file": "p16_0.png",
+        "width": 465,
+        "height": 482,
+        "index": 0
+      },
+      {
+        "file": "p16_1.png",
+        "width": 546,
+        "height": 583,
+        "index": 1
+      },
+      {
+        "file": "p16_2.png",
+        "width": 876,
+        "height": 849,
+        "index": 2
+      },
+      {
+        "file": "p16_3.png",
+        "width": 436,
+        "height": 464,
+        "index": 3
+      },
+      {
+        "file": "p16_4.png",
+        "width": 303,
+        "height": 299,
+        "index": 4
+      },
+      {
+        "file": "p16_5.png",
+        "width": 790,
+        "height": 941,
+        "index": 5
+      }
+    ],
+    "products": [
+      "KHADLAJ ISLAND 100ML \t38 USD",
+      "LATTAFA ADEEB 80ML \t23 USD",
+      "LATTAFA AJWAA 90ML \t40 USD"
+    ],
+    "imagenBrands": [
+      "KHADLAJ",
+      "LATTAFA",
+      "L'AFFAIR",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 17,
+    "images": [
+      {
+        "file": "p17_0.png",
+        "width": 500,
+        "height": 477,
+        "index": 0
+      },
+      {
+        "file": "p17_1.png",
+        "width": 406,
+        "height": 486,
+        "index": 1
+      },
+      {
+        "file": "p17_2.png",
+        "width": 1000,
+        "height": 824,
+        "index": 2
+      },
+      {
+        "file": "p17_3.png",
+        "width": 840,
+        "height": 772,
+        "index": 3
+      },
+      {
+        "file": "p17_4.png",
+        "width": 494,
+        "height": 500,
+        "index": 4
+      },
+      {
+        "file": "p17_5.png",
+        "width": 1000,
+        "height": 854,
+        "index": 5
+      },
+      {
+        "file": "p17_6.png",
+        "width": 500,
+        "height": 483,
+        "index": 6
+      },
+      {
+        "file": "p17_7.png",
+        "width": 512,
+        "height": 469,
+        "index": 7
+      },
+      {
+        "file": "p17_8.png",
+        "width": 795,
+        "height": 818,
+        "index": 8
+      }
+    ],
+    "products": [
+      "LATTAFA AL QIAM GOLD 100ML \t29 USD",
+      "LATTAFA ANSAAM SILVER 100ML 34 USD",
+      "LATTAFA ASAD 100ML \t30 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 18,
+    "images": [
+      {
+        "file": "p18_0.png",
+        "width": 656,
+        "height": 605,
+        "index": 0
+      },
+      {
+        "file": "p18_1.png",
+        "width": 540,
+        "height": 499,
+        "index": 1
+      },
+      {
+        "file": "p18_2.png",
+        "width": 500,
+        "height": 465,
+        "index": 2
+      },
+      {
+        "file": "p18_3.png",
+        "width": 521,
+        "height": 363,
+        "index": 3
+      },
+      {
+        "file": "p18_4.png",
+        "width": 600,
+        "height": 548,
+        "index": 4
+      },
+      {
+        "file": "p18_5.png",
+        "width": 500,
+        "height": 462,
+        "index": 5
+      },
+      {
+        "file": "p18_6.png",
+        "width": 480,
+        "height": 405,
+        "index": 6
+      },
+      {
+        "file": "p18_7.png",
+        "width": 578,
+        "height": 578,
+        "index": 7
+      },
+      {
+        "file": "p18_8.png",
+        "width": 778,
+        "height": 793,
+        "index": 8
+      }
+    ],
+    "products": [
+      "LATTAFA ASAD ELIXIR 100ML \t38 USD",
+      "LATTAFA ASAD ZANZIBAR 100ML 23 USD",
+      "LATTAFA ATLAS 55ML \t34 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 19,
+    "images": [
+      {
+        "file": "p19_0.png",
+        "width": 494,
+        "height": 383,
+        "index": 0
+      },
+      {
+        "file": "p19_1.png",
+        "width": 662,
+        "height": 601,
+        "index": 1
+      },
+      {
+        "file": "p19_2.png",
+        "width": 522,
+        "height": 489,
+        "index": 2
+      },
+      {
+        "file": "p19_3.png",
+        "width": 443,
+        "height": 465,
+        "index": 3
+      },
+      {
+        "file": "p19_4.png",
+        "width": 523,
+        "height": 469,
+        "index": 4
+      },
+      {
+        "file": "p19_5.png",
+        "width": 462,
+        "height": 500,
+        "index": 5
+      },
+      {
+        "file": "p19_6.png",
+        "width": 866,
+        "height": 875,
+        "index": 6
+      },
+      {
+        "file": "p19_7.png",
+        "width": 408,
+        "height": 478,
+        "index": 7
+      },
+      {
+        "file": "p19_8.png",
+        "width": 745,
+        "height": 669,
+        "index": 8
+      }
+    ],
+    "products": [
+      "LATTAFA EMEER 100ML \t42 USD",
+      "LATTAFA FAKHAR BLACK 100ML \t30 USD",
+      "LATTAFA FAKHAR PLATIN 100ML 26 USD",
+      "LATTAFA HAYAATI 100ML \t19 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 20,
+    "images": [
+      {
+        "file": "p20_0.png",
+        "width": 474,
+        "height": 431,
+        "index": 0
+      },
+      {
+        "file": "p20_1.png",
+        "width": 852,
+        "height": 602,
+        "index": 1
+      },
+      {
+        "file": "p20_2.png",
+        "width": 600,
+        "height": 504,
+        "index": 2
+      },
+      {
+        "file": "p20_3.png",
+        "width": 749,
+        "height": 691,
+        "index": 3
+      },
+      {
+        "file": "p20_4.png",
+        "width": 685,
+        "height": 476,
+        "index": 4
+      },
+      {
+        "file": "p20_5.png",
+        "width": 942,
+        "height": 839,
+        "index": 5
+      },
+      {
+        "file": "p20_6.png",
+        "width": 1280,
+        "height": 654,
+        "index": 6
+      },
+      {
+        "file": "p20_7.png",
+        "width": 500,
+        "height": 380,
+        "index": 7
+      },
+      {
+        "file": "p20_8.png",
+        "width": 890,
+        "height": 754,
+        "index": 8
+      }
+    ],
+    "products": [
+      "LATTAFA KHAMRAH 100ML \t28 USD",
+      "LATTAFA KHANJAR 85ML \t53 USD",
+      "LATTAFA LAIL MALEKI 100ML \t18 USD",
+      "LATTAFA LIAM GREY 100ML \t27 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 21,
+    "images": [
+      {
+        "file": "p21_0.png",
+        "width": 475,
+        "height": 564,
+        "index": 0
+      },
+      {
+        "file": "p21_1.png",
+        "width": 405,
+        "height": 485,
+        "index": 1
+      },
+      {
+        "file": "p21_2.png",
+        "width": 640,
+        "height": 553,
+        "index": 2
+      },
+      {
+        "file": "p21_3.png",
+        "width": 915,
+        "height": 788,
+        "index": 3
+      },
+      {
+        "file": "p21_4.png",
+        "width": 907,
+        "height": 813,
+        "index": 4
+      },
+      {
+        "file": "p21_5.png",
+        "width": 600,
+        "height": 517,
+        "index": 5
+      },
+      {
+        "file": "p21_6.png",
+        "width": 448,
+        "height": 477,
+        "index": 6
+      },
+      {
+        "file": "p21_7.png",
+        "width": 500,
+        "height": 389,
+        "index": 7
+      }
+    ],
+    "products": [
+      "LATTAFA MAAHIR BLACK 100ML 28 USD",
+      "LATTAFA MAAHIR GOLD 100ML \t30 USD",
+      "LATTAFA MASHRABYA 100ML \t24 USD",
+      "LATTAFA NEBRAS 100ML \t39 USD",
+      "LATTAFA OPULENT OUD 100ML \t18 USD",
+      "LATTAFA PRIDE PISA 100ML \t45 USD",
+      "LATTAFA QAED AL FURSAN 90ML 21 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 22,
+    "images": [
+      {
+        "file": "p22_0.png",
+        "width": 487,
+        "height": 413,
+        "index": 0
+      },
+      {
+        "file": "p22_1.png",
+        "width": 500,
+        "height": 487,
+        "index": 1
+      },
+      {
+        "file": "p22_2.png",
+        "width": 508,
+        "height": 410,
+        "index": 2
+      },
+      {
+        "file": "p22_3.png",
+        "width": 1149,
+        "height": 811,
+        "index": 3
+      },
+      {
+        "file": "p22_4.png",
+        "width": 468,
+        "height": 478,
+        "index": 4
+      },
+      {
+        "file": "p22_5.png",
+        "width": 891,
+        "height": 686,
+        "index": 5
+      },
+      {
+        "file": "p22_6.png",
+        "width": 808,
+        "height": 668,
+        "index": 6
+      },
+      {
+        "file": "p22_7.png",
+        "width": 785,
+        "height": 833,
+        "index": 7
+      },
+      {
+        "file": "p22_8.png",
+        "width": 640,
+        "height": 640,
+        "index": 8
+      }
+    ],
+    "products": [
+      "LATTAFA QIMMAH 100ML \t19 USD",
+      "LATTAFA RAMZ SILVER 100ML \t19 USD",
+      "LATTAFA SHAHEEN GOLD 100ML 28 USD",
+      "LATTAFA TERIAQ INTENSE 100ML 41 USD",
+      "LATTAFA VINTAGE RADIO 100ML 28 USD",
+      "LATTAFA WAJOOD 100ML \t47 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 23,
+    "images": [
+      {
+        "file": "p23_0.png",
+        "width": 384,
+        "height": 486,
+        "index": 0
+      },
+      {
+        "file": "p23_1.png",
+        "width": 465,
+        "height": 600,
+        "index": 1
+      },
+      {
+        "file": "p23_2.png",
+        "width": 461,
+        "height": 503,
+        "index": 2
+      },
+      {
+        "file": "p23_3.png",
+        "width": 600,
+        "height": 498,
+        "index": 3
+      },
+      {
+        "file": "p23_4.png",
+        "width": 600,
+        "height": 546,
+        "index": 4
+      },
+      {
+        "file": "p23_5.png",
+        "width": 500,
+        "height": 480,
+        "index": 5
+      },
+      {
+        "file": "p23_6.png",
+        "width": 420,
+        "height": 452,
+        "index": 6
+      },
+      {
+        "file": "p23_7.png",
+        "width": 742,
+        "height": 742,
+        "index": 7
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "MAISON",
+      "ALHAMBRA",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 24,
+    "images": [
+      {
+        "file": "p24_0.png",
+        "width": 487,
+        "height": 455,
+        "index": 0
+      },
+      {
+        "file": "p24_1.png",
+        "width": 854,
+        "height": 934,
+        "index": 1
+      },
+      {
+        "file": "p24_2.png",
+        "width": 600,
+        "height": 501,
+        "index": 2
+      },
+      {
+        "file": "p24_3.png",
+        "width": 1024,
+        "height": 937,
+        "index": 3
+      },
+      {
+        "file": "p24_4.png",
+        "width": 466,
+        "height": 600,
+        "index": 4
+      },
+      {
+        "file": "p24_5.png",
+        "width": 458,
+        "height": 500,
+        "index": 5
+      },
+      {
+        "file": "p24_6.png",
+        "width": 745,
+        "height": 786,
+        "index": 6
+      },
+      {
+        "file": "p24_7.png",
+        "width": 512,
+        "height": 437,
+        "index": 7
+      },
+      {
+        "file": "p24_8.png",
+        "width": 1000,
+        "height": 909,
+        "index": 8
+      }
+    ],
+    "products": [
+      "MAISON ALHAMBRA SALVO EDP"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 25,
+    "images": [
+      {
+        "file": "p25_0.png",
+        "width": 560,
+        "height": 598,
+        "index": 0
+      },
+      {
+        "file": "p25_1.png",
+        "width": 598,
+        "height": 580,
+        "index": 1
+      },
+      {
+        "file": "p25_2.png",
+        "width": 463,
+        "height": 463,
+        "index": 2
+      },
+      {
+        "file": "p25_3.png",
+        "width": 500,
+        "height": 534,
+        "index": 3
+      },
+      {
+        "file": "p25_4.png",
+        "width": 600,
+        "height": 424,
+        "index": 4
+      },
+      {
+        "file": "p25_5.png",
+        "width": 685,
+        "height": 600,
+        "index": 5
+      },
+      {
+        "file": "p25_6.png",
+        "width": 495,
+        "height": 536,
+        "index": 6
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "NAUTICA",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 26,
+    "images": [
+      {
+        "file": "p26_0.png",
+        "width": 816,
+        "height": 885,
+        "index": 0
+      },
+      {
+        "file": "p26_1.png",
+        "width": 1024,
+        "height": 951,
+        "index": 1
+      },
+      {
+        "file": "p26_2.png",
+        "width": 700,
+        "height": 559,
+        "index": 2
+      },
+      {
+        "file": "p26_3.png",
+        "width": 969,
+        "height": 771,
+        "index": 3
+      },
+      {
+        "file": "p26_4.png",
+        "width": 491,
+        "height": 469,
+        "index": 4
+      },
+      {
+        "file": "p26_5.png",
+        "width": 379,
+        "height": 477,
+        "index": 5
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "RASASI",
+      "ORIENTICA",
+      "PARIS",
+      "CORNER",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 27,
+    "images": [
+      {
+        "file": "p27_0.png",
+        "width": 540,
+        "height": 437,
+        "index": 0
+      },
+      {
+        "file": "p27_1.png",
+        "width": 1024,
+        "height": 822,
+        "index": 1
+      },
+      {
+        "file": "p27_2.png",
+        "width": 1048,
+        "height": 825,
+        "index": 2
+      },
+      {
+        "file": "p27_3.png",
+        "width": 673,
+        "height": 516,
+        "index": 3
+      },
+      {
+        "file": "p27_4.png",
+        "width": 706,
+        "height": 543,
+        "index": 4
+      },
+      {
+        "file": "p27_5.png",
+        "width": 1048,
+        "height": 715,
+        "index": 5
+      },
+      {
+        "file": "p27_6.png",
+        "width": 576,
+        "height": 440,
+        "index": 6
+      },
+      {
+        "file": "p27_7.png",
+        "width": 608,
+        "height": 536,
+        "index": 7
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "RAVE",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 28,
+    "images": [
+      {
+        "file": "p28_0.png",
+        "width": 500,
+        "height": 468,
+        "index": 0
+      },
+      {
+        "file": "p28_1.png",
+        "width": 908,
+        "height": 630,
+        "index": 1
+      },
+      {
+        "file": "p28_2.png",
+        "width": 513,
+        "height": 469,
+        "index": 2
+      },
+      {
+        "file": "p28_3.png",
+        "width": 394,
+        "height": 591,
+        "index": 3
+      },
+      {
+        "file": "p28_4.png",
+        "width": 422,
+        "height": 623,
+        "index": 4
+      },
+      {
+        "file": "p28_5.png",
+        "width": 793,
+        "height": 704,
+        "index": 5
+      },
+      {
+        "file": "p28_6.png",
+        "width": 694,
+        "height": 555,
+        "index": 6
+      },
+      {
+        "file": "p28_7.png",
+        "width": 583,
+        "height": 475,
+        "index": 7
+      },
+      {
+        "file": "p28_8.png",
+        "width": 676,
+        "height": 521,
+        "index": 8
+      }
+    ],
+    "products": [
+      "RAYHAAN AZUL 100ML \t56 USD",
+      "RAYHAAN ELIXIR 100ML \t45 USD",
+      "RAYHAAN ITALIA 100ML \t59 USD",
+      "RAYHAAN JUNGLE VIBE 100ML \t39 USD",
+      "RAYHAAN LION 100ML \t41 USD",
+      "RAYHAAN PACIFIC ALOHA 100ML 56 USD",
+      "RAYHAAN WOLF 100ML \t42 USD"
+    ],
+    "imagenBrands": [
+      "RAYHAAN",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 29,
+    "images": [
+      {
+        "file": "p29_0.png",
+        "width": 416,
+        "height": 500,
+        "index": 0
+      },
+      {
+        "file": "p29_1.png",
+        "width": 700,
+        "height": 700,
+        "index": 1
+      },
+      {
+        "file": "p29_2.png",
+        "width": 488,
+        "height": 539,
+        "index": 2
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "RIIFFS",
+      "ZIMAYA",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 30,
+    "images": [
+      {
+        "file": "p30_0.png",
+        "width": 409,
+        "height": 467,
+        "index": 0
+      },
+      {
+        "file": "p30_1.png",
+        "width": 643,
+        "height": 723,
+        "index": 1
+      },
+      {
+        "file": "p30_2.png",
+        "width": 990,
+        "height": 821,
+        "index": 2
+      },
+      {
+        "file": "p30_3.png",
+        "width": 1200,
+        "height": 612,
+        "index": 3
+      },
+      {
+        "file": "p30_4.png",
+        "width": 780,
+        "height": 740,
+        "index": 4
+      },
+      {
+        "file": "p30_5.png",
+        "width": 1200,
+        "height": 691,
+        "index": 5
+      },
+      {
+        "file": "p30_6.png",
+        "width": 450,
+        "height": 450,
+        "index": 6
+      }
+    ],
+    "products": [
+      "AFNAN 9AM BLANCO 100ML \t34 USD",
+      "AFNAN HISTORIC DORIA 100ML \t41 USD"
+    ],
+    "imagenBrands": [
+      "AFNAN",
+      "FRAGANCIAS",
+      "FEMENINAS",
+      "HARAMAIN",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 31,
+    "images": [
+      {
+        "file": "p31_0.png",
+        "width": 181,
+        "height": 252,
+        "index": 0
+      },
+      {
+        "file": "p31_1.png",
+        "width": 1000,
+        "height": 734,
+        "index": 1
+      },
+      {
+        "file": "p31_2.png",
+        "width": 1024,
+        "height": 1024,
+        "index": 2
+      },
+      {
+        "file": "p31_3.png",
+        "width": 1024,
+        "height": 1024,
+        "index": 3
+      },
+      {
+        "file": "p31_4.png",
+        "width": 800,
+        "height": 800,
+        "index": 4
+      },
+      {
+        "file": "p31_5.png",
+        "width": 450,
+        "height": 391,
+        "index": 5
+      },
+      {
+        "file": "p31_6.png",
+        "width": 734,
+        "height": 589,
+        "index": 6
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "WATANIAH",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 32,
+    "images": [
+      {
+        "file": "p32_0.png",
+        "width": 779,
+        "height": 608,
+        "index": 0
+      },
+      {
+        "file": "p32_1.png",
+        "width": 990,
+        "height": 803,
+        "index": 1
+      },
+      {
+        "file": "p32_2.png",
+        "width": 1117,
+        "height": 858,
+        "index": 2
+      },
+      {
+        "file": "p32_3.png",
+        "width": 895,
+        "height": 856,
+        "index": 3
+      },
+      {
+        "file": "p32_4.png",
+        "width": 512,
+        "height": 442,
+        "index": 4
+      },
+      {
+        "file": "p32_5.png",
+        "width": 512,
+        "height": 434,
+        "index": 5
+      },
+      {
+        "file": "p32_6.png",
+        "width": 553,
+        "height": 598,
+        "index": 6
+      },
+      {
+        "file": "p32_7.png",
+        "width": 540,
+        "height": 540,
+        "index": 7
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 33,
+    "images": [
+      {
+        "file": "p33_0.png",
+        "width": 500,
+        "height": 480,
+        "index": 0
+      },
+      {
+        "file": "p33_1.png",
+        "width": 600,
+        "height": 498,
+        "index": 1
+      },
+      {
+        "file": "p33_2.png",
+        "width": 394,
+        "height": 500,
+        "index": 2
+      },
+      {
+        "file": "p33_3.png",
+        "width": 542,
+        "height": 600,
+        "index": 3
+      },
+      {
+        "file": "p33_4.png",
+        "width": 337,
+        "height": 213,
+        "index": 4
+      },
+      {
+        "file": "p33_5.png",
+        "width": 1000,
+        "height": 658,
+        "index": 5
+      },
+      {
+        "file": "p33_6.png",
+        "width": 418,
+        "height": 418,
+        "index": 6
+      },
+      {
+        "file": "p33_7.png",
+        "width": 700,
+        "height": 700,
+        "index": 7
+      }
+    ],
+    "products": [
+      "ARMAF ISLAND BLISS 100ML \t41 USD",
+      "ARMAF ODYSSEY CANDEE 100ML 27 USD",
+      "ARMAF YUM YUM 100ML \t47 USD",
+      "BHARARA ROSE 100ML \t56 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 34,
+    "images": [
+      {
+        "file": "p34_0.png",
+        "width": 540,
+        "height": 498,
+        "index": 0
+      },
+      {
+        "file": "p34_1.png",
+        "width": 610,
+        "height": 464,
+        "index": 1
+      },
+      {
+        "file": "p34_2.png",
+        "width": 424,
+        "height": 458,
+        "index": 2
+      },
+      {
+        "file": "p34_3.png",
+        "width": 470,
+        "height": 464,
+        "index": 3
+      },
+      {
+        "file": "p34_4.png",
+        "width": 824,
+        "height": 768,
+        "index": 4
+      },
+      {
+        "file": "p34_5.png",
+        "width": 462,
+        "height": 376,
+        "index": 5
+      }
+    ],
+    "products": [
+      "BHARARA NICHE FEMME 100ML \t57 USD",
+      "EMPER DONNA INTENSE 100ML \t30 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 35,
+    "images": [
+      {
+        "file": "p35_0.png",
+        "width": 540,
+        "height": 489,
+        "index": 0
+      },
+      {
+        "file": "p35_1.png",
+        "width": 711,
+        "height": 800,
+        "index": 1
+      },
+      {
+        "file": "p35_2.png",
+        "width": 869,
+        "height": 766,
+        "index": 2
+      },
+      {
+        "file": "p35_3.png",
+        "width": 497,
+        "height": 550,
+        "index": 3
+      },
+      {
+        "file": "p35_4.png",
+        "width": 470,
+        "height": 464,
+        "index": 4
+      },
+      {
+        "file": "p35_5.png",
+        "width": 470,
+        "height": 464,
+        "index": 5
+      },
+      {
+        "file": "p35_6.png",
+        "width": 470,
+        "height": 464,
+        "index": 6
+      },
+      {
+        "file": "p35_7.png",
+        "width": 470,
+        "height": 464,
+        "index": 7
+      }
+    ],
+    "products": [
+      "LATTAFA AFEEF 100ML \t84 USD"
+    ],
+    "imagenBrands": [
+      "LATTAFA",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 36,
+    "images": [
+      {
+        "file": "p36_0.png",
+        "width": 743,
+        "height": 784,
+        "index": 0
+      },
+      {
+        "file": "p36_1.png",
+        "width": 750,
+        "height": 770,
+        "index": 1
+      },
+      {
+        "file": "p36_2.png",
+        "width": 760,
+        "height": 858,
+        "index": 2
+      },
+      {
+        "file": "p36_3.png",
+        "width": 800,
+        "height": 800,
+        "index": 3
+      },
+      {
+        "file": "p36_4.png",
+        "width": 754,
+        "height": 719,
+        "index": 4
+      },
+      {
+        "file": "p36_5.png",
+        "width": 514,
+        "height": 493,
+        "index": 5
+      },
+      {
+        "file": "p36_6.png",
+        "width": 487,
+        "height": 540,
+        "index": 6
+      },
+      {
+        "file": "p36_7.png",
+        "width": 640,
+        "height": 642,
+        "index": 7
+      },
+      {
+        "file": "p36_8.png",
+        "width": 475,
+        "height": 500,
+        "index": 8
+      }
+    ],
+    "products": [
+      "LATTAFA AJWAD 60ML \t20 USD",
+      "LATTAFA ANA ABIYEDH 60ML \t20 USD",
+      "LATTAFA ANGHAM 100ML \t29 USD",
+      "LATTAFA ANSAAM GOLD 100ML 30 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 37,
+    "images": [
+      {
+        "file": "p37_0.png",
+        "width": 640,
+        "height": 568,
+        "index": 0
+      },
+      {
+        "file": "p37_1.png",
+        "width": 485,
+        "height": 475,
+        "index": 1
+      },
+      {
+        "file": "p37_2.png",
+        "width": 968,
+        "height": 891,
+        "index": 2
+      },
+      {
+        "file": "p37_3.png",
+        "width": 595,
+        "height": 600,
+        "index": 3
+      },
+      {
+        "file": "p37_4.png",
+        "width": 481,
+        "height": 478,
+        "index": 4
+      },
+      {
+        "file": "p37_5.png",
+        "width": 450,
+        "height": 466,
+        "index": 5
+      },
+      {
+        "file": "p37_6.png",
+        "width": 462,
+        "height": 584,
+        "index": 6
+      },
+      {
+        "file": "p37_7.png",
+        "width": 788,
+        "height": 812,
+        "index": 7
+      },
+      {
+        "file": "p37_8.png",
+        "width": 401,
+        "height": 450,
+        "index": 8
+      }
+    ],
+    "products": [
+      "LATTAFA ATHEERI 100ML \t72 USD",
+      "LATTAFA ECLAIRE 100ML \t36 USD",
+      "LATTAFA EMAAN 100ML \t26 USD",
+      "LATTAFA FAKHAR ROSE 100ML \t35 USD",
+      "LATTAFA HAYA 100ML \t33 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 38,
+    "images": [
+      {
+        "file": "p38_0.png",
+        "width": 748,
+        "height": 1003,
+        "index": 0
+      },
+      {
+        "file": "p38_1.png",
+        "width": 449,
+        "height": 480,
+        "index": 1
+      },
+      {
+        "file": "p38_2.png",
+        "width": 371,
+        "height": 490,
+        "index": 2
+      },
+      {
+        "file": "p38_3.png",
+        "width": 670,
+        "height": 832,
+        "index": 3
+      },
+      {
+        "file": "p38_4.png",
+        "width": 488,
+        "height": 490,
+        "index": 4
+      },
+      {
+        "file": "p38_5.png",
+        "width": 640,
+        "height": 414,
+        "index": 5
+      },
+      {
+        "file": "p38_6.png",
+        "width": 516,
+        "height": 539,
+        "index": 6
+      },
+      {
+        "file": "p38_7.png",
+        "width": 734,
+        "height": 625,
+        "index": 7
+      },
+      {
+        "file": "p38_8.png",
+        "width": 597,
+        "height": 476,
+        "index": 8
+      }
+    ],
+    "products": [
+      "LATTAFA MAYAR 100ML \t26 USD",
+      "LATTAFA MAYAR CHERRY 100ML 25 USD",
+      "LATTAFA MUSAMAM 100ML \t29 USD",
+      "LATTAFA NEBRAS ELIXIR 100ML \t36 USD",
+      "LATTAFA OPULENT DUBAI 100ML 24 USD",
+      "LATTAFA SAKEENA 100ML \t24 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 39,
+    "images": [
+      {
+        "file": "p39_0.png",
+        "width": 640,
+        "height": 553,
+        "index": 0
+      },
+      {
+        "file": "p39_1.png",
+        "width": 878,
+        "height": 931,
+        "index": 1
+      },
+      {
+        "file": "p39_2.png",
+        "width": 509,
+        "height": 569,
+        "index": 2
+      },
+      {
+        "file": "p39_3.png",
+        "width": 583,
+        "height": 444,
+        "index": 3
+      },
+      {
+        "file": "p39_4.png",
+        "width": 600,
+        "height": 558,
+        "index": 4
+      },
+      {
+        "file": "p39_5.png",
+        "width": 500,
+        "height": 500,
+        "index": 5
+      },
+      {
+        "file": "p39_6.png",
+        "width": 849,
+        "height": 819,
+        "index": 6
+      },
+      {
+        "file": "p39_7.png",
+        "width": 597,
+        "height": 555,
+        "index": 7
+      },
+      {
+        "file": "p39_8.png",
+        "width": 452,
+        "height": 548,
+        "index": 8
+      }
+    ],
+    "products": [
+      "LATTAFA SEHR MAGIC OF 100ML 36 USD",
+      "LATTAFA TERIAQ 100ML \t32 USD",
+      "LATTAFA VICTORIA 100ML \t35 USD",
+      "LATTAFA YARA CANDY 100ML \t27 USD",
+      "LATTAFA YARA ELIXIR 100ML \t35 USD",
+      "LATTAFA YARA MOI 100ML \t24 USD",
+      "LATTAFA YARA ROSA 100ML \t28 USD",
+      "LATTAFA YARA TOUS 100ML \t25 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 40,
+    "images": [
+      {
+        "file": "p40_0.png",
+        "width": 600,
+        "height": 549,
+        "index": 0
+      },
+      {
+        "file": "p40_1.png",
+        "width": 540,
+        "height": 357,
+        "index": 1
+      },
+      {
+        "file": "p40_2.png",
+        "width": 437,
+        "height": 395,
+        "index": 2
+      },
+      {
+        "file": "p40_3.png",
+        "width": 384,
+        "height": 487,
+        "index": 3
+      },
+      {
+        "file": "p40_4.png",
+        "width": 539,
+        "height": 497,
+        "index": 4
+      },
+      {
+        "file": "p40_5.png",
+        "width": 685,
+        "height": 529,
+        "index": 5
+      },
+      {
+        "file": "p40_6.png",
+        "width": 532,
+        "height": 529,
+        "index": 6
+      },
+      {
+        "file": "p40_7.png",
+        "width": 471,
+        "height": 500,
+        "index": 7
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "MAISON",
+      "ALHAMBRA",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 41,
+    "images": [
+      {
+        "file": "p41_0.png",
+        "width": 800,
+        "height": 741,
+        "index": 0
+      },
+      {
+        "file": "p41_1.png",
+        "width": 736,
+        "height": 675,
+        "index": 1
+      },
+      {
+        "file": "p41_2.png",
+        "width": 795,
+        "height": 774,
+        "index": 2
+      },
+      {
+        "file": "p41_3.png",
+        "width": 430,
+        "height": 500,
+        "index": 3
+      },
+      {
+        "file": "p41_4.png",
+        "width": 875,
+        "height": 853,
+        "index": 4
+      },
+      {
+        "file": "p41_5.png",
+        "width": 486,
+        "height": 480,
+        "index": 5
+      },
+      {
+        "file": "p41_6.png",
+        "width": 515,
+        "height": 546,
+        "index": 6
+      },
+      {
+        "file": "p41_7.png",
+        "width": 508,
+        "height": 596,
+        "index": 7
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "PARIS",
+      "CORNER",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 42,
+    "images": [
+      {
+        "file": "p42_0.png",
+        "width": 472,
+        "height": 483,
+        "index": 0
+      },
+      {
+        "file": "p42_1.png",
+        "width": 935,
+        "height": 751,
+        "index": 1
+      },
+      {
+        "file": "p42_2.png",
+        "width": 736,
+        "height": 807,
+        "index": 2
+      },
+      {
+        "file": "p42_3.png",
+        "width": 353,
+        "height": 318,
+        "index": 3
+      },
+      {
+        "file": "p42_4.png",
+        "width": 487,
+        "height": 428,
+        "index": 4
+      }
+    ],
+    "products": [
+      "RAYHAAN DIVINE 100ML \t66 USD"
+    ],
+    "imagenBrands": [
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 43,
+    "images": [
+      {
+        "file": "p43_0.png",
+        "width": 478,
+        "height": 500,
+        "index": 0
+      },
+      {
+        "file": "p43_1.png",
+        "width": 574,
+        "height": 571,
+        "index": 1
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "ZIMAYA",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  },
+  {
+    "page": 44,
+    "images": [
+      {
+        "file": "p44_0.png",
+        "width": 550,
+        "height": 472,
+        "index": 0
+      },
+      {
+        "file": "p44_1.png",
+        "width": 500,
+        "height": 542,
+        "index": 1
+      },
+      {
+        "file": "p44_2.png",
+        "width": 551,
+        "height": 466,
+        "index": 2
+      },
+      {
+        "file": "p44_3.png",
+        "width": 500,
+        "height": 467,
+        "index": 3
+      },
+      {
+        "file": "p44_4.png",
+        "width": 500,
+        "height": 539,
+        "index": 4
+      },
+      {
+        "file": "p44_5.png",
+        "width": 500,
+        "height": 540,
+        "index": 5
+      },
+      {
+        "file": "p44_6.png",
+        "width": 396,
+        "height": 369,
+        "index": 6
+      },
+      {
+        "file": "p44_7.png",
+        "width": 415,
+        "height": 389,
+        "index": 7
+      }
+    ],
+    "products": [],
+    "imagenBrands": [
+      "GRANDEUR",
+      "@FRANZEBI.IMPORTS",
+      "2796",
+      "6619",
+      "FRANZEBI",
+      "IMPORTS",
+      "2872",
+      "0954"
+    ]
+  }
+]

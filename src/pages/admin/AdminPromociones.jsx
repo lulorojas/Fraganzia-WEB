@@ -3,6 +3,7 @@ import {
   useTodasLasPromociones, useCrearPromocion,
   useEditarPromocion, useEliminarPromocion,
 } from '../../hooks/usePromociones';
+import { notificarNuevaPromocion } from '../../services/emailService';
 import { PromocionesTable } from '../../components/admin/PromocionesTable';
 import { PromocionForm } from '../../components/admin/PromocionForm';
 import { Button } from '../../components/ui/Button';
@@ -23,8 +24,15 @@ export default function AdminPromociones() {
   function cerrar() { setModo(null); setPromoEditando(null); }
 
   async function handleSubmit(datos) {
-    if (modo === 'nuevo') await crear(datos);
-    else await editar({ id: promoEditando.id, datos });
+    if (modo === 'nuevo') {
+      await crear(datos);
+      // Notificar al admin de la nueva promoción (no bloqueante)
+      notificarNuevaPromocion(datos).catch(err => {
+        console.warn('No se pudo notificar nueva promoción:', err);
+      });
+    } else {
+      await editar({ id: promoEditando.id, datos });
+    }
     cerrar();
   }
 

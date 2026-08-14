@@ -1,0 +1,221 @@
+{
+  "stats": [
+    {
+      "familia": "Verde",
+      "count": 3,
+      "percentage": "0.9"
+    },
+    {
+      "familia": "Cítrico",
+      "count": 13,
+      "percentage": "4.0"
+    },
+    {
+      "familia": "Especiado",
+      "count": 15,
+      "percentage": "4.6"
+    },
+    {
+      "familia": "Gourmand",
+      "count": 26,
+      "percentage": "8.0"
+    },
+    {
+      "familia": "Acuático",
+      "count": 27,
+      "percentage": "8.3"
+    },
+    {
+      "familia": "Aromático",
+      "count": 36,
+      "percentage": "11.0"
+    },
+    {
+      "familia": "Amaderado",
+      "count": 46,
+      "percentage": "14.1"
+    },
+    {
+      "familia": "Floral",
+      "count": 79,
+      "percentage": "24.2"
+    },
+    {
+      "familia": "Oriental",
+      "count": 81,
+      "percentage": "24.8"
+    }
+  ],
+  "lowUsage": [
+    {
+      "familia": "Verde",
+      "perfumes": [
+        {
+          "id": "BhX5qmFGmXN0gZwBHGX3",
+          "nombre": "FRENCH AVENUE GENESIS VIRGO 90ML",
+          "marca": "French Avenue"
+        },
+        {
+          "id": "dK72909Sq0EdJElSrC4t",
+          "nombre": "ARMAF ODYSSEY EAU DE MONTAGNE 100ML",
+          "marca": "Armaf"
+        },
+        {
+          "id": "pIHTiqbPTWtT313StKUf",
+          "nombre": "RAYHAAN JUNGLE VIBE 100ML",
+          "marca": "Rayhaan"
+        }
+      ]
+    },
+    {
+      "familia": "Cítrico",
+      "perfumes": [
+        {
+          "id": "32JEc59bDSdRhdWFnxGg",
+          "nombre": "ARMAF ODYSSEY GO MANGO 100ML",
+          "marca": "Armaf"
+        },
+        {
+          "id": "7bZFX02S3KRq9oLd35rp",
+          "nombre": "ARMAF ODYSSEY MANDARIN SKY VINTAGE 100ML",
+          "marca": "Armaf"
+        },
+        {
+          "id": "B1kRiSVdSZrjDrcaG2ob",
+          "nombre": "RAYHAAN TROPICAL VIBES 100ML",
+          "marca": "Rayhaan"
+        },
+        {
+          "id": "KrHibG4XfSjJmvNa28Q6",
+          "nombre": "MAISON ALHAMBRA SALVO EDP 100ML",
+          "marca": "Maison Alhambra"
+        },
+        {
+          "id": "P8jX1Py6C7tw2sxcqYDy",
+          "nombre": "RASASI HAWAS FOR HIM TROPICAL 100ML",
+          "marca": "Rasasi"
+        },
+        {
+          "id": "RRmiTxF2xhe1UbLimxjI",
+          "nombre": "L'AFFAIR SUMMER SHOCKWAVE 100ML",
+          "marca": "L'Affair"
+        },
+        {
+          "id": "TxKldl8h3JdP6202fZpV",
+          "nombre": "MAISON ALHAMBRA YEAH! PARFUM EDP 100ML",
+          "marca": "Maison Alhambra"
+        },
+        {
+          "id": "UaZbap0XXF1XnnTDE31B",
+          "nombre": "AL HARAMAIN DETOUR ECO 100ML",
+          "marca": "Al Haramain"
+        },
+        {
+          "id": "Y8Bn823khq2XOsnrxygy",
+          "nombre": "ARMAF ODYSSEY MANDARIN SKY 100ML",
+          "marca": "Armaf"
+        },
+        {
+          "id": "f3VWpm7VnWuH5wtkId6j",
+          "nombre": "MAISON ALHAMBRA YEAH! MAN EDP 100ML",
+          "marca": "Maison Alhambra"
+        },
+        {
+          "id": "fvwKUOYWqpqJvbV07w5e",
+          "nombre": "RASASI HAWAS FOR HIM MALIBU 100ML",
+          "marca": "Rasasi"
+        },
+        {
+          "id": "qIavexzrsAxs9PhTCoLn",
+          "nombre": "ARMAF ODYSSEY LIMONI 100ML",
+          "marca": "Armaf"
+        },
+        {
+          "id": "s9bqYlu3XCGb2MaxWecr",
+          "nombre": "ARMAF ODYSSEY MANDARIN SKY ELIXIR 100ML",
+          "marca": "Armaf"
+        }
+      ]
+    },
+    {
+      "familia": "Especiado",
+      "perfumes": [
+        {
+          "id": "6MDfZtpA285MxXn5rnA3",
+          "nombre": "FRENCH AVENUE GENESIS SCORPIO 90ML",
+          "marca": "French Avenue"
+        },
+        {
+          "id": "F4RoZ0jwICTwK5GlRJxJ",
+          "nombre": "MAISON ALHAMBRA FLAMING ELIXIR 80ML",
+          "marca": "Maison Alhambra"
+        },
+        {
+          "id": "I0guiFJbVWVakWWybPJj",
+          "nombre": "AFNAN SUPREMACY COLLECTOR'S EDITION 100ML",
+          "marca": "Afnan"
+        },
+        {
+          "id": "KakURbjXADgiDARYctKf",
+          "nombre": "AFNAN SUPREMACY NOT ONLY INTENSE 100ML",
+          "marca": "Afnan"
+        },
+        {
+          "id": "LJgITJX8WkAByB6Jbw3r",
+          "nombre": "FRAGRANCE WORLD IMPERIUM 100ML",
+          "marca": "Fragrance World"
+        },
+        {
+          "id": "LotSAssOQ2dz5rHYi2v6",
+          "nombre": "ARMAF TAG HIM UOMO ROSSO 100ML",
+          "marca": "Armaf"
+        },
+        {
+          "id": "MZmoNLykKGTmEnsRGEgR",
+          "nombre": "LATTAFA TERIAQ INTENSE 100ML",
+          "marca": "Lattafa"
+        },
+        {
+          "id": "Mxe9v4IcZbfnj2xNdQaG",
+          "nombre": "LATTAFA ASAD ZANZIBAR 100ML",
+          "marca": "Lattafa"
+        },
+        {
+          "id": "Q30PieEmlRunCi8QYzXD",
+          "nombre": "FRENCH AVENUE VULCAN FEU 100ML",
+          "marca": "French Avenue"
+        },
+        {
+          "id": "QZSmJwawbU6UeWg8l8R1",
+          "nombre": "LATTAFA EMEER 100ML",
+          "marca": "Lattafa"
+        },
+        {
+          "id": "RKrvJMr9M0ecJJk6Y2M1",
+          "nombre": "RASASI HAWAS FIRE 100ML",
+          "marca": "Rasasi"
+        },
+        {
+          "id": "RyjNplyCm4VndSmsRba2",
+          "nombre": "EMPER MANDORA 100ML",
+          "marca": "Emper"
+        },
+        {
+          "id": "XVI6QTRqsNgdI4nQvKfX",
+          "nombre": "MAISON ALHAMBRA PHILOS ROSSO 100ML",
+          "marca": "Maison Alhambra"
+        },
+        {
+          "id": "eHn27Bo0HStlgwvuZqQP",
+          "nombre": "DUMONT NITRO RED 100ML",
+          "marca": "Dumont"
+        },
+        {
+          "id": "pIPb0RhXKML1sOUebbBr",
+          "nombre": "RASASI HAWAS FOR HIM KOBRA 100ML",
+          "marca": "Rasasi"
+        }
+      ]
+    }
+  ]
+}

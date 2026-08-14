@@ -1,0 +1,40 @@
+{
+  "problemas": {
+    "sinDescripcion": [],
+    "sinNotas": [],
+    "generosSospechosos": [
+      {
+        "nombre": "LATTAFA THE KINGDOM FEMENINO 100ML",
+        "actual": "Femenino",
+        "razon": "Contiene keyword masculino claro"
+      }
+    ],
+    "familiasRaras": [
+      {
+        "nombre": "ARMAF ODYSSEY DUBAI CHOCOLAT 100ML",
+        "genero": "Masculino",
+        "familia": "Gourmand"
+      }
+    ],
+    "sinImagen": []
+  },
+  "stats": {
+    "generos": {
+      "Masculino": 198,
+      "Femenino": 103,
+      "Kids": 8,
+      "Unisex": 17
+    },
+    "familias": {
+      "Oriental": 81,
+      "Aromático": 36,
+      "Floral": 80,
+      "Gourmand": 25,
+      "Amaderado": 46,
+      "Cítrico": 13,
+      "Acuático": 27,
+      "Especiado": 15,
+      "Verde": 3
+    }
+  }
+}

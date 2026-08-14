@@ -1,5 +1,6 @@
 import { useConfig, useActualizarConfig } from '../../hooks/useConfig';
 import { ConfigForm } from '../../components/admin/ConfigForm';
+import { GlassCard } from '../../components/ui/GlassCard';
 import { Spinner } from '../../components/ui/Spinner';
 
 export default function AdminConfig() {
@@ -14,7 +15,9 @@ export default function AdminConfig() {
     <div>
       <h1 className="mb-6 font-display text-xl text-text sm:text-2xl">Configuración general</h1>
       {isLoading ? <Spinner /> : (
-        <ConfigForm config={config} onSubmit={handleSubmit} cargando={isPending} />
+        <GlassCard className="max-w-md p-6">
+          <ConfigForm config={config} onSubmit={handleSubmit} cargando={isPending} />
+        </GlassCard>
       )}
     </div>
   );
