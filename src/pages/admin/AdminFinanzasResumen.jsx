@@ -26,7 +26,12 @@ export default function AdminFinanzasResumen() {
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <TotalesSocioCard socioActualId={socioActualId} socios={socios} totalesPorSocio={panel?.totalesPorSocio} />
       <SaldoNetoCard saldoNeto={panel?.saldoNeto ?? 0} socios={socios} />
-      <StockCard stockPorProducto={panel?.stockPorProducto} perfumes={perfumes} />
+      <StockCard
+        stockPorProducto={panel?.stockPorProducto}
+        porCobrar={panel?.porCobrar}
+        socios={socios}
+        perfumes={perfumes}
+      />
       <MovimientosRecientesList movimientos={panel?.movimientosRecientes} />
     </div>
   );

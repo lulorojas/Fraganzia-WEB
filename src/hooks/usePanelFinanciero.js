@@ -6,8 +6,10 @@ import { useGastos } from './useGastos';
 import { useMovimientosPersonales } from './useMovimientosPersonales';
 import { useTransferenciasSocios } from './useTransferenciasSocios';
 import { useSocioActual } from './useSocioActual';
+import { usePerfumesAdmin } from './usePerfumesAdmin';
+import { useDolarBlue } from './useDolarBlue';
 import {
-  calcularTotalesPorSocio, calcularSaldoNeto, calcularStockPorProducto,
+  calcularTotalesPorSocio, calcularSaldoNeto, calcularStockPorProducto, calcularPorCobrarStock,
 } from '../services/panelFinancieroCalculos';
 
 const VACIO = [];
@@ -30,6 +32,12 @@ export function usePanelFinanciero() {
   const gastos = useGastos();
   const movimientosPersonales = useMovimientosPersonales(socioActualId);
   const transferenciasSocios = useTransferenciasSocios();
+
+  // Ambas ya están cacheadas por otras pantallas (misma queryKey), así que no
+  // agregan lecturas de Firestore: solo hacen falta para valorizar el stock a
+  // precio de venta.
+  const { data: perfumes } = usePerfumesAdmin();
+  const { dolarMedio } = useDolarBlue();
 
   const queries = [ventasSocios, ventasDecants, compras, gastos, movimientosPersonales, transferenciasSocios];
   const isLoading = queries.some((q) => q.isLoading);
@@ -64,11 +72,12 @@ export function usePanelFinanciero() {
         ventasSocios: v, ventasDecants: vd, compras: c, gastos: g, transferenciasSocios: t,
       }),
       stockPorProducto,
+      porCobrar: calcularPorCobrarStock(stockPorProducto, perfumes, dolarMedio),
       movimientosRecientes,
     };
   }, [
     ventasSocios.data, ventasDecants.data, compras.data, gastos.data,
-    movimientosPersonales.data, transferenciasSocios.data,
+    movimientosPersonales.data, transferenciasSocios.data, perfumes, dolarMedio,
   ]);
 
   return { data, isLoading, error };
