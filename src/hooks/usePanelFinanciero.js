@@ -67,6 +67,7 @@ export function usePanelFinanciero() {
     return {
       totalesPorSocio: calcularTotalesPorSocio({
         movimientosPersonales: mp, ventasSocios: v, ventasDecants: vd, compras: c, gastos: g,
+        transferenciasSocios: t,
       }),
       saldoNeto: calcularSaldoNeto({
         ventasSocios: v, ventasDecants: vd, compras: c, gastos: g, transferenciasSocios: t,
