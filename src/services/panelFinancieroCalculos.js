@@ -1,4 +1,5 @@
 import { SOCIOS } from '../constants';
+import { usdAArs } from '../utils/precios';
 
 /**
  * Funciones puras de cálculo del panel financiero. Reciben los movimientos ya
@@ -119,6 +120,50 @@ export function calcularStockPorProducto(compras = [], ventasSocios = []) {
   return Object.fromEntries(
     Object.entries(stock).map(([perfumeId, cantidad]) => [perfumeId, Math.max(0, cantidad)])
   );
+}
+
+/**
+ * Cuánto entraría si se vendiera todo el stock actual: el stock valorizado a
+ * PRECIO DE VENTA (no a costo). Usa el precio de catálogo del perfume
+ * (`precioUSD` convertido con el dólar del momento), que es el precio de lista
+ * por transferencia; si se cobra en efectivo entra un 5% menos.
+ *
+ * Como toda venta se reparte 50/50, a cada socio le corresponde la mitad.
+ *
+ * Sin cotización de dólar no se puede valorizar: devuelve `sinCotizacion` para
+ * que la UI lo diga en vez de mostrar $0, que se leería como "no queda nada".
+ */
+export function calcularPorCobrarStock(stockPorProducto = {}, perfumes = [], dolarMedio = null) {
+  const porProducto = {};
+  if (!dolarMedio) {
+    return { total: 0, porSocio: {}, porProducto, sinCotizacion: true, sinPrecio: [] };
+  }
+
+  const precioUSDDe = new Map((perfumes ?? []).map((p) => [p.id, p.precioUSD]));
+  const sinPrecio = [];
+  let total = 0;
+
+  Object.entries(stockPorProducto).forEach(([perfumeId, cantidad]) => {
+    if (cantidad <= 0) return;
+    const precioUSD = precioUSDDe.get(perfumeId);
+    // Perfume borrado del catálogo o sin precio: se cuenta aparte en vez de
+    // valorizarlo en 0 y ensuciar el total por lo bajo sin avisar.
+    if (!precioUSD) {
+      sinPrecio.push(perfumeId);
+      return;
+    }
+    const monto = cantidad * usdAArs(precioUSD, dolarMedio);
+    porProducto[perfumeId] = monto;
+    total += monto;
+  });
+
+  const mitad = total / 2;
+  const porSocio = SOCIOS.reduce((acc, s) => {
+    acc[s.id] = mitad;
+    return acc;
+  }, {});
+
+  return { total, porSocio, porProducto, sinCotizacion: false, sinPrecio };
 }
 
 export function calcularRankingPerfumes(ventasSocios = []) {
