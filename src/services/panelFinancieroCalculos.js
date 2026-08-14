@@ -50,6 +50,7 @@ export function calcularTotalesPorSocio({
   ventasDecants = [],
   compras = [],
   gastos = [],
+  transferenciasSocios = [],
 }) {
   const totales = totalesVacios();
 
@@ -74,6 +75,14 @@ export function calcularTotalesPorSocio({
   // no es necesariamente el total de la compra.
   compras.forEach((c) => {
     pagosDeCompra(c).forEach((p) => sumar(p.socioId, p.metodo, -(p.monto ?? 0)));
+  });
+
+  // La transferencia mueve plata real de un socio al otro: quien la hace deja
+  // de tenerla y quien la recibe pasa a tenerla. Sin esto la deuda se salda en
+  // el saldo neto pero la plata nunca aparece en el bolsillo de quien cobró.
+  transferenciasSocios.forEach((t) => {
+    sumar(t.de, t.metodo, -(t.monto ?? 0));
+    sumar(t.a, t.metodo, t.monto ?? 0);
   });
 
   return Object.fromEntries(
