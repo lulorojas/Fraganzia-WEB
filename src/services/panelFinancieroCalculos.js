@@ -16,6 +16,27 @@ import { usdAArs } from '../utils/precios';
 
 const OTRO_SOCIO = { luciano: 'benja', benja: 'luciano' };
 
+/**
+ * Una compra puede pagarla un socio solo o repartirse entre los dos. La forma
+ * canónica es `pagos: [{ socioId, monto, metodo }]`.
+ *
+ * Las compras cargadas antes de habilitar el reparto guardan un único pagador
+ * en `pagadoPor`/`metodoPago` por el total: se leen como un pago único, así los
+ * totales históricos no cambian al desplegar esto.
+ */
+export function pagosDeCompra(compra = {}) {
+  if (Array.isArray(compra.pagos) && compra.pagos.length > 0) return compra.pagos;
+  if (compra.pagadoPor) {
+    return [{ socioId: compra.pagadoPor, monto: compra.montoTotal ?? 0, metodo: compra.metodoPago }];
+  }
+  return [];
+}
+
+export function totalDeCompra(compra = {}) {
+  if (compra.montoTotal != null) return compra.montoTotal;
+  return pagosDeCompra(compra).reduce((acc, p) => acc + (p.monto ?? 0), 0);
+}
+
 function totalesVacios() {
   return SOCIOS.reduce((acc, s) => {
     acc[s.id] = { efectivo: 0, mercadopago: 0 };
@@ -49,7 +70,11 @@ export function calcularTotalesPorSocio({
 
   gastos.forEach((g) => sumar(g.pagadoPor, g.metodoPago, -g.monto));
 
-  compras.forEach((c) => sumar(c.pagadoPor, c.metodoPago, -c.montoTotal));
+  // Cada socio descuenta de su plata lo que efectivamente puso, que con reparto
+  // no es necesariamente el total de la compra.
+  compras.forEach((c) => {
+    pagosDeCompra(c).forEach((p) => sumar(p.socioId, p.metodo, -(p.monto ?? 0)));
+  });
 
   return Object.fromEntries(
     Object.entries(totales).map(([socioId, t]) => [
@@ -86,9 +111,18 @@ export function calcularSaldoNeto({
     saldo += signo(g.pagadoPor) * (g.monto / 2);
   });
 
-  // Quien paga la compra pone plata por los dos: es acreedor de la mitad.
+  // Una compra puede pagarla uno solo o repartirse. El desbalance es cuánto
+  // puso un socio por encima de la mitad que le tocaba.
+  //
+  // Se mide sobre un solo socio (Luciano) a propósito: lo que él puso de más
+  // es exactamente lo que el otro puso de menos, así que sumar los dos lados
+  // contaría la deuda dos veces.
   compras.forEach((c) => {
-    saldo += signo(c.pagadoPor) * (c.montoTotal / 2);
+    const total = totalDeCompra(c);
+    const pagoLuciano = pagosDeCompra(c)
+      .filter((p) => p.socioId === 'luciano')
+      .reduce((acc, p) => acc + (p.monto ?? 0), 0);
+    saldo += pagoLuciano - total / 2;
   });
 
   transferenciasSocios.forEach((t) => {

@@ -1,11 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { compraSchema } from '../../schemas/compraSchema';
 import { useSocios } from '../../hooks/useSocios';
 import { usePerfumesAdmin } from '../../hooks/usePerfumesAdmin';
+import { pagosDeCompra } from '../../services/panelFinancieroCalculos';
+import { SOCIOS, METODOS_PAGO_SOCIOS } from '../../constants';
 import { Button } from '../ui/Button';
 import { PerfumeSearchSelect } from '../ui/PerfumeSearchSelect';
+import { CompraPagos } from './CompraPagos';
 
 function Campo({ label, error, children }) {
   return (
@@ -24,9 +27,22 @@ function hoyISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Normaliza compras viejas (un solo pagador en `pagadoPor`) a `pagos[]`, así
+// una compra cargada antes del reparto se puede editar sin romperse.
 function toFormValues(c) {
   if (!c) return null;
-  return { ...c, fecha: c.fecha?.toDate ? c.fecha.toDate().toISOString().slice(0, 10) : hoyISO() };
+  return {
+    ...c,
+    pagos: pagosDeCompra(c),
+    fecha: c.fecha?.toDate ? c.fecha.toDate().toISOString().slice(0, 10) : hoyISO(),
+  };
+}
+
+function modoDePagos(pagos, montoTotal) {
+  if (!pagos || pagos.length <= 1) return 'uno';
+  const mitad = (Number(montoTotal) || 0) / 2;
+  const esMitad = pagos.every((p) => Math.abs((Number(p.monto) || 0) - mitad) <= 0.5);
+  return esMitad ? 'mitad' : 'personalizado';
 }
 
 export function CompraForm({ compra, onSubmit, onCancel, cargando }) {
@@ -42,15 +58,47 @@ export function CompraForm({ compra, onSubmit, onCancel, cargando }) {
       proveedor: '',
       items: [{ perfumeId: '', perfumeNombre: '', cantidad: 1 }],
       montoTotal: '',
-      pagadoPor: '',
-      metodoPago: 'efectivo',
+      pagos: [{ socioId: '', monto: 0, metodo: METODOS_PAGO_SOCIOS[0] }],
       fecha: hoyISO(),
     },
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: 'items' });
 
-  useEffect(() => { if (compra) reset(toFormValues(compra)); }, [compra, reset]);
+  const montoTotal = watch('montoTotal');
+  const pagos = watch('pagos');
+  const [modo, setModo] = useState(() => modoDePagos(compra?.pagos, compra?.montoTotal));
+
+  useEffect(() => {
+    if (!compra) return;
+    const valores = toFormValues(compra);
+    reset(valores);
+    setModo(modoDePagos(valores.pagos, valores.montoTotal));
+  }, [compra, reset]);
+
+  // Al cambiar el total hay que redistribuir: si no, los montos quedarían con
+  // el reparto del total anterior y la suma dejaría de cerrar.
+  useEffect(() => {
+    const total = Number(montoTotal) || 0;
+    if (modo === 'uno') {
+      setValue('pagos', [{ socioId: pagos?.[0]?.socioId ?? '', monto: total, metodo: pagos?.[0]?.metodo ?? METODOS_PAGO_SOCIOS[0] }]);
+    } else if (modo === 'mitad') {
+      setValue('pagos', SOCIOS.map((s, i) => ({
+        socioId: s.id, monto: total / 2, metodo: pagos?.[i]?.metodo ?? METODOS_PAGO_SOCIOS[0],
+      })));
+    } else {
+      // Reparto libre: se conserva lo del primero y el resto va al segundo.
+      const primero = Math.min(Number(pagos?.[0]?.monto) || 0, total);
+      setValue('pagos', SOCIOS.map((s, i) => ({
+        socioId: s.id,
+        monto: i === 0 ? primero : total - primero,
+        metodo: pagos?.[i]?.metodo ?? METODOS_PAGO_SOCIOS[0],
+      })));
+    }
+    // `pagos` no va en las dependencias a propósito: se escribe acá adentro y
+    // volvería a dispararse en loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [montoTotal, modo, setValue]);
 
   function handlePerfumeChange(index, id, p) {
     setValue(`items.${index}.perfumeId`, id, { shouldValidate: true });
@@ -106,23 +154,21 @@ export function CompraForm({ compra, onSubmit, onCancel, cargando }) {
         {errors.items?.message && <p className="mt-2 text-xs text-error">{errors.items.message}</p>}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Campo label="Monto total (ARS)" error={errors.montoTotal?.message}>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Campo label="Monto total de la compra (ARS)" error={errors.montoTotal?.message}>
           <input type="number" step="0.01" className={`${INPUT} font-luxury text-lg`} {...register('montoTotal')} />
         </Campo>
-        <Campo label="Pagado por" error={errors.pagadoPor?.message}>
-          <select className={SELECT} {...register('pagadoPor')}>
-            <option value="">Elegir…</option>
-            {socios?.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}
-          </select>
-        </Campo>
-        <Campo label="Método de pago" error={errors.metodoPago?.message}>
-          <select className={SELECT} {...register('metodoPago')}>
-            <option value="efectivo">Efectivo</option>
-            <option value="mercadopago">Mercado Pago</option>
-          </select>
-        </Campo>
       </div>
+
+      <CompraPagos
+        modo={modo}
+        onModoChange={setModo}
+        montoTotal={montoTotal}
+        pagos={pagos}
+        onPagosChange={(nuevos) => setValue('pagos', nuevos, { shouldValidate: true })}
+        socios={socios}
+        error={errors.pagos?.message ?? errors.pagos?.[0]?.socioId?.message}
+      />
 
       <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={cargando}>
