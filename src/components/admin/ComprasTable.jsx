@@ -1,5 +1,6 @@
 import { Button } from '../ui/Button';
 import { formatARS } from '../../utils/format';
+import { pagosDeCompra, totalDeCompra } from '../../services/panelFinancieroCalculos';
 
 export function ComprasTable({ compras, socios, onEditar, onAnular }) {
   if (!compras?.length) {
@@ -12,6 +13,14 @@ export function ComprasTable({ compras, socios, onEditar, onAnular }) {
 
   function listaItems(c) {
     return (c.items || []).map((i) => `${i.perfumeNombre} ×${i.cantidad}`).join(' · ');
+  }
+
+  // Un solo pagador se muestra por nombre; el reparto, con cuánto puso cada uno.
+  function detallePago(c) {
+    const pagos = pagosDeCompra(c);
+    if (pagos.length === 0) return '—';
+    if (pagos.length === 1) return nombreSocio(pagos[0].socioId);
+    return pagos.map((p) => `${nombreSocio(p.socioId)} ${formatARS(p.monto)}`).join(' · ');
   }
 
   function confirmarAnular(c) {
@@ -41,8 +50,8 @@ export function ComprasTable({ compras, socios, onEditar, onAnular }) {
           <div key={c.id} className="glass p-4">
             <p className="font-body text-text">{c.proveedor}</p>
             <p className="mb-2 text-xs text-text-secondary">{listaItems(c)}</p>
-            <p className="font-luxury text-lg text-text">{formatARS(c.montoTotal)}</p>
-            <p className="mb-3 text-xs text-text-secondary">Pagó {nombreSocio(c.pagadoPor)}</p>
+            <p className="font-luxury text-lg text-text">{formatARS(totalDeCompra(c))}</p>
+            <p className="mb-3 text-xs text-text-secondary">Pagó {detallePago(c)}</p>
             <Acciones c={c} />
           </div>
         ))}
@@ -65,8 +74,8 @@ export function ComprasTable({ compras, socios, onEditar, onAnular }) {
               <tr key={c.id} className="border-b border-border">
                 <td className="py-2 pr-4 font-body">{c.proveedor}</td>
                 <td className="py-2 pr-4">{listaItems(c)}</td>
-                <td className="py-2 pr-4 font-luxury">{formatARS(c.montoTotal)}</td>
-                <td className="py-2 pr-4 text-xs text-text-secondary">{nombreSocio(c.pagadoPor)}</td>
+                <td className="py-2 pr-4 font-luxury">{formatARS(totalDeCompra(c))}</td>
+                <td className="py-2 pr-4 text-xs text-text-secondary">{detallePago(c)}</td>
                 <td className="py-2"><Acciones c={c} /></td>
               </tr>
             ))}
