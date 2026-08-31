@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import {
-  LayoutDashboard, TrendingUp, Droplet, ShoppingCart, Receipt, ArrowLeftRight, History, BarChart3,
+  LayoutDashboard, TrendingUp, Droplet, ShoppingCart, Receipt, ArrowLeftRight, History, BarChart3, Package,
 } from 'lucide-react';
 
 const TABS = [
@@ -9,6 +9,7 @@ const TABS = [
   { to: 'decants', label: 'Decants', Icon: Droplet },
   { to: 'compras', label: 'Compras', Icon: ShoppingCart },
   { to: 'gastos', label: 'Gastos', Icon: Receipt },
+  { to: 'stock', label: 'Stock', Icon: Package },
   { to: 'movimientos', label: 'Movimientos', Icon: ArrowLeftRight },
   { to: 'analytics', label: 'Analytics', Icon: BarChart3 },
   { to: 'auditoria', label: 'Auditoría', Icon: History },

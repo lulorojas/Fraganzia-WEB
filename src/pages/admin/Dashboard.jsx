@@ -5,6 +5,7 @@ import { Spinner } from '../../components/ui/Spinner';
 import { usePedidosList } from '../../hooks/usePedidos';
 import { useCompras } from '../../hooks/useCompras';
 import { useVentasSocios } from '../../hooks/useVentasSocios';
+import { useAjustesStock } from '../../hooks/useAjustesStock';
 import { calcularStockPorProducto } from '../../services/panelFinancieroCalculos';
 import {
   calcularPerfumesMasPedidos, calcularMarcasMasPedidas, calcularResumenPedidos,
@@ -40,11 +41,12 @@ export default function Dashboard() {
   const { data: pedidos, isLoading } = usePedidosList();
   const { data: compras } = useCompras();
   const { data: ventasSocios } = useVentasSocios();
+  const { data: ajustesStock } = useAjustesStock();
   const { data: interes } = useInteresClientes();
 
   const analitica = useMemo(() => {
     const p = pedidos ?? VACIO;
-    const stockPorProducto = calcularStockPorProducto(compras ?? VACIO, ventasSocios ?? VACIO);
+    const stockPorProducto = calcularStockPorProducto(compras ?? VACIO, ventasSocios ?? VACIO, ajustesStock ?? VACIO);
     return {
       resumen: calcularResumenPedidos(p),
       masPedidos: calcularPerfumesMasPedidos(p),
@@ -52,7 +54,7 @@ export default function Dashboard() {
       evolucion: calcularEvolucionPedidos(p),
       reposicion: calcularOportunidadesReposicion(p, stockPorProducto),
     };
-  }, [pedidos, compras, ventasSocios]);
+  }, [pedidos, compras, ventasSocios, ajustesStock]);
 
   const { resumen } = analitica;
 
