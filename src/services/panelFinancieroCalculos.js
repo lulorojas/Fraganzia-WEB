@@ -195,35 +195,45 @@ export function calcularStockPorProducto(compras = [], ventasSocios = [], ajuste
 
 /**
  * Cuánto entraría si se vendiera todo el stock actual: el stock valorizado a
- * PRECIO DE VENTA (no a costo). Usa el precio de catálogo del perfume
- * (`precioUSD` convertido con el dólar del momento), que es el precio de lista
- * por transferencia; si se cobra en efectivo entra un 5% menos.
+ * PRECIO DE VENTA (no a costo), tomando el precio de lista del catálogo.
  *
  * Como toda venta se reparte 50/50, a cada socio le corresponde la mitad.
  *
- * Sin cotización de dólar no se puede valorizar: devuelve `sinCotizacion` para
- * que la UI lo diga en vez de mostrar $0, que se leería como "no queda nada".
+ * Un perfume sin precio cargado se informa en `sinPrecio` en vez de valorizarse
+ * en 0, que se leería como "no queda nada".
  */
 export function calcularPorCobrarStock(stockPorProducto = {}, perfumes = [], dolarMedio = null) {
   const porProducto = {};
-  if (!dolarMedio) {
-    return { total: 0, porSocio: {}, porProducto, sinCotizacion: true, sinPrecio: [] };
-  }
+  const perfumePorId = new Map((perfumes ?? []).map((p) => [p.id, p]));
 
-  const precioUSDDe = new Map((perfumes ?? []).map((p) => [p.id, p.precioUSD]));
+  /**
+   * Se usa el precio en pesos guardado en el perfume, que es la lista con la
+   * que realmente se vende. Convertir `precioUSD` con el dólar del día da otro
+   * número: la lista está armada con su propio margen, muy por encima del
+   * blue, así que valorizar el stock con la cotización lo dejaba bastante por
+   * debajo de lo que se cobra de verdad.
+   *
+   * La conversión queda solo como respaldo para un perfume sin precio cargado.
+   */
+  const precioDe = (perfume) => {
+    if (perfume?.precioTransferencia > 0) return perfume.precioTransferencia;
+    if (perfume?.precioUSD > 0 && dolarMedio) return usdAArs(perfume.precioUSD, dolarMedio);
+    return null;
+  };
+
   const sinPrecio = [];
   let total = 0;
 
   Object.entries(stockPorProducto).forEach(([perfumeId, cantidad]) => {
     if (cantidad <= 0) return;
-    const precioUSD = precioUSDDe.get(perfumeId);
+    const precio = precioDe(perfumePorId.get(perfumeId));
     // Perfume borrado del catálogo o sin precio: se cuenta aparte en vez de
     // valorizarlo en 0 y ensuciar el total por lo bajo sin avisar.
-    if (!precioUSD) {
+    if (!precio) {
       sinPrecio.push(perfumeId);
       return;
     }
-    const monto = cantidad * usdAArs(precioUSD, dolarMedio);
+    const monto = cantidad * precio;
     porProducto[perfumeId] = monto;
     total += monto;
   });
@@ -234,7 +244,7 @@ export function calcularPorCobrarStock(stockPorProducto = {}, perfumes = [], dol
     return acc;
   }, {});
 
-  return { total, porSocio, porProducto, sinCotizacion: false, sinPrecio };
+  return { total, porSocio, porProducto, sinPrecio };
 }
 
 function mesDe(fecha) {
