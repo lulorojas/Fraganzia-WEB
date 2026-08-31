@@ -51,6 +51,7 @@ export function calcularTotalesPorSocio({
   compras = [],
   gastos = [],
   transferenciasSocios = [],
+  cambiosMetodo = [],
 }) {
   const totales = totalesVacios();
 
@@ -85,6 +86,14 @@ export function calcularTotalesPorSocio({
     sumar(t.a, t.metodo, t.monto ?? 0);
   });
 
+  // Cambio de método: la misma plata pasa de efectivo a Mercado Pago o al
+  // revés, dentro del bolsillo del mismo socio. El total general no se mueve,
+  // salvo que haya diferencia entre lo que salió y lo que entró.
+  cambiosMetodo.forEach((c) => {
+    sumar(c.socioId, c.de, -(c.monto ?? 0));
+    sumar(c.socioId, c.a, c.montoRecibido ?? c.monto ?? 0);
+  });
+
   return Object.fromEntries(
     Object.entries(totales).map(([socioId, t]) => [
       socioId,
@@ -100,6 +109,7 @@ export function calcularSaldoNeto({
   compras = [],
   gastos = [],
   transferenciasSocios = [],
+  cambiosMetodo = [],
 }) {
   let saldo = 0;
   const signo = (socioId) => (socioId === 'luciano' ? 1 : -1);
@@ -134,6 +144,16 @@ export function calcularSaldoNeto({
     saldo += pagoLuciano - total / 2;
   });
 
+  // Un cambio de método no mueve el saldo entre socios: es la misma plata del
+  // mismo socio cambiando de bolsillo. Solo si salió más de lo que entró, esa
+  // diferencia es un costo del negocio que absorbió ese socio y funciona como
+  // un gasto: el otro le debe la mitad.
+  cambiosMetodo.forEach((c) => {
+    const diferencia = (c.monto ?? 0) - (c.montoRecibido ?? c.monto ?? 0);
+    if (!diferencia) return;
+    saldo += signo(c.socioId) * (diferencia / 2);
+  });
+
   transferenciasSocios.forEach((t) => {
     saldo += signo(t.de) * t.monto;
   });
@@ -147,12 +167,20 @@ export function calcularSaldoNeto({
  * "no queda nada", que es lo que representa el mundo real. Solo aparecen
  * productos que efectivamente se compraron alguna vez.
  */
-export function calcularStockPorProducto(compras = [], ventasSocios = []) {
+/**
+ * Los ajustes manuales permiten cargar stock que no vino de una compra
+ * registrada (mercadería vieja de la que no se recuerda el monto) o descontar
+ * unidades perdidas. `cantidad` es con signo: positiva suma, negativa resta.
+ */
+export function calcularStockPorProducto(compras = [], ventasSocios = [], ajustesStock = []) {
   const stock = {};
   compras.forEach((c) => {
     (c.items || []).forEach((item) => {
       stock[item.perfumeId] = (stock[item.perfumeId] || 0) + item.cantidad;
     });
+  });
+  ajustesStock.forEach((a) => {
+    stock[a.perfumeId] = (stock[a.perfumeId] || 0) + (a.cantidad ?? 0);
   });
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
@@ -238,9 +266,14 @@ function porFechaAsc(a, b) {
  * sistema, o carga incompleta) se devuelven aparte en vez de contarse con costo
  * cero, que inflaría la ganancia sin avisar.
  */
-export function asignarVentasACompras(compras = [], ventasSocios = []) {
+export function asignarVentasACompras(compras = [], ventasSocios = [], ajustesStock = []) {
   const lotesPorPerfume = {};
   const porCompra = {};
+
+  const agregarLote = (perfumeId, lote) => {
+    lotesPorPerfume[perfumeId] = lotesPorPerfume[perfumeId] ?? [];
+    lotesPorPerfume[perfumeId].push(lote);
+  };
 
   [...compras].sort(porFechaAsc).forEach((c) => {
     const unidades = (c.items ?? []).reduce((acc, i) => acc + (i.cantidad ?? 0), 0);
@@ -256,10 +289,37 @@ export function asignarVentasACompras(compras = [], ventasSocios = []) {
       ingresoAtribuido: 0,
     };
     (c.items ?? []).forEach((i) => {
-      lotesPorPerfume[i.perfumeId] = lotesPorPerfume[i.perfumeId] ?? [];
-      lotesPorPerfume[i.perfumeId].push({ compraId: c.id, restante: i.cantidad ?? 0 });
+      agregarLote(i.perfumeId, { compraId: c.id, restante: i.cantidad ?? 0, sinCosto: false });
     });
   });
+
+  // El stock cargado a mano entra sin costo conocido: no se le puede atribuir
+  // ganancia, así que se marca para descontarlo del margen en vez de tratarlo
+  // como si hubiera salido gratis.
+  [...ajustesStock].sort(porFechaAsc).forEach((a) => {
+    if ((a.cantidad ?? 0) > 0) {
+      agregarLote(a.perfumeId, { compraId: null, restante: a.cantidad, sinCosto: true });
+    }
+  });
+
+  // Las bajas manuales consumen stock igual que una venta, pero sin ingreso:
+  // esas unidades ya no están para atribuirlas a una venta futura.
+  const consumir = (perfumeId, cantidad, alTomar) => {
+    let porAsignar = cantidad;
+    (lotesPorPerfume[perfumeId] ?? []).forEach((lote) => {
+      if (porAsignar <= 0 || lote.restante <= 0) return;
+      const toma = Math.min(lote.restante, porAsignar);
+      lote.restante -= toma;
+      porAsignar -= toma;
+      alTomar?.(lote, toma);
+    });
+    return porAsignar;
+  };
+
+  ajustesStock
+    .filter((a) => (a.cantidad ?? 0) < 0)
+    .sort(porFechaAsc)
+    .forEach((a) => consumir(a.perfumeId, Math.abs(a.cantidad)));
 
   const porVenta = [];
   let unidadesSinCosto = 0;
@@ -270,29 +330,31 @@ export function asignarVentasACompras(compras = [], ventasSocios = []) {
     .sort(porFechaAsc)
     .forEach((v) => {
       const precio = v.precioUnitario ?? 0;
-      let porAsignar = v.cantidad ?? 0;
       let costo = 0;
+      let sinCostoEnVenta = 0;
 
-      (lotesPorPerfume[v.perfumeId] ?? []).forEach((lote) => {
-        if (porAsignar <= 0 || lote.restante <= 0) return;
-        const toma = Math.min(lote.restante, porAsignar);
-        lote.restante -= toma;
-        porAsignar -= toma;
+      const sobrante = consumir(v.perfumeId, v.cantidad ?? 0, (lote, toma) => {
+        if (lote.sinCosto) {
+          sinCostoEnVenta += toma;
+          return;
+        }
         costo += toma * porCompra[lote.compraId].costoUnitario;
         porCompra[lote.compraId].unidadesVendidas += toma;
         porCompra[lote.compraId].ingresoAtribuido += toma * precio;
       });
 
-      if (porAsignar > 0) {
-        unidadesSinCosto += porAsignar;
-        ingresoSinCosto += porAsignar * precio;
-      }
+      // Sobrante = vendido sin nada en stock que lo respalde; cuenta igual que
+      // lo cargado a mano: ingreso sin costo conocido.
+      const sinCostoTotal = sinCostoEnVenta + sobrante;
+      unidadesSinCosto += sinCostoTotal;
+      ingresoSinCosto += sinCostoTotal * precio;
 
       porVenta.push({
         mes: mesDe(v.fecha),
         ingreso: (v.cantidad ?? 0) * precio,
+        ingresoConCosto: ((v.cantidad ?? 0) - sinCostoTotal) * precio,
         costo,
-        unidadesSinCosto: porAsignar,
+        unidadesSinCosto: sinCostoTotal,
       });
     });
 
@@ -304,8 +366,8 @@ export function asignarVentasACompras(compras = [], ventasSocios = []) {
  * la parte del lote ya vendida. `recuperadoPct` dice cuánto de lo que se pagó
  * por la compra ya volvió en ventas.
  */
-export function calcularGananciaPorCompra(compras = [], ventasSocios = []) {
-  const { porCompra, unidadesSinCosto, ingresoSinCosto } = asignarVentasACompras(compras, ventasSocios);
+export function calcularGananciaPorCompra(compras = [], ventasSocios = [], ajustesStock = []) {
+  const { porCompra, unidadesSinCosto, ingresoSinCosto } = asignarVentasACompras(compras, ventasSocios, ajustesStock);
 
   const detalle = porCompra
     .map((c) => {
@@ -350,9 +412,9 @@ export function calcularGananciaPorCompra(compras = [], ventasSocios = []) {
  * frasco y todavía no se descontó. Se devuelven aparte para poder aclararlo.
  */
 export function calcularEvolucionGanancia({
-  ventasSocios = [], ventasDecants = [], compras = [], gastos = [],
+  ventasSocios = [], ventasDecants = [], compras = [], gastos = [], ajustesStock = [],
 } = {}) {
-  const { porVenta } = asignarVentasACompras(compras, ventasSocios);
+  const { porVenta } = asignarVentasACompras(compras, ventasSocios, ajustesStock);
   const porMes = {};
 
   const mes = (clave) => {

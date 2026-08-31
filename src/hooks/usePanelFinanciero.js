@@ -5,6 +5,8 @@ import { useCompras } from './useCompras';
 import { useGastos } from './useGastos';
 import { useMovimientosPersonales } from './useMovimientosPersonales';
 import { useTransferenciasSocios } from './useTransferenciasSocios';
+import { useAjustesStock } from './useAjustesStock';
+import { useCambiosMetodo } from './useCambiosMetodo';
 import { useSocioActual } from './useSocioActual';
 import { usePerfumesAdmin } from './usePerfumesAdmin';
 import { useDolarBlue } from './useDolarBlue';
@@ -32,6 +34,8 @@ export function usePanelFinanciero() {
   const gastos = useGastos();
   const movimientosPersonales = useMovimientosPersonales(socioActualId);
   const transferenciasSocios = useTransferenciasSocios();
+  const ajustesStock = useAjustesStock();
+  const cambiosMetodo = useCambiosMetodo();
 
   // Ambas ya están cacheadas por otras pantallas (misma queryKey), así que no
   // agregan lecturas de Firestore: solo hacen falta para valorizar el stock a
@@ -39,7 +43,10 @@ export function usePanelFinanciero() {
   const { data: perfumes } = usePerfumesAdmin();
   const { dolarMedio } = useDolarBlue();
 
-  const queries = [ventasSocios, ventasDecants, compras, gastos, movimientosPersonales, transferenciasSocios];
+  const queries = [
+    ventasSocios, ventasDecants, compras, gastos, movimientosPersonales,
+    transferenciasSocios, ajustesStock, cambiosMetodo,
+  ];
   const isLoading = queries.some((q) => q.isLoading);
   const error = queries.find((q) => q.error)?.error ?? null;
 
@@ -50,8 +57,10 @@ export function usePanelFinanciero() {
     const g = gastos.data ?? VACIO;
     const mp = movimientosPersonales.data ?? VACIO;
     const t = transferenciasSocios.data ?? VACIO;
+    const aj = ajustesStock.data ?? VACIO;
+    const cm = cambiosMetodo.data ?? VACIO;
 
-    const stockPorProducto = calcularStockPorProducto(c, v);
+    const stockPorProducto = calcularStockPorProducto(c, v, aj);
 
     const movimientosRecientes = [
       ...v.map((m) => ({ ...m, tipo: 'Venta perfume' })),
@@ -60,6 +69,8 @@ export function usePanelFinanciero() {
       ...g.map((m) => ({ ...m, tipo: 'Gasto' })),
       ...mp.map((m) => ({ ...m, tipo: m.tipo === 'aporte' ? 'Aporte' : 'Retiro' })),
       ...t.map((m) => ({ ...m, tipo: 'Transferencia' })),
+      ...cm.map((m) => ({ ...m, tipo: 'Cambio de método' })),
+      ...aj.map((m) => ({ ...m, tipo: m.cantidad >= 0 ? 'Alta de stock' : 'Baja de stock' })),
     ]
       .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
       .slice(0, 10);
@@ -67,10 +78,11 @@ export function usePanelFinanciero() {
     return {
       totalesPorSocio: calcularTotalesPorSocio({
         movimientosPersonales: mp, ventasSocios: v, ventasDecants: vd, compras: c, gastos: g,
-        transferenciasSocios: t,
+        transferenciasSocios: t, cambiosMetodo: cm,
       }),
       saldoNeto: calcularSaldoNeto({
-        ventasSocios: v, ventasDecants: vd, compras: c, gastos: g, transferenciasSocios: t,
+        ventasSocios: v, ventasDecants: vd, compras: c, gastos: g,
+        transferenciasSocios: t, cambiosMetodo: cm,
       }),
       stockPorProducto,
       porCobrar: calcularPorCobrarStock(stockPorProducto, perfumes, dolarMedio),
@@ -78,7 +90,8 @@ export function usePanelFinanciero() {
     };
   }, [
     ventasSocios.data, ventasDecants.data, compras.data, gastos.data,
-    movimientosPersonales.data, transferenciasSocios.data, perfumes, dolarMedio,
+    movimientosPersonales.data, transferenciasSocios.data, ajustesStock.data,
+    cambiosMetodo.data, perfumes, dolarMedio,
   ]);
 
   return { data, isLoading, error };

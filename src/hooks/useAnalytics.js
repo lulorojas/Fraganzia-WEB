@@ -3,6 +3,7 @@ import { useVentasSocios } from './useVentasSocios';
 import { useVentasDecants } from './useVentasDecants';
 import { useCompras } from './useCompras';
 import { useGastos } from './useGastos';
+import { useAjustesStock } from './useAjustesStock';
 import {
   calcularRankingPerfumes, calcularEvolucionVentas, calcularIngresoTotal, calcularActividadPorSocio,
   calcularEvolucionGanancia, calcularGananciaPorCompra,
@@ -18,8 +19,9 @@ export function useAnalytics() {
   const ventasDecants = useVentasDecants();
   const compras = useCompras();
   const gastos = useGastos();
+  const ajustesStock = useAjustesStock();
 
-  const queries = [ventasSocios, ventasDecants, compras, gastos];
+  const queries = [ventasSocios, ventasDecants, compras, gastos, ajustesStock];
   const isLoading = queries.some((q) => q.isLoading);
   const error = queries.find((q) => q.error)?.error ?? null;
 
@@ -28,6 +30,7 @@ export function useAnalytics() {
     const vd = ventasDecants.data ?? VACIO;
     const c = compras.data ?? VACIO;
     const g = gastos.data ?? VACIO;
+    const aj = ajustesStock.data ?? VACIO;
 
     return {
       rankingPerfumes: calcularRankingPerfumes(v),
@@ -36,11 +39,11 @@ export function useAnalytics() {
       actividadPorSocio: calcularActividadPorSocio({ ventasSocios: v, ventasDecants: vd }),
       ventasDecants: vd,
       evolucionGanancia: calcularEvolucionGanancia({
-        ventasSocios: v, ventasDecants: vd, compras: c, gastos: g,
+        ventasSocios: v, ventasDecants: vd, compras: c, gastos: g, ajustesStock: aj,
       }),
-      ganancia: calcularGananciaPorCompra(c, v),
+      ganancia: calcularGananciaPorCompra(c, v, aj),
     };
-  }, [ventasSocios.data, ventasDecants.data, compras.data, gastos.data]);
+  }, [ventasSocios.data, ventasDecants.data, compras.data, gastos.data, ajustesStock.data]);
 
   return { data, isLoading, error };
 }

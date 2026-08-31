@@ -24,6 +24,7 @@ import AdminCompras from '../pages/admin/AdminCompras';
 import AdminVentasDecants from '../pages/admin/AdminVentasDecants';
 import AdminGastos from '../pages/admin/AdminGastos';
 import AdminMovimientos from '../pages/admin/AdminMovimientos';
+import AdminStock from '../pages/admin/AdminStock';
 import AdminAuditoria from '../pages/admin/AdminAuditoria';
 import AdminAnalytics from '../pages/admin/AdminAnalytics';
 
@@ -75,6 +76,7 @@ export function AppRouter() {
             <Route path="decants" element={<AdminVentasDecants />} />
             <Route path="compras" element={<AdminCompras />} />
             <Route path="gastos" element={<AdminGastos />} />
+            <Route path="stock" element={<AdminStock />} />
             <Route path="movimientos" element={<AdminMovimientos />} />
             <Route path="analytics" element={<AdminAnalytics />} />
             <Route path="auditoria" element={<AdminAuditoria />} />
