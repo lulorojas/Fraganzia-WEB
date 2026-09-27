@@ -13,6 +13,7 @@ import { Spinner } from '../components/ui/Spinner';
 import { Button } from '../components/ui/Button';
 import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
 import { formatARS } from '../utils/format';
+import { webpSrc } from '../utils/image';
 
 export default function PerfumeDetalle() {
   const { id } = useParams();
@@ -70,11 +71,20 @@ export default function PerfumeDetalle() {
   return (
     <div className="mx-auto max-w-3xl p-6">
       {perfume.imagenes?.[0] && (
-        <img
-          src={perfume.imagenes[0]}
-          alt={perfume.nombre}
-          className="mb-4 aspect-square w-full max-w-sm mx-auto rounded-2xl object-contain bg-[#0e0a1a] p-6"
-        />
+        <picture>
+          {webpSrc(perfume.imagenes[0]) && (
+            <source srcSet={webpSrc(perfume.imagenes[0])} type="image/webp" />
+          )}
+          <img
+            src={perfume.imagenes[0]}
+            alt={perfume.nombre}
+            fetchpriority="high"
+            decoding="async"
+            width="400"
+            height="400"
+            className="mb-4 aspect-square w-full max-w-sm mx-auto rounded-2xl object-contain bg-[#0e0a1a] p-6"
+          />
+        </picture>
       )}
       <h1 className="font-display text-3xl text-text">{perfume.nombre}</h1>
       <p className="text-text-secondary">{perfume.marca} · {perfume.volumenML} ml</p>

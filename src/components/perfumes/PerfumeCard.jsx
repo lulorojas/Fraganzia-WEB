@@ -4,6 +4,7 @@ import { preciosPorMetodo, getMejorPromo } from '../../utils/precios';
 import { formatARS } from '../../utils/format';
 import { useConfig } from '../../hooks/useConfig';
 import { usePromocionesActivas } from '../../hooks/usePromociones';
+import { webpSrc } from '../../utils/image';
 
 export function PerfumeCard({ perfume, dolarMedio, onAgregar }) {
   const { data: config } = useConfig();
@@ -30,11 +31,20 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar }) {
       {/* ── Imagen: fondo blanco puro como las fotos ── */}
       <Link to={`/perfume/${perfume.id}`} className="relative block overflow-hidden bg-white">
         {perfume.imagenes?.[0] ? (
-          <img
-            src={perfume.imagenes[0]}
-            alt={perfume.nombre}
-            className="aspect-square w-full object-contain p-6 transition-transform duration-500 group-hover:scale-110"
-          />
+          <picture>
+            {webpSrc(perfume.imagenes[0]) && (
+              <source srcSet={webpSrc(perfume.imagenes[0])} type="image/webp" />
+            )}
+            <img
+              src={perfume.imagenes[0]}
+              alt={perfume.nombre}
+              loading="lazy"
+              decoding="async"
+              width="400"
+              height="400"
+              className="aspect-square w-full object-contain p-6 transition-transform duration-500 group-hover:scale-110"
+            />
+          </picture>
         ) : (
           <div className="aspect-square w-full flex items-center justify-center bg-white">
             <span className="text-6xl opacity-10 select-none text-violet">✦</span>

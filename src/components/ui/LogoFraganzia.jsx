@@ -12,7 +12,7 @@ export function LogoFraganzia({ size = 1, className = '' }) {
     >
       <img
         src="/logo-fraganzia-crop.png"
-        alt="Fraganzia"
+        alt=""
         width={iconPx}
         height={iconPx}
         style={{ borderRadius: '50%', objectFit: 'cover' }}

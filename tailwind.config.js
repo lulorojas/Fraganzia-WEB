@@ -36,8 +36,23 @@ export default {
         'fade-in': 'fade-in 1s ease-out forwards',
         'fade-up': 'fade-up 0.8s ease-out forwards',
         'gradient-shift': 'gradient-shift 3s ease-in-out infinite',
+        'orb-1': 'orb-1 22s ease-in-out infinite',
+        'orb-2': 'orb-2 26s ease-in-out infinite',
+        'orb-3': 'orb-3 19s ease-in-out infinite',
       },
       keyframes: {
+        'orb-1': {
+          '0%, 100%': { transform: 'translate(-10%, -10%)' },
+          '50%': { transform: 'translate(20%, 15%)' },
+        },
+        'orb-2': {
+          '0%, 100%': { transform: 'translate(15%, -15%)' },
+          '50%': { transform: 'translate(-15%, 10%)' },
+        },
+        'orb-3': {
+          '0%, 100%': { transform: 'translate(-15%, 15%)' },
+          '50%': { transform: 'translate(10%, -10%)' },
+        },
         'glow-pulse': {
           '0%, 100%': { opacity: '0.5', boxShadow: '0 0 20px rgba(139, 51, 208, 0.3)' },
           '50%': { opacity: '1', boxShadow: '0 0 40px rgba(139, 51, 208, 0.6)' },
