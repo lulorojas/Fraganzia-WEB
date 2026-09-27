@@ -13,6 +13,7 @@ import { useDolarBlue } from './useDolarBlue';
 import {
   calcularTotalesPorSocio, calcularSaldoNeto, calcularStockPorProducto, calcularPorCobrarStock,
 } from '../services/panelFinancieroCalculos';
+import { fechaDeMovimiento, milisDeFecha } from '../utils/format';
 
 const VACIO = [];
 
@@ -72,7 +73,9 @@ export function usePanelFinanciero() {
       ...cm.map((m) => ({ ...m, tipo: 'Cambio de método' })),
       ...aj.map((m) => ({ ...m, tipo: m.cantidad >= 0 ? 'Alta de stock' : 'Baja de stock' })),
     ]
-      .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+      // Por fecha de la operación, no por cuándo se cargó: es la que se muestra
+      // en la lista, así que ordenar por otra cosa se vería desordenado.
+      .sort((a, b) => milisDeFecha(fechaDeMovimiento(b)) - milisDeFecha(fechaDeMovimiento(a)))
       .slice(0, 10);
 
     return {

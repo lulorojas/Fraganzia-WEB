@@ -1,5 +1,5 @@
 import { Button } from '../ui/Button';
-import { formatARS } from '../../utils/format';
+import { formatARS, formatFecha, fechaDeMovimiento } from '../../utils/format';
 import { pagosDeCompra, totalDeCompra } from '../../services/panelFinancieroCalculos';
 
 export function ComprasTable({ compras, socios, onEditar, onAnular }) {
@@ -51,7 +51,9 @@ export function ComprasTable({ compras, socios, onEditar, onAnular }) {
             <p className="font-body text-text">{c.proveedor}</p>
             <p className="mb-2 text-xs text-text-secondary">{listaItems(c)}</p>
             <p className="font-luxury text-lg text-text">{formatARS(totalDeCompra(c))}</p>
-            <p className="mb-3 text-xs text-text-secondary">Pagó {detallePago(c)}</p>
+            <p className="mb-3 text-xs text-text-secondary">
+              {formatFecha(fechaDeMovimiento(c))} · pagó {detallePago(c)}
+            </p>
             <Acciones c={c} />
           </div>
         ))}
@@ -62,6 +64,7 @@ export function ComprasTable({ compras, socios, onEditar, onAnular }) {
         <table className="w-full text-left text-sm text-text">
           <thead>
             <tr className="border-b border-border text-text-secondary">
+              <th className="pb-2 pr-4">Fecha</th>
               <th className="pb-2 pr-4">Proveedor</th>
               <th className="pb-2 pr-4">Perfumes</th>
               <th className="pb-2 pr-4">Monto total</th>
@@ -72,6 +75,7 @@ export function ComprasTable({ compras, socios, onEditar, onAnular }) {
           <tbody>
             {compras.map((c) => (
               <tr key={c.id} className="border-b border-border">
+                <td className="whitespace-nowrap py-2 pr-4 text-text-secondary">{formatFecha(fechaDeMovimiento(c))}</td>
                 <td className="py-2 pr-4 font-body">{c.proveedor}</td>
                 <td className="py-2 pr-4">{listaItems(c)}</td>
                 <td className="py-2 pr-4 font-luxury">{formatARS(totalDeCompra(c))}</td>
