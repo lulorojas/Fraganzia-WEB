@@ -13,7 +13,6 @@ import Carrito from '../pages/Carrito';
 import Login from '../pages/Login';
 import SobreNosotros from '../pages/SobreNosotros';
 import Contacto from '../pages/Contacto';
-<<<<<<< HEAD
 
 // Todo lo de /admin se carga en un chunk aparte: un visitante del catálogo
 // nunca debería descargar el código de finanzas/analytics/etc.
@@ -29,6 +28,7 @@ const AdminVentasSocios = lazy(() => import('../pages/admin/AdminVentasSocios'))
 const AdminCompras = lazy(() => import('../pages/admin/AdminCompras'));
 const AdminVentasDecants = lazy(() => import('../pages/admin/AdminVentasDecants'));
 const AdminGastos = lazy(() => import('../pages/admin/AdminGastos'));
+const AdminStock = lazy(() => import('../pages/admin/AdminStock'));
 const AdminMovimientos = lazy(() => import('../pages/admin/AdminMovimientos'));
 const AdminAuditoria = lazy(() => import('../pages/admin/AdminAuditoria'));
 const AdminAnalytics = lazy(() => import('../pages/admin/AdminAnalytics'));
@@ -40,24 +40,6 @@ function AdminSuspense({ children }) {
     </Suspense>
   );
 }
-=======
-import Dashboard from '../pages/admin/Dashboard';
-import AdminPerfumes from '../pages/admin/AdminPerfumes';
-import AdminPedidos from '../pages/admin/AdminPedidos';
-import AdminPromociones from '../pages/admin/AdminPromociones';
-import AdminConfig from '../pages/admin/AdminConfig';
-import AdminUsuarios from '../pages/admin/AdminUsuarios';
-import AdminFinanzasLayout from '../pages/admin/AdminFinanzasLayout';
-import AdminFinanzasResumen from '../pages/admin/AdminFinanzasResumen';
-import AdminVentasSocios from '../pages/admin/AdminVentasSocios';
-import AdminCompras from '../pages/admin/AdminCompras';
-import AdminVentasDecants from '../pages/admin/AdminVentasDecants';
-import AdminGastos from '../pages/admin/AdminGastos';
-import AdminMovimientos from '../pages/admin/AdminMovimientos';
-import AdminStock from '../pages/admin/AdminStock';
-import AdminAuditoria from '../pages/admin/AdminAuditoria';
-import AdminAnalytics from '../pages/admin/AdminAnalytics';
->>>>>>> a717cf3391859a4ecc7be7c08284c0f4c48e291d
 
 function PublicLayout() {
   return (
@@ -97,7 +79,6 @@ export function AppRouter() {
             </ProtectedRoute>
           }
         >
-<<<<<<< HEAD
           <Route index element={<AdminSuspense><Dashboard /></AdminSuspense>} />
           <Route path="perfumes" element={<AdminSuspense><AdminPerfumes /></AdminSuspense>} />
           <Route path="pedidos" element={<AdminSuspense><AdminPedidos /></AdminSuspense>} />
@@ -110,27 +91,10 @@ export function AppRouter() {
             <Route path="decants" element={<AdminSuspense><AdminVentasDecants /></AdminSuspense>} />
             <Route path="compras" element={<AdminSuspense><AdminCompras /></AdminSuspense>} />
             <Route path="gastos" element={<AdminSuspense><AdminGastos /></AdminSuspense>} />
+            <Route path="stock" element={<AdminSuspense><AdminStock /></AdminSuspense>} />
             <Route path="movimientos" element={<AdminSuspense><AdminMovimientos /></AdminSuspense>} />
             <Route path="analytics" element={<AdminSuspense><AdminAnalytics /></AdminSuspense>} />
             <Route path="auditoria" element={<AdminSuspense><AdminAuditoria /></AdminSuspense>} />
-=======
-          <Route index element={<Dashboard />} />
-          <Route path="perfumes" element={<AdminPerfumes />} />
-          <Route path="pedidos" element={<AdminPedidos />} />
-          <Route path="promociones" element={<AdminPromociones />} />
-          <Route path="usuarios" element={<AdminUsuarios />} />
-          <Route path="config" element={<AdminConfig />} />
-          <Route path="finanzas" element={<AdminFinanzasLayout />}>
-            <Route index element={<AdminFinanzasResumen />} />
-            <Route path="ventas" element={<AdminVentasSocios />} />
-            <Route path="decants" element={<AdminVentasDecants />} />
-            <Route path="compras" element={<AdminCompras />} />
-            <Route path="gastos" element={<AdminGastos />} />
-            <Route path="stock" element={<AdminStock />} />
-            <Route path="movimientos" element={<AdminMovimientos />} />
-            <Route path="analytics" element={<AdminAnalytics />} />
-            <Route path="auditoria" element={<AdminAuditoria />} />
->>>>>>> a717cf3391859a4ecc7be7c08284c0f4c48e291d
           </Route>
         </Route>
       </Routes>
