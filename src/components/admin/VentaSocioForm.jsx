@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ventaSocioSchema } from '../../schemas/ventaSocioSchema';
 import { calcularStockPorProducto } from '../../services/panelFinancieroCalculos';
 import { useSocios } from '../../hooks/useSocios';
+import { useAjustesStock } from '../../hooks/useAjustesStock';
 import { usePerfumesAdmin } from '../../hooks/usePerfumesAdmin';
 import { useCompras } from '../../hooks/useCompras';
 import { useVentasSocios } from '../../hooks/useVentasSocios';
@@ -41,10 +42,11 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
   const { dolarMedio } = useDolarBlue();
   const { data: compras } = useCompras();
   const { data: ventasSocios } = useVentasSocios();
+  const { data: ajustesStock } = useAjustesStock();
 
   const stockPorProducto = useMemo(
-    () => calcularStockPorProducto(compras || [], ventasSocios || []),
-    [compras, ventasSocios]
+    () => calcularStockPorProducto(compras || [], ventasSocios || [], ajustesStock || []),
+    [compras, ventasSocios, ajustesStock]
   );
 
   // Solo se puede vender lo que hay en stock. Al editar, el perfume ya elegido

@@ -50,6 +50,8 @@ export function calcularTotalesPorSocio({
   ventasDecants = [],
   compras = [],
   gastos = [],
+  transferenciasSocios = [],
+  cambiosMetodo = [],
 }) {
   const totales = totalesVacios();
 
@@ -76,6 +78,22 @@ export function calcularTotalesPorSocio({
     pagosDeCompra(c).forEach((p) => sumar(p.socioId, p.metodo, -(p.monto ?? 0)));
   });
 
+  // La transferencia mueve plata real de un socio al otro: quien la hace deja
+  // de tenerla y quien la recibe pasa a tenerla. Sin esto la deuda se salda en
+  // el saldo neto pero la plata nunca aparece en el bolsillo de quien cobró.
+  transferenciasSocios.forEach((t) => {
+    sumar(t.de, t.metodo, -(t.monto ?? 0));
+    sumar(t.a, t.metodo, t.monto ?? 0);
+  });
+
+  // Cambio de método: la misma plata pasa de efectivo a Mercado Pago o al
+  // revés, dentro del bolsillo del mismo socio. El total general no se mueve,
+  // salvo que haya diferencia entre lo que salió y lo que entró.
+  cambiosMetodo.forEach((c) => {
+    sumar(c.socioId, c.de, -(c.monto ?? 0));
+    sumar(c.socioId, c.a, c.montoRecibido ?? c.monto ?? 0);
+  });
+
   return Object.fromEntries(
     Object.entries(totales).map(([socioId, t]) => [
       socioId,
@@ -91,6 +109,7 @@ export function calcularSaldoNeto({
   compras = [],
   gastos = [],
   transferenciasSocios = [],
+  cambiosMetodo = [],
 }) {
   let saldo = 0;
   const signo = (socioId) => (socioId === 'luciano' ? 1 : -1);
@@ -125,6 +144,16 @@ export function calcularSaldoNeto({
     saldo += pagoLuciano - total / 2;
   });
 
+  // Un cambio de método no mueve el saldo entre socios: es la misma plata del
+  // mismo socio cambiando de bolsillo. Solo si salió más de lo que entró, esa
+  // diferencia es un costo del negocio que absorbió ese socio y funciona como
+  // un gasto: el otro le debe la mitad.
+  cambiosMetodo.forEach((c) => {
+    const diferencia = (c.monto ?? 0) - (c.montoRecibido ?? c.monto ?? 0);
+    if (!diferencia) return;
+    saldo += signo(c.socioId) * (diferencia / 2);
+  });
+
   transferenciasSocios.forEach((t) => {
     saldo += signo(t.de) * t.monto;
   });
@@ -138,12 +167,20 @@ export function calcularSaldoNeto({
  * "no queda nada", que es lo que representa el mundo real. Solo aparecen
  * productos que efectivamente se compraron alguna vez.
  */
-export function calcularStockPorProducto(compras = [], ventasSocios = []) {
+/**
+ * Los ajustes manuales permiten cargar stock que no vino de una compra
+ * registrada (mercadería vieja de la que no se recuerda el monto) o descontar
+ * unidades perdidas. `cantidad` es con signo: positiva suma, negativa resta.
+ */
+export function calcularStockPorProducto(compras = [], ventasSocios = [], ajustesStock = []) {
   const stock = {};
   compras.forEach((c) => {
     (c.items || []).forEach((item) => {
       stock[item.perfumeId] = (stock[item.perfumeId] || 0) + item.cantidad;
     });
+  });
+  ajustesStock.forEach((a) => {
+    stock[a.perfumeId] = (stock[a.perfumeId] || 0) + (a.cantidad ?? 0);
   });
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
@@ -158,35 +195,45 @@ export function calcularStockPorProducto(compras = [], ventasSocios = []) {
 
 /**
  * Cuánto entraría si se vendiera todo el stock actual: el stock valorizado a
- * PRECIO DE VENTA (no a costo). Usa el precio de catálogo del perfume
- * (`precioUSD` convertido con el dólar del momento), que es el precio de lista
- * por transferencia; si se cobra en efectivo entra un 5% menos.
+ * PRECIO DE VENTA (no a costo), tomando el precio de lista del catálogo.
  *
  * Como toda venta se reparte 50/50, a cada socio le corresponde la mitad.
  *
- * Sin cotización de dólar no se puede valorizar: devuelve `sinCotizacion` para
- * que la UI lo diga en vez de mostrar $0, que se leería como "no queda nada".
+ * Un perfume sin precio cargado se informa en `sinPrecio` en vez de valorizarse
+ * en 0, que se leería como "no queda nada".
  */
 export function calcularPorCobrarStock(stockPorProducto = {}, perfumes = [], dolarMedio = null) {
   const porProducto = {};
-  if (!dolarMedio) {
-    return { total: 0, porSocio: {}, porProducto, sinCotizacion: true, sinPrecio: [] };
-  }
+  const perfumePorId = new Map((perfumes ?? []).map((p) => [p.id, p]));
 
-  const precioUSDDe = new Map((perfumes ?? []).map((p) => [p.id, p.precioUSD]));
+  /**
+   * Se usa el precio en pesos guardado en el perfume, que es la lista con la
+   * que realmente se vende. Convertir `precioUSD` con el dólar del día da otro
+   * número: la lista está armada con su propio margen, muy por encima del
+   * blue, así que valorizar el stock con la cotización lo dejaba bastante por
+   * debajo de lo que se cobra de verdad.
+   *
+   * La conversión queda solo como respaldo para un perfume sin precio cargado.
+   */
+  const precioDe = (perfume) => {
+    if (perfume?.precioTransferencia > 0) return perfume.precioTransferencia;
+    if (perfume?.precioUSD > 0 && dolarMedio) return usdAArs(perfume.precioUSD, dolarMedio);
+    return null;
+  };
+
   const sinPrecio = [];
   let total = 0;
 
   Object.entries(stockPorProducto).forEach(([perfumeId, cantidad]) => {
     if (cantidad <= 0) return;
-    const precioUSD = precioUSDDe.get(perfumeId);
+    const precio = precioDe(perfumePorId.get(perfumeId));
     // Perfume borrado del catálogo o sin precio: se cuenta aparte en vez de
     // valorizarlo en 0 y ensuciar el total por lo bajo sin avisar.
-    if (!precioUSD) {
+    if (!precio) {
       sinPrecio.push(perfumeId);
       return;
     }
-    const monto = cantidad * usdAArs(precioUSD, dolarMedio);
+    const monto = cantidad * precio;
     porProducto[perfumeId] = monto;
     total += monto;
   });
@@ -197,7 +244,222 @@ export function calcularPorCobrarStock(stockPorProducto = {}, perfumes = [], dol
     return acc;
   }, {});
 
-  return { total, porSocio, porProducto, sinCotizacion: false, sinPrecio };
+  return { total, porSocio, porProducto, sinPrecio };
+}
+
+function mesDe(fecha) {
+  const d = fecha?.toDate ? fecha.toDate() : new Date(fecha);
+  if (Number.isNaN(d.getTime())) return null;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function porFechaAsc(a, b) {
+  const fa = a.fecha?.toDate ? a.fecha.toDate().getTime() : new Date(a.fecha).getTime();
+  const fb = b.fecha?.toDate ? b.fecha.toDate().getTime() : new Date(b.fecha).getTime();
+  return (fa || 0) - (fb || 0);
+}
+
+/**
+ * Atribuye cada venta de perfume a la compra de la que salió esa unidad,
+ * usando FIFO: se vende primero lo que se compró primero, que es como se mueve
+ * el stock real.
+ *
+ * Esto permite medir la ganancia POR COMPRA sin saber cuánto costó cada perfume
+ * por separado — que es un dato que el sistema no guarda. Se compara lo que
+ * costó el lote entero contra lo que se vendió de ese lote.
+ *
+ * El costo por unidad dentro de una compra se reparte en partes iguales. Es
+ * exacto cuando el lote se vende completo (el caso que importa para la ganancia
+ * final) y una aproximación mientras se vende de a poco.
+ *
+ * Las unidades vendidas sin una compra que las respalde (stock previo al
+ * sistema, o carga incompleta) se devuelven aparte en vez de contarse con costo
+ * cero, que inflaría la ganancia sin avisar.
+ */
+export function asignarVentasACompras(compras = [], ventasSocios = [], ajustesStock = []) {
+  const lotesPorPerfume = {};
+  const porCompra = {};
+
+  const agregarLote = (perfumeId, lote) => {
+    lotesPorPerfume[perfumeId] = lotesPorPerfume[perfumeId] ?? [];
+    lotesPorPerfume[perfumeId].push(lote);
+  };
+
+  [...compras].sort(porFechaAsc).forEach((c) => {
+    const unidades = (c.items ?? []).reduce((acc, i) => acc + (i.cantidad ?? 0), 0);
+    const montoTotal = totalDeCompra(c);
+    porCompra[c.id] = {
+      compraId: c.id,
+      proveedor: c.proveedor,
+      fecha: c.fecha,
+      montoTotal,
+      unidades,
+      costoUnitario: unidades ? montoTotal / unidades : 0,
+      unidadesVendidas: 0,
+      ingresoAtribuido: 0,
+    };
+    (c.items ?? []).forEach((i) => {
+      agregarLote(i.perfumeId, { compraId: c.id, restante: i.cantidad ?? 0, sinCosto: false });
+    });
+  });
+
+  // El stock cargado a mano entra sin costo conocido: no se le puede atribuir
+  // ganancia, así que se marca para descontarlo del margen en vez de tratarlo
+  // como si hubiera salido gratis.
+  [...ajustesStock].sort(porFechaAsc).forEach((a) => {
+    if ((a.cantidad ?? 0) > 0) {
+      agregarLote(a.perfumeId, { compraId: null, restante: a.cantidad, sinCosto: true });
+    }
+  });
+
+  // Las bajas manuales consumen stock igual que una venta, pero sin ingreso:
+  // esas unidades ya no están para atribuirlas a una venta futura.
+  const consumir = (perfumeId, cantidad, alTomar) => {
+    let porAsignar = cantidad;
+    (lotesPorPerfume[perfumeId] ?? []).forEach((lote) => {
+      if (porAsignar <= 0 || lote.restante <= 0) return;
+      const toma = Math.min(lote.restante, porAsignar);
+      lote.restante -= toma;
+      porAsignar -= toma;
+      alTomar?.(lote, toma);
+    });
+    return porAsignar;
+  };
+
+  ajustesStock
+    .filter((a) => (a.cantidad ?? 0) < 0)
+    .sort(porFechaAsc)
+    .forEach((a) => consumir(a.perfumeId, Math.abs(a.cantidad)));
+
+  const porVenta = [];
+  let unidadesSinCosto = 0;
+  let ingresoSinCosto = 0;
+
+  [...ventasSocios]
+    .filter((v) => v.estado === 'cobrada')
+    .sort(porFechaAsc)
+    .forEach((v) => {
+      const precio = v.precioUnitario ?? 0;
+      let costo = 0;
+      let sinCostoEnVenta = 0;
+
+      const sobrante = consumir(v.perfumeId, v.cantidad ?? 0, (lote, toma) => {
+        if (lote.sinCosto) {
+          sinCostoEnVenta += toma;
+          return;
+        }
+        costo += toma * porCompra[lote.compraId].costoUnitario;
+        porCompra[lote.compraId].unidadesVendidas += toma;
+        porCompra[lote.compraId].ingresoAtribuido += toma * precio;
+      });
+
+      // Sobrante = vendido sin nada en stock que lo respalde; cuenta igual que
+      // lo cargado a mano: ingreso sin costo conocido.
+      const sinCostoTotal = sinCostoEnVenta + sobrante;
+      unidadesSinCosto += sinCostoTotal;
+      ingresoSinCosto += sinCostoTotal * precio;
+
+      porVenta.push({
+        mes: mesDe(v.fecha),
+        ingreso: (v.cantidad ?? 0) * precio,
+        ingresoConCosto: ((v.cantidad ?? 0) - sinCostoTotal) * precio,
+        costo,
+        unidadesSinCosto: sinCostoTotal,
+      });
+    });
+
+  return { porCompra: Object.values(porCompra), porVenta, unidadesSinCosto, ingresoSinCosto };
+}
+
+/**
+ * Ganancia de cada compra: cuánto entró por vender ese lote contra lo que costó
+ * la parte del lote ya vendida. `recuperadoPct` dice cuánto de lo que se pagó
+ * por la compra ya volvió en ventas.
+ */
+export function calcularGananciaPorCompra(compras = [], ventasSocios = [], ajustesStock = []) {
+  const { porCompra, unidadesSinCosto, ingresoSinCosto } = asignarVentasACompras(compras, ventasSocios, ajustesStock);
+
+  const detalle = porCompra
+    .map((c) => {
+      const costoVendido = c.unidadesVendidas * c.costoUnitario;
+      const ganancia = c.ingresoAtribuido - costoVendido;
+      return {
+        ...c,
+        costoVendido,
+        ganancia,
+        // Margen sobre la venta: de cada $100 que entraron, cuánto es ganancia.
+        margenPct: c.ingresoAtribuido > 0 ? (ganancia / c.ingresoAtribuido) * 100 : null,
+        recuperadoPct: c.montoTotal > 0 ? (c.ingresoAtribuido / c.montoTotal) * 100 : 0,
+        vendidoTodo: c.unidades > 0 && c.unidadesVendidas >= c.unidades,
+      };
+    })
+    .sort(porFechaAsc);
+
+  const ingresoTotal = detalle.reduce((acc, c) => acc + c.ingresoAtribuido, 0);
+  const gananciaTotal = detalle.reduce((acc, c) => acc + c.ganancia, 0);
+
+  return {
+    detalle,
+    ingresoTotal,
+    gananciaTotal,
+    // Promedio ponderado por facturación, no promedio simple de porcentajes:
+    // una compra grande pesa más que una chica, que es lo que corresponde.
+    margenPromedioPct: ingresoTotal > 0 ? (gananciaTotal / ingresoTotal) * 100 : null,
+    unidadesSinCosto,
+    ingresoSinCosto,
+  };
+}
+
+/**
+ * Ganancia real mes a mes: lo que entró por ventas menos el costo de lo que
+ * efectivamente se vendió (no lo que se compró) menos los gastos del mes.
+ *
+ * Comprar stock no aparece como pérdida: esa plata no se perdió, se convirtió
+ * en mercadería y su costo recién pesa cuando esa mercadería se vende.
+ *
+ * Los decants suman como ingreso pero sin costo asociado: salen de un frasco
+ * que sigue contando como stock, así que su costo ya está en la compra de ese
+ * frasco y todavía no se descontó. Se devuelven aparte para poder aclararlo.
+ */
+export function calcularEvolucionGanancia({
+  ventasSocios = [], ventasDecants = [], compras = [], gastos = [], ajustesStock = [],
+} = {}) {
+  const { porVenta } = asignarVentasACompras(compras, ventasSocios, ajustesStock);
+  const porMes = {};
+
+  const mes = (clave) => {
+    porMes[clave] = porMes[clave] ?? {
+      mes: clave, ingresoPerfumes: 0, costoVendido: 0, ingresoDecants: 0, gastos: 0,
+    };
+    return porMes[clave];
+  };
+
+  porVenta.forEach((v) => {
+    if (!v.mes) return;
+    const m = mes(v.mes);
+    m.ingresoPerfumes += v.ingreso;
+    m.costoVendido += v.costo;
+  });
+
+  ventasDecants.forEach((v) => {
+    const clave = mesDe(v.fecha);
+    if (!clave) return;
+    mes(clave).ingresoDecants += (v.cantidad ?? 0) * (v.precioUnitario ?? 0);
+  });
+
+  gastos.forEach((g) => {
+    const clave = mesDe(g.fecha);
+    if (!clave) return;
+    mes(clave).gastos += g.monto ?? 0;
+  });
+
+  return Object.values(porMes)
+    .map((m) => ({
+      ...m,
+      ingreso: m.ingresoPerfumes + m.ingresoDecants,
+      ganancia: m.ingresoPerfumes - m.costoVendido + m.ingresoDecants - m.gastos,
+    }))
+    .sort((a, b) => a.mes.localeCompare(b.mes));
 }
 
 export function calcularRankingPerfumes(ventasSocios = []) {

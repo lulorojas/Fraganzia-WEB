@@ -6,8 +6,12 @@ import {
 import {
   useTransferenciasSocios, useCrearTransferencia, useAnularTransferencia,
 } from '../../hooks/useTransferenciasSocios';
+import {
+  useCambiosMetodo, useCrearCambioMetodo, useAnularCambioMetodo,
+} from '../../hooks/useCambiosMetodo';
 import { MovimientoPersonalForm } from '../../components/admin/MovimientoPersonalForm';
 import { TransferenciaForm } from '../../components/admin/TransferenciaForm';
+import { CambioMetodoForm } from '../../components/admin/CambioMetodoForm';
 import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { GlassCard } from '../../components/ui/GlassCard';
@@ -26,6 +30,22 @@ export default function AdminMovimientos() {
   const { data: transferencias, isLoading: cargandoTransferencias } = useTransferenciasSocios();
   const crearTransferencia = useCrearTransferencia();
   const anularTransferencia = useAnularTransferencia();
+
+  const { data: cambios, isLoading: cargandoCambios } = useCambiosMetodo();
+  const crearCambio = useCrearCambioMetodo();
+  const anularCambio = useAnularCambioMetodo();
+
+  const nombreMetodo = (m) => (m === 'efectivo' ? 'Efectivo' : 'Mercado Pago');
+
+  async function handleCrearCambio(datos) {
+    await crearCambio.mutateAsync({ datos, socioId: socioActualId });
+  }
+
+  async function handleAnularCambio(c) {
+    if (window.confirm('¿Anular este cambio de método?')) {
+      await anularCambio.mutateAsync({ id: c.id, valorAnterior: c, socioId: socioActualId });
+    }
+  }
 
   async function handleCrearMovimiento(datos) {
     await crearMovimiento.mutateAsync({ datos, socioId: socioActualId });
@@ -85,6 +105,36 @@ export default function AdminMovimientos() {
                   {nombreSocio(t.de)} → {nombreSocio(t.a)} · {formatARS(t.monto)}
                 </span>
                 <Button variant="ghost" className="text-xs px-2 py-1 text-error" onClick={() => handleAnularTransferencia(t)}>
+                  Anular
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </GlassCard>
+
+      <GlassCard className="lg:col-span-2">
+        <p className="mb-1 text-xs uppercase tracking-wide text-text-secondary">
+          Compartido — lo ven ambos socios
+        </p>
+        <CambioMetodoForm
+          socioActualId={socioActualId}
+          onSubmit={handleCrearCambio}
+          cargando={crearCambio.isPending}
+        />
+        <hr className="my-4 border-border" />
+        {cargandoCambios ? <Spinner /> : !cambios?.length ? (
+          <p className="text-text-secondary">No hay cambios de método registrados.</p>
+        ) : (
+          <div className="flex flex-col gap-2 text-sm">
+            {cambios.map((c) => (
+              <div key={c.id} className="flex items-center justify-between gap-2 border-b border-border py-1">
+                <span className="min-w-0 text-text-secondary">
+                  {nombreSocio(c.socioId)} · {nombreMetodo(c.de)} → {nombreMetodo(c.a)} ·{' '}
+                  {formatARS(c.monto)}
+                  {(c.montoRecibido ?? c.monto) !== c.monto && ` (entraron ${formatARS(c.montoRecibido)})`}
+                </span>
+                <Button variant="ghost" className="shrink-0 px-2 py-1 text-xs text-error" onClick={() => handleAnularCambio(c)}>
                   Anular
                 </Button>
               </div>

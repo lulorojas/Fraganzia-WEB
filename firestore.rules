@@ -115,6 +115,18 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // Ajustes manuales de stock: mercadería que no vino de una compra
+    // registrada, o bajas por pérdida/rotura.
+    match /ajustesStock/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Cambio de efectivo a Mercado Pago o al revés, dentro del bolsillo de un
+    // mismo socio.
+    match /cambiosMetodo/{id} {
+      allow read, write: if isAdmin();
+    }
+
     // Auditoría de creación/edición/anulación de movimientos de este módulo.
     // Las entradas de movimientos personales llevan `socioPrivado` y solo las
     // lee su dueño: si no, el otro socio vería por acá el detalle que la regla
