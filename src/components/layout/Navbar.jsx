@@ -63,7 +63,7 @@ export function Navbar() {
             </a>
 
             {/* Carrito */}
-            <Link to="/carrito" className="relative flex items-center transition-all duration-200 hover:text-text hover:scale-110">
+            <Link to="/carrito" aria-label="Carrito" className="relative flex items-center transition-all duration-200 hover:text-text hover:scale-110">
               <ShoppingBag size={21} />
               {cantidadItems > 0 && (
                 <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-violet to-lila text-[11px] font-bold text-white shadow-lg ring-2 ring-bg animate-pulse">
@@ -85,6 +85,7 @@ export function Navbar() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
+                  aria-label="Menú de usuario"
                   className="flex items-center gap-1.5 transition-all duration-200 hover:text-text"
                 >
                   <User size={20} />

@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { formatARS } from '../../utils/format';
+import { webpSrc } from '../../utils/image';
 
 export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
   const imagenUrl = item.imagenes?.[0] || 'https://via.placeholder.com/80';
@@ -8,12 +9,17 @@ export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
     <div className="glass relative flex items-center gap-3 rounded-xl p-3 pr-8">
       {/* Imagen del producto */}
       <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-[#F5F2FB] sm:h-20 sm:w-20">
-        <img
-          src={imagenUrl}
-          alt={item.nombre}
-          className="h-full w-full object-contain"
-          loading="lazy"
-        />
+        <picture>
+          {webpSrc(imagenUrl) && (
+            <source srcSet={webpSrc(imagenUrl)} type="image/webp" />
+          )}
+          <img
+            src={imagenUrl}
+            alt={item.nombre}
+            className="h-full w-full object-contain"
+            loading="lazy"
+          />
+        </picture>
       </div>
 
       {/* Info del producto */}

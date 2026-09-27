@@ -17,6 +17,7 @@ export function Filtros({ filtros, onChange }) {
       <select
         value={filtros.genero ?? ''}
         onChange={(e) => actualizar('genero', e.target.value)}
+        aria-label="Filtrar por género"
         className="rounded-xl border border-border bg-bg px-3 py-2 text-text"
       >
         <option value="">Género</option>
@@ -27,6 +28,7 @@ export function Filtros({ filtros, onChange }) {
       <select
         value={filtros.marca ?? ''}
         onChange={(e) => actualizar('marca', e.target.value)}
+        aria-label="Filtrar por marca"
         className="rounded-xl border border-border bg-bg px-3 py-2 text-text"
       >
         <option value="">Marca</option>
@@ -37,6 +39,7 @@ export function Filtros({ filtros, onChange }) {
       <select
         value={filtros.familiaOlfativa ?? ''}
         onChange={(e) => actualizar('familiaOlfativa', e.target.value)}
+        aria-label="Filtrar por familia olfativa"
         className="rounded-xl border border-border bg-bg px-3 py-2 text-text"
       >
         <option value="">Familia olfativa</option>
