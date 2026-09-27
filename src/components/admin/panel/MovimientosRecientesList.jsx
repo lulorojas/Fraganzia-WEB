@@ -1,6 +1,6 @@
 import { Activity } from 'lucide-react';
 import { GlassCard } from '../../ui/GlassCard';
-import { formatARS } from '../../../utils/format';
+import { formatARS, formatFecha, fechaDeMovimiento } from '../../../utils/format';
 
 function importeDe(m) {
   if (m.cantidad != null && m.precioUnitario != null) return m.cantidad * m.precioUnitario;
@@ -28,9 +28,12 @@ export function MovimientosRecientesList({ movimientos }) {
       ) : (
         <div className="flex flex-col gap-2 text-sm">
           {movimientos.map((m) => (
-            <div key={`${m.tipo}-${m.id}`} className="flex justify-between border-b border-border py-1">
-              <span className="text-text-secondary">{m.tipo}{detalleDe(m) ? ` · ${detalleDe(m)}` : ''}</span>
-              <span className="text-text">{formatARS(importeDe(m))}</span>
+            <div key={`${m.tipo}-${m.id}`} className="flex items-baseline justify-between gap-2 border-b border-border py-1">
+              <span className="min-w-0 text-text-secondary">
+                <span className="whitespace-nowrap">{formatFecha(fechaDeMovimiento(m))}</span>
+                {' · '}{m.tipo}{detalleDe(m) ? ` · ${detalleDe(m)}` : ''}
+              </span>
+              <span className="shrink-0 text-text">{formatARS(importeDe(m))}</span>
             </div>
           ))}
         </div>

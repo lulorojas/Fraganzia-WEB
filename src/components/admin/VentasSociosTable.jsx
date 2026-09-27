@@ -1,6 +1,6 @@
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { formatARS } from '../../utils/format';
+import { formatARS, formatFecha, fechaDeMovimiento } from '../../utils/format';
 
 export function VentasSociosTable({ ventas, socios, onEditar, onMarcarCobrada, onAnular }) {
   if (!ventas?.length) {
@@ -55,7 +55,7 @@ export function VentasSociosTable({ ventas, socios, onEditar, onMarcarCobrada, o
             </div>
             <p className="font-luxury text-lg text-text">{formatARS(v.cantidad * v.precioUnitario)}</p>
             <p className="mb-3 text-xs text-text-secondary">
-              {v.cantidad} u. · {nombreSocio(v.vendidoPor)}
+              {formatFecha(fechaDeMovimiento(v))} · {v.cantidad} u. · {nombreSocio(v.vendidoPor)}
             </p>
             <Acciones v={v} />
           </div>
@@ -67,6 +67,7 @@ export function VentasSociosTable({ ventas, socios, onEditar, onMarcarCobrada, o
         <table className="w-full text-left text-sm text-text">
           <thead>
             <tr className="border-b border-border text-text-secondary">
+              <th className="pb-2 pr-4">Fecha</th>
               <th className="pb-2 pr-4">Perfume</th>
               <th className="pb-2 pr-4">Cant.</th>
               <th className="pb-2 pr-4">Importe</th>
@@ -78,6 +79,7 @@ export function VentasSociosTable({ ventas, socios, onEditar, onMarcarCobrada, o
           <tbody>
             {ventas.map((v) => (
               <tr key={v.id} className="border-b border-border">
+                <td className="whitespace-nowrap py-2 pr-4 text-text-secondary">{formatFecha(fechaDeMovimiento(v))}</td>
                 <td className="py-2 pr-4 font-body">{v.perfumeNombre}</td>
                 <td className="py-2 pr-4">{v.cantidad}</td>
                 <td className="py-2 pr-4 font-luxury">{formatARS(v.cantidad * v.precioUnitario)}</td>

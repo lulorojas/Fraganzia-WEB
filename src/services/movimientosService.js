@@ -2,6 +2,7 @@ import {
   collection, doc, getDocs, writeBatch, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { fechaDeMovimiento, milisDeFecha } from '../utils/format';
 
 const AUDITORIA_COLLECTION = 'auditoria';
 
@@ -12,11 +13,21 @@ const AUDITORIA_COLLECTION = 'auditoria';
  * escritas atómicamente en el mismo `writeBatch` que el movimiento.
  */
 
+/**
+ * Ordena por fecha de la operación, más reciente primero. Sin esto los
+ * listados salían en el orden arbitrario en que Firestore devuelve los
+ * documentos, que no se corresponde con nada que el socio pueda seguir.
+ *
+ * El orden se hace en memoria y no con `orderBy` de Firestore porque estas
+ * colecciones se leen enteras igual, y un `orderBy` sobre `fecha` dejaría
+ * afuera cualquier documento que no tenga el campo.
+ */
 export async function listarMovimientos(coleccion) {
   const snap = await getDocs(collection(db, coleccion));
   return snap.docs
     .map((d) => ({ id: d.id, ...d.data() }))
-    .filter((m) => m.anulado !== true);
+    .filter((m) => m.anulado !== true)
+    .sort((a, b) => milisDeFecha(fechaDeMovimiento(b)) - milisDeFecha(fechaDeMovimiento(a)));
 }
 
 // ─── Primitivas a nivel de batch (para servicios que necesitan agregar

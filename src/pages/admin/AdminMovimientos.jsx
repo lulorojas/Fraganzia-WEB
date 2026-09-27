@@ -15,7 +15,7 @@ import { CambioMetodoForm } from '../../components/admin/CambioMetodoForm';
 import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { GlassCard } from '../../components/ui/GlassCard';
-import { formatARS } from '../../utils/format';
+import { formatARS, formatFecha, fechaDeMovimiento } from '../../utils/format';
 
 export default function AdminMovimientos() {
   const { data: socios } = useSocios();
@@ -80,6 +80,7 @@ export default function AdminMovimientos() {
             {movimientos.map((m) => (
               <div key={m.id} className="flex items-center justify-between border-b border-border py-1">
                 <span className="text-text-secondary">
+                  {formatFecha(fechaDeMovimiento(m))} ·{' '}
                   {m.tipo === 'aporte' ? 'Aporte' : 'Retiro'} · {formatARS(m.monto)}
                 </span>
                 <Button variant="ghost" className="text-xs px-2 py-1 text-error" onClick={() => handleAnularMovimiento(m)}>
@@ -130,7 +131,8 @@ export default function AdminMovimientos() {
             {cambios.map((c) => (
               <div key={c.id} className="flex items-center justify-between gap-2 border-b border-border py-1">
                 <span className="min-w-0 text-text-secondary">
-                  {nombreSocio(c.socioId)} · {nombreMetodo(c.de)} → {nombreMetodo(c.a)} ·{' '}
+                  {formatFecha(fechaDeMovimiento(c))} · {nombreSocio(c.socioId)} ·{' '}
+                  {nombreMetodo(c.de)} → {nombreMetodo(c.a)} ·{' '}
                   {formatARS(c.monto)}
                   {(c.montoRecibido ?? c.monto) !== c.monto && ` (entraron ${formatARS(c.montoRecibido)})`}
                 </span>
