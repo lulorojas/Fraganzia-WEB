@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { preciosPorMetodo } from '../../utils/precios';
 import { formatARS } from '../../utils/format';
-import { webpSrc } from '../../utils/image';
+import { ImagenProducto } from './ImagenProducto';
 
 export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
   const scrollRef = useRef(null);
@@ -48,7 +48,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
         aria-label="Perfumes destacados"
         tabIndex={0}
       >
-        {perfumes.map((perfume, i) => {
+        {perfumes.map((perfume) => {
           const precios = dolarMedio ? preciosPorMetodo(perfume.precioUSD, dolarMedio) : null;
           
           return (
@@ -59,20 +59,13 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
               <div className="card-surface card-hover h-full rounded-2xl overflow-hidden">
                 <Link to={`/perfume/${perfume.id}`} className="block" tabIndex={-1} aria-hidden="true">
                   <div className="relative aspect-[3/4] bg-white overflow-hidden">
-                    <picture>
-                      {webpSrc(perfume.imagenes?.[0]) && (
-                        <source srcSet={webpSrc(perfume.imagenes[0])} type="image/webp" />
-                      )}
-                      <img
-                        src={perfume.imagenes?.[0] || '/placeholder-perfume.svg'}
-                        alt=""
-                        loading={i < 2 ? 'eager' : 'lazy'}
-                        decoding="async"
-                        width="280"
-                        height="373"
-                        className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover/card:scale-110"
-                      />
-                    </picture>
+                    <ImagenProducto
+                      url={perfume.imagenes?.[0]}
+                      sizes="280px"
+                      width="280"
+                      height="373"
+                      className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover/card:scale-110"
+                    />
                     {perfume.descuento > 0 && (
                       <div className="absolute top-3 right-3 bg-violet px-3 py-1 rounded-full text-xs font-semibold text-white shadow-lg">
                         -{perfume.descuento}%

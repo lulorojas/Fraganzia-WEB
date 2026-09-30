@@ -27,7 +27,8 @@ npm run dev                  # http://localhost:5173
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` | Servidor de desarrollo con recarga instantánea |
-| `npm run build` | Build de producción en `dist/` (incluye sitemap y pre-render) |
+| `npm run build` | Build de producción en `dist/` (incluye fotos optimizadas, sitemap y pre-render) |
+| `npm run imagenes` | Descarga y optimiza fotos de producto nuevas |
 | `npm run preview` | Sirve el build localmente |
 | `npm run deploy` | Build y publicación en Firebase Hosting |
 | `npm run deploy:rules` | Publica las reglas e índices de Firestore |

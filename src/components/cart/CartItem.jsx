@@ -1,28 +1,16 @@
 import { Minus, Plus, X } from 'lucide-react';
 import { formatARS } from '../../utils/format';
-import { webpSrc } from '../../utils/image';
+import { ImagenProducto } from '../perfumes/ImagenProducto';
 import { CANTIDAD_MAX } from '../../context/CartContext';
 
 export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
-  const imagenUrl = item.imagenes?.[0] || '/placeholder-perfume.svg';
   const nombreCompleto = `${item.marca} ${item.nombre}`;
 
   return (
     <li className="card-surface relative flex items-center gap-3 rounded-xl p-3 pr-12">
       {/* Imagen del producto */}
       <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-white sm:h-20 sm:w-20">
-        <picture>
-          {webpSrc(imagenUrl) && <source srcSet={webpSrc(imagenUrl)} type="image/webp" />}
-          <img
-            src={imagenUrl}
-            alt=""
-            width="80"
-            height="80"
-            className="h-full w-full object-contain"
-            loading="lazy"
-            decoding="async"
-          />
-        </picture>
+        <ImagenProducto url={item.imagenes?.[0]} sizes="80px" width="80" height="80" className="h-full w-full object-contain" />
       </div>
 
       {/* Info del producto */}

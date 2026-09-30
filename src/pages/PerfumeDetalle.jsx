@@ -14,7 +14,8 @@ import { PrecioNoDisponible } from '../components/perfumes/PrecioNoDisponible';
 import { Button } from '../components/ui/Button';
 import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
 import { formatARS } from '../utils/format';
-import { webpSrc } from '../utils/image';
+import { imagenGrande } from '../utils/image';
+import { ImagenProducto } from '../components/perfumes/ImagenProducto';
 
 
 // Mismo layout que la página cargada, para que nada se mueva al llegar los datos.
@@ -67,7 +68,8 @@ export default function PerfumeDetalle() {
   const precioEfectivoFinal = precios && (pct ? precioConPromo(precios.precioEfectivo, pct) : precios.precioEfectivo);
 
   const imagen = perfume?.imagenes?.[0];
-  const imagenAbsoluta = imagen?.startsWith('/') ? `${SITE_URL}${imagen}` : imagen;
+  const imagenOg = imagenGrande(imagen);
+  const imagenAbsoluta = imagenOg?.startsWith('/') ? `${SITE_URL}${imagenOg}` : imagenOg;
 
   useDocumentMeta(
     perfume
@@ -146,17 +148,15 @@ export default function PerfumeDetalle() {
         <div className="md:sticky md:top-24 md:self-start">
           <div className="relative overflow-hidden rounded-3xl bg-white">
             {imagen ? (
-              <picture>
-                {webpSrc(imagen) && <source srcSet={webpSrc(imagen)} type="image/webp" />}
-                <img
-                  src={imagen}
-                  alt={`${perfume.marca} ${perfume.nombre}`}
-                  fetchpriority="high"
-                  width="600"
-                  height="600"
-                  className="aspect-square w-full object-contain p-8 sm:p-12"
-                />
-              </picture>
+              <ImagenProducto
+                url={imagen}
+                alt={`${perfume.marca} ${perfume.nombre}`}
+                sizes="(min-width: 1152px) 540px, (min-width: 768px) 46vw, 100vw"
+                width="600"
+                height="600"
+                prioridad
+                className="aspect-square w-full object-contain p-8 sm:p-12"
+              />
             ) : (
               <div className="flex aspect-square w-full items-center justify-center">
                 <span className="select-none text-8xl text-violet opacity-10">✦</span>

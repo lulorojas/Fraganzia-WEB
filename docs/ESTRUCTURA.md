@@ -36,7 +36,8 @@ src/
 │                       # config y finanzas (ventas, compras, gastos, stock, analytics…)
 ├── components/
 │   ├── layout/         # Navbar, Footer, AdminLayout, AuthModal, ProtectedRoute
-│   ├── perfumes/       # PerfumeCard, PerfumeGrid, Filtros, slider, notas olfativas
+│   ├── perfumes/       # PerfumeCard, PerfumeGrid, ImagenProducto, Filtros, slider, notas olfativas
+│   ├── asistente/      # Botón flotante y chat "Encontrá tu perfume"
 │   ├── cart/           # Ítem del carrito, selector de pago, resumen
 │   ├── admin/          # Formularios, tablas y gráficos del panel
 │   └── ui/             # Piezas genéricas: Button, Modal, Toast, Spinner, Logo, ErrorBoundary
@@ -46,7 +47,8 @@ src/
 ├── context/            # Estado global: sesión (Auth), carrito, toasts
 ├── firebase/           # Inicialización de Firebase (+ App Check opcional)
 ├── constants/          # WhatsApp, géneros, familias olfativas, marcas, socios
-├── utils/              # Precios, formato de moneda, WhatsApp, imágenes, datos iniciales
+├── data/               # imagenes-locales.json: qué fotos ya están optimizadas en el sitio
+├── utils/              # Precios, formato de moneda, WhatsApp, imágenes, datos iniciales, recomendador
 └── assets/fonts/       # Fuentes recortadas al español (ver tools/subset-fonts.py)
 ```
 
@@ -60,6 +62,10 @@ Firestore ──► services/*.js ──► hooks/use*.js (React Query, caché) 
 - **Hooks**: envuelven cada servicio en `useQuery` / `useMutation`. Definen la clave de caché y cuánto tiempo el dato se considera fresco. Las mutaciones invalidan las claves afectadas.
 - **Catálogo público**: se lee **una sola vez** (`['perfumes', 'public']`), y los filtros y la búsqueda se aplican en memoria (`filtrarPerfumes` en `perfumesService.js`). Cambiar un filtro no vuelve a leer Firestore.
 
+### Fotos de producto
+
+En Firestore cada perfume guarda la URL original de su foto (a veces en otro sitio). En el build, `tools/localizar-imagenes.mjs` descarga cada foto una sola vez y la guarda como `public/img/p/<hash>-400.webp` y `-800.webp`, donde `<hash>` sale de la URL (`src/utils/hash.js`). `<ImagenProducto>` usa la copia local si existe y, si no, la URL original. Si una foto falla al cargar, muestra un placeholder. Firestore nunca se modifica.
+
 ### Arranque rápido: pre-render + datos iniciales
 
 1. En el build, `tools/prerender.mjs` guarda en el HTML una "foto" de los datos públicos (catálogo, promociones, config, dólar) y el HTML ya armado de cada página pública.
@@ -70,7 +76,8 @@ Firestore ──► services/*.js ──► hooks/use*.js (React Query, caché) 
 
 | Archivo | Para qué |
 |---|---|
-| `productos-18-09/` | Fotos de producto locales (`.jpg` + `.webp`) |
+| `img/p/` | Fotos de producto optimizadas (WebP 400 y 800 px), generadas por `tools/localizar-imagenes.mjs` |
+| `productos-18-09/` | Fotos originales cargadas en el catálogo del 18-09 (Firestore apunta a ellas) |
 | `logo-96/192/256.webp` | Logo en varios tamaños (se elige según pantalla) |
 | `icon-*.png`, `manifest.webmanifest`, `favicon.svg` | Íconos del navegador y de "agregar a inicio" |
 | `robots.txt` | Indica a buscadores qué indexar y dónde está el sitemap |
@@ -83,12 +90,12 @@ Firestore ──► services/*.js ──► hooks/use*.js (React Query, caché) 
 
 | Script | Cuándo corre | Qué hace |
 |---|---|---|
+| `localizar-imagenes.mjs` | Al inicio de cada `npm run build` (o `npm run imagenes`) | Descarga las fotos de producto (muchas estaban en sitios ajenos) y las guarda optimizadas en `public/img/p/`. Solo procesa las nuevas |
 | `generate-sitemap.mjs` | En cada `npm run build` | Genera `dist/sitemap.xml` con todas las páginas y perfumes |
 | `prerender.mjs` | En cada `npm run build` | Foto de datos + HTML pre-renderizado de las páginas públicas |
 | `lib/firestore-rest.mjs` | Lo usan los dos anteriores | Lee colecciones públicas por REST, sin credenciales de admin |
 | `test-rules.mjs` | `npm run test:rules` | Prueba `firestore.rules` en el emulador local |
 | `subset-fonts.py` | A mano, si cambian las fuentes | Recorta las fuentes a los caracteres del español |
-| `convert-images-webp.mjs` | A mano, al agregar fotos locales | Genera `.webp` de las fotos de `public/productos-18-09/` |
 | `export-current-catalog.mjs` | A mano | Exporta el catálogo a CSV (necesita `serviceAccount.json`) |
 | `cache-precios-ars.mjs` | A mano | Guarda precios en pesos de respaldo en cada perfume |
 

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { PrecioNoDisponible } from './PrecioNoDisponible';
 import { preciosPorMetodo, getMejorPromo } from '../../utils/precios';
 import { formatARS } from '../../utils/format';
-import { webpSrc } from '../../utils/image';
+import { ImagenProducto } from './ImagenProducto';
 
 /**
  * `config` y `promociones` los pasa la grilla (una sola suscripción para
@@ -36,19 +36,14 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
           para que teclado y lectores de pantalla lo encuentren una sola vez. */}
       <Link to={url} tabIndex={-1} aria-hidden="true" className="relative block overflow-hidden bg-white">
         {imagen ? (
-          <picture>
-            {webpSrc(imagen) && <source srcSet={webpSrc(imagen)} type="image/webp" />}
-            <img
-              src={imagen}
-              alt=""
-              loading={prioridad ? 'eager' : 'lazy'}
-              fetchpriority={prioridad ? 'high' : undefined}
-              decoding="async"
-              width="400"
-              height="400"
-              className="aspect-square w-full object-contain p-3 sm:p-6 transition-transform duration-500 group-hover:scale-105"
-            />
-          </picture>
+          <ImagenProducto
+            url={imagen}
+            sizes="(min-width: 1280px) 300px, (min-width: 1024px) 23vw, (min-width: 640px) 31vw, 48vw"
+            width="400"
+            height="400"
+            prioridad={prioridad}
+            className="aspect-square w-full object-contain p-3 sm:p-6 transition-transform duration-500 group-hover:scale-105"
+          />
         ) : (
           <div className="aspect-square w-full flex items-center justify-center bg-white">
             <span className="text-6xl opacity-10 select-none text-violet">✦</span>

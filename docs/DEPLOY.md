@@ -105,10 +105,11 @@ npm run deploy
 
 Esto:
 
-1. Compila la app (`vite build`).
-2. Genera `dist/sitemap.xml`.
-3. Pre-renderiza las páginas públicas con Chrome.
-4. Publica `dist/` en Firebase Hosting.
+1. Descarga y optimiza las fotos de producto nuevas (`public/img/p/`).
+2. Compila la app (`vite build`).
+3. Genera `dist/sitemap.xml`.
+4. Pre-renderiza las páginas públicas con Chrome.
+5. Publica `dist/` en Firebase Hosting.
 
 La web queda en `https://<tu-proyecto>.web.app`.
 

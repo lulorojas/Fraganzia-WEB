@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node tools/generate-sitemap.mjs && node tools/prerender.mjs",
+    "build": "node tools/localizar-imagenes.mjs && vite build && node tools/generate-sitemap.mjs && node tools/prerender.mjs",
     "preview": "vite preview",
     "deploy": "npm run build && npx --yes firebase-tools@latest deploy --only hosting --project fraganzia-e9b70",
     "deploy:rules": "npx --yes firebase-tools@latest deploy --only firestore:rules,firestore:indexes --project fraganzia-e9b70",
-    "test:rules": "npx --yes firebase-tools@latest emulators:exec --only firestore --project demo-fraganzia \"node tools/test-rules.mjs\""
+    "test:rules": "npx --yes firebase-tools@latest emulators:exec --only firestore --project demo-fraganzia \"node tools/test-rules.mjs\"",
+    "imagenes": "node tools/localizar-imagenes.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

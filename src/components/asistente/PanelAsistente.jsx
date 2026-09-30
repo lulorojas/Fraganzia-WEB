@@ -10,7 +10,7 @@ import {
   AROMAS, MOMENTOS, GENEROS_ASISTENTE, recomendar, rangosDePresupuesto,
 } from '../../utils/recomendador';
 import { formatARS } from '../../utils/format';
-import { webpSrc } from '../../utils/image';
+import { ImagenProducto } from '../perfumes/ImagenProducto';
 
 const POR_TANDA = 3;
 
@@ -88,12 +88,7 @@ function Recomendacion({ item, onAgregar, onVer }) {
   return (
     <li className="card-surface flex gap-3 rounded-2xl p-3">
       <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-white">
-        {imagen && (
-          <picture>
-            {webpSrc(imagen) && <source srcSet={webpSrc(imagen)} type="image/webp" />}
-            <img src={imagen} alt="" width="80" height="80" loading="lazy" decoding="async" className="h-full w-full object-contain p-1.5" />
-          </picture>
-        )}
+        <ImagenProducto url={imagen} sizes="80px" width="80" height="80" className="h-full w-full object-contain p-1.5" />
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
         <p className="truncate font-body text-[11px] font-semibold uppercase tracking-wide2 text-lila">{perfume.marca}</p>

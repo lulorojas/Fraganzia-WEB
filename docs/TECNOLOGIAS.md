@@ -88,7 +88,7 @@ Con reCAPTCHA v3, verifica que las solicitudes a Firestore vengan de la web real
 - **Pre-render** (`tools/prerender.mjs`, con Puppeteer + Chrome): en el build se genera el HTML ya armado de la home, el catálogo, Nosotros y Contacto, más una "foto" de los datos públicos. El visitante ve la página al instante, sin esperar al JavaScript, y los buscadores ven contenido real.
 - **Datos iniciales:** React arranca con la foto del build (`src/utils/datosIniciales.js`) y la refresca desde Firestore en segundo plano.
 - **SEO:** título y descripción por página (`useDocumentMeta`), canonical, Open Graph, datos estructurados (`Store`, `Product`) y `sitemap.xml` generado en cada build.
-- **Imágenes:** WebP para las fotos locales, tamaños explícitos (sin saltos de layout) y carga diferida salvo las primeras.
+- **Imágenes:** todas las fotos de producto se descargan en el build y se sirven desde el sitio en WebP (400 y 800 px, el navegador elige). Tienen tamaños explícitos (sin saltos de layout) y carga diferida salvo las primeras. Antes se enlazaban directo a 18 sitios ajenos: fotos pesadas y en riesgo de desaparecer.
 
 ## Herramientas de desarrollo
 
@@ -97,7 +97,7 @@ Con reCAPTCHA v3, verifica que las solicitudes a Firestore vengan de la web real
 | ESLint / Prettier | No configurados todavía |
 | `@firebase/rules-unit-testing` | Pruebas de `firestore.rules` |
 | `puppeteer-core` | Pre-render en el build |
-| `sharp` | Conversión de imágenes a WebP |
+| `sharp` | Optimización de fotos de producto a WebP (`tools/localizar-imagenes.mjs`) |
 | `firebase-admin` | Scripts de mantenimiento con credenciales de admin (`tools/`) |
 | GitHub Actions | Deploy automático en cada push a `main` |
 | [Spec Kit](https://github.com/github/spec-kit) | Metodología: cada feature se especifica en `specs/` antes de implementarse |
