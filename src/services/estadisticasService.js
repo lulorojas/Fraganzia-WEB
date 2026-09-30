@@ -2,6 +2,7 @@ import {
   collection, doc, getDocs, setDoc, increment, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { yaRegistradoEnSesion } from '../utils/sesion';
 
 const COLLECTION = 'estadisticas';
 
@@ -16,16 +17,6 @@ const COLLECTION = 'estadisticas';
  * el contador ni gasta cuota de más. Una vista por perfume por sesión.
  */
 
-function yaRegistrado(clave) {
-  try {
-    if (sessionStorage.getItem(clave)) return true;
-    sessionStorage.setItem(clave, '1');
-    return false;
-  } catch {
-    return false; // modo incógnito o storage bloqueado: se registra igual
-  }
-}
-
 // Fire-and-forget: la analítica nunca debe romper la experiencia de compra.
 function registrar(perfumeId, campos) {
   return setDoc(
@@ -36,7 +27,7 @@ function registrar(perfumeId, campos) {
 }
 
 export function incrementarVista(perfumeId) {
-  if (!perfumeId || yaRegistrado(`vista:${perfumeId}`)) return Promise.resolve();
+  if (!perfumeId || yaRegistradoEnSesion(`vista:${perfumeId}`)) return Promise.resolve();
   return registrar(perfumeId, { vistas: increment(1) });
 }
 

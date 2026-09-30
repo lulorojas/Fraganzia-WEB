@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom';
 import { PrecioNoDisponible } from './PrecioNoDisponible';
 import { preciosPorMetodo, getMejorPromo } from '../../utils/precios';
 import { formatARS } from '../../utils/format';
-import { useConfig } from '../../hooks/useConfig';
-import { usePromocionesActivas } from '../../hooks/usePromociones';
 import { webpSrc } from '../../utils/image';
 
-export function PerfumeCard({ perfume, dolarMedio, onAgregar }) {
-  const { data: config } = useConfig();
-  const { data: promociones } = usePromocionesActivas();
-
+/**
+ * `config` y `promociones` los pasa la grilla (una sola suscripción para
+ * todas las cards). `prioridad` = la card está arriba de todo: su imagen se
+ * carga ya, sin lazy loading, porque suele ser el LCP de la página.
+ */
+export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promociones, prioridad = false }) {
   const tieneCotizacion = Boolean(dolarMedio);
 
   // Prioridad: cálculo en vivo con API → precios guardados en Firestore → sin precio
@@ -25,24 +25,28 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar }) {
   const precioTransConPromo = precios && pct ? Math.round(precios.precioTransferencia * (1 - pct / 100) / 1000) * 1000 : null;
   const precioEfecConPromo  = precios && pct ? Math.round(precios.precioEfectivo      * (1 - pct / 100) / 1000) * 1000 : null;
 
+  const url = `/perfume/${perfume.id}`;
+  const imagen = perfume.imagenes?.[0];
+
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl glass glass-hover-subtle transition-all duration-300">
+    <article className="card-surface card-hover group flex w-full flex-col overflow-hidden rounded-2xl">
 
       {/* ── Imagen: fondo blanco puro como las fotos ── */}
-      <Link to={`/perfume/${perfume.id}`} className="relative block overflow-hidden bg-white">
-        {perfume.imagenes?.[0] ? (
+      {/* El link de la imagen repite el del título: se saca del orden de tabulación
+          para que teclado y lectores de pantalla lo encuentren una sola vez. */}
+      <Link to={url} tabIndex={-1} aria-hidden="true" className="relative block overflow-hidden bg-white">
+        {imagen ? (
           <picture>
-            {webpSrc(perfume.imagenes[0]) && (
-              <source srcSet={webpSrc(perfume.imagenes[0])} type="image/webp" />
-            )}
+            {webpSrc(imagen) && <source srcSet={webpSrc(imagen)} type="image/webp" />}
             <img
-              src={perfume.imagenes[0]}
-              alt={perfume.nombre}
-              loading="lazy"
+              src={imagen}
+              alt=""
+              loading={prioridad ? 'eager' : 'lazy'}
+              fetchpriority={prioridad ? 'high' : undefined}
               decoding="async"
               width="400"
               height="400"
-              className="aspect-square w-full object-contain p-6 transition-transform duration-500 group-hover:scale-110"
+              className="aspect-square w-full object-contain p-3 sm:p-6 transition-transform duration-500 group-hover:scale-105"
             />
           </picture>
         ) : (
@@ -51,49 +55,51 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar }) {
           </div>
         )}
         {pct > 0 && (
-          <span className="absolute top-3 right-3 rounded-full bg-gradient-to-r from-violet to-lila px-3 py-1.5 text-xs font-bold text-white shadow-xl">
+          <span className="absolute top-3 right-3 rounded-full bg-violet px-3 py-1.5 text-xs font-bold text-white shadow-xl">
             -{pct}%
           </span>
         )}
       </Link>
 
       {/* ── Info: marca + nombre ── */}
-      <Link to={`/perfume/${perfume.id}`} className="px-5 pt-4 pb-2 block">
-        <p className="text-xs font-semibold uppercase tracking-wide2 text-lila mb-1.5 truncate">{perfume.marca}</p>
-        <h3 className="font-display text-base font-semibold leading-snug text-text line-clamp-2 min-h-[2.5rem]">{perfume.nombre}</h3>
+      <Link to={url} className="block px-3 pt-3 pb-2 sm:px-5 sm:pt-4 focus-visible:outline-offset-[-2px]">
+        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-wide2 text-lila mb-1 sm:mb-1.5 truncate">{perfume.marca}</p>
+        <h2 className="font-display text-sm sm:text-base font-semibold leading-snug text-text line-clamp-2 min-h-[2.5rem] sm:min-h-[2.75rem]">{perfume.nombre}</h2>
       </Link>
 
       {/* ── Divider gradiente ── */}
-      <div className="px-5">
+      <div className="px-3 sm:px-5">
         <div className="h-px bg-gradient-to-r from-violet/10 via-violet/40 to-violet/10" />
       </div>
 
       {/* ── Precios + botón ── */}
-      <div className="mt-auto px-5 pb-5 pt-3 flex flex-col gap-3">
+      <div className="mt-auto px-3 pb-3 pt-3 sm:px-5 sm:pb-5 flex flex-col gap-3">
         {tienePrecios ? (
           pct > 0 ? (
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 tabular-nums">
               <div className="flex justify-between items-baseline">
-                <span className="text-xs text-text-secondary">Transferencia</span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-xs text-text-secondary/40 line-through">{formatARS(precios.precioTransferencia)}</span>
-                  <span className="text-base font-bold text-emerald-600">{formatARS(precioTransConPromo)}</span>
+                <span className="text-xs text-text-secondary"><span className="sm:hidden">Transf.</span><span className="hidden sm:inline">Transferencia</span></span>
+                <div className="flex flex-col items-end sm:flex-row sm:items-baseline sm:gap-2">
+                  <span className="text-xs text-text-secondary line-through">
+                    <span className="sr-only">Antes </span>{formatARS(precios.precioTransferencia)}
+                  </span>
+                  <span className="text-sm sm:text-base font-bold text-emerald-400">{formatARS(precioTransConPromo)}</span>
                 </div>
               </div>
               <div className="flex justify-between items-baseline">
                 <span className="text-xs text-text-secondary">Efectivo</span>
-                <span className="text-sm font-semibold text-emerald-600">{formatARS(precioEfecConPromo)}</span>
+                <span className="text-xs sm:text-sm font-semibold text-emerald-400">{formatARS(precioEfecConPromo)}</span>
               </div>
             </div>
           ) : (
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 tabular-nums">
               <div className="flex justify-between items-baseline">
-                <span className="text-xs text-text-secondary">Transferencia</span>
-                <span className="text-base font-bold text-text">{formatARS(precios.precioTransferencia)}</span>
+                <span className="text-xs text-text-secondary"><span className="sm:hidden">Transf.</span><span className="hidden sm:inline">Transferencia</span></span>
+                <span className="text-sm sm:text-base font-bold text-text">{formatARS(precios.precioTransferencia)}</span>
               </div>
               <div className="flex justify-between items-baseline">
                 <span className="text-xs text-text-secondary">Efectivo</span>
-                <span className="text-sm font-semibold text-text-secondary">{formatARS(precios.precioEfectivo)}</span>
+                <span className="text-xs sm:text-sm font-semibold text-text-secondary">{formatARS(precios.precioEfectivo)}</span>
               </div>
             </div>
           )
@@ -101,12 +107,14 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar }) {
           <PrecioNoDisponible nombrePerfume={perfume.nombre} whatsappNumero={config?.whatsappNumero} />
         )}
         <button
+          type="button"
           onClick={() => onAgregar?.(perfume)}
-          className="w-full rounded-xl bg-violet/10 hover:bg-violet border border-violet/30 hover:border-violet py-2.5 text-sm font-semibold text-text transition-all duration-300 hover:shadow-lg hover:shadow-violet/30"
+          aria-label={`Agregar ${perfume.marca} ${perfume.nombre} al carrito`}
+          className="w-full rounded-xl bg-violet/10 hover:bg-violet border border-violet/30 hover:border-violet py-2.5 text-xs sm:text-sm font-semibold text-text transition-colors duration-300"
         >
           Agregar al carrito
         </button>
       </div>
-    </div>
+    </article>
   );
 }

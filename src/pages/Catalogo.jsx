@@ -7,11 +7,18 @@ import { incrementarAgregadoCarrito } from '../services/estadisticasService';
 import { registrarBusqueda } from '../services/busquedasService';
 import { Filtros } from '../components/perfumes/Filtros';
 import { PerfumeGrid } from '../components/perfumes/PerfumeGrid';
-import { Spinner } from '../components/ui/Spinner';
+import { PerfumeGridSkeleton } from '../components/perfumes/PerfumeCardSkeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export default function Catalogo() {
   const [filtros, setFiltros] = useState({});
-  const { data: perfumes, isLoading } = usePerfumes(filtros);
+  const { data: perfumes, isLoading, isError, refetch } = usePerfumes(filtros);
+  useDocumentMeta({
+    title: 'Catálogo de perfumes árabes',
+    description:
+      'Todos nuestros perfumes árabes originales: Lattafa, Armaf, Al Haramain y más. Filtrá por género, marca y familia olfativa.',
+    path: '/catalogo',
+  });
   const { dolarMedio } = useDolarBlue();
   const { dispatch } = useCart();
   const { showToast } = useToast();
@@ -47,7 +54,7 @@ export default function Catalogo() {
   }
 
   return (
-    <div className="px-6 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="mb-8">
         <p className="tracking-luxury mb-2 font-body text-xs uppercase text-lila">Colección completa</p>
         <h1 className="font-display text-3xl text-text">Catálogo</h1>
@@ -55,9 +62,40 @@ export default function Catalogo() {
       <Filtros filtros={filtros} onChange={setFiltros} />
       <div className="mt-6">
         {isLoading ? (
-          <Spinner />
+          <PerfumeGridSkeleton />
+        ) : isError ? (
+          <div className="card-surface mx-auto max-w-md rounded-2xl p-8 text-center" role="alert">
+            <p className="mb-4 font-body text-text-secondary">
+              No pudimos cargar el catálogo. Revisá tu conexión y probá de nuevo.
+            </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-text"
+            >
+              Reintentar
+            </button>
+          </div>
         ) : (
-          <PerfumeGrid perfumes={perfumes} dolarMedio={dolarMedio} onAgregar={handleAgregar} />
+          <PerfumeGrid
+            perfumes={perfumes}
+            dolarMedio={dolarMedio}
+            onAgregar={handleAgregar}
+            vacio={
+              <div className="card-surface mx-auto max-w-md rounded-2xl p-8 text-center">
+                <p className="mb-4 font-body text-text-secondary">
+                  No encontramos perfumes con esos filtros.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setFiltros({})}
+                  className="rounded-xl border border-violet/30 px-5 py-2.5 font-body text-sm font-semibold text-text transition-base hover:border-violet hover:bg-violet/20"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
+            }
+          />
         )}
       </div>
     </div>

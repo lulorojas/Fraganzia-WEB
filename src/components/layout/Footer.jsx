@@ -45,12 +45,12 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-center">
-          <p className="font-body text-xs text-text-secondary/50">
+          <p className="font-body text-xs text-text-secondary">
             © {new Date().getFullYear()} Fraganzia. Todos los derechos reservados.
           </p>
           <Link 
             to="/login" 
-            className="mt-2 inline-block font-body text-[10px] text-text-secondary/30 hover:text-text-secondary/60 transition-colors"
+            className="mt-2 inline-block font-body text-xs text-text-secondary hover:text-text transition-colors"
           >
             Admin
           </Link>

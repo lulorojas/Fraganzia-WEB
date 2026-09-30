@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { GlassCard } from '../components/ui/GlassCard';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export default function NotFound() {
+  useDocumentMeta({ title: 'Página no encontrada' });
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-xl items-center px-4 py-12">
       <GlassCard className="w-full p-8 text-center">

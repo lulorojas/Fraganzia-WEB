@@ -14,7 +14,6 @@ function useInvalidarGastos() {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: ['gastos'] });
-    qc.invalidateQueries({ queryKey: ['panelFinanciero'] });
   };
 }
 

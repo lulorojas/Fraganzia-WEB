@@ -28,12 +28,14 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: 'Manrope', system-ui, sans-serif;
-  background-image:
-    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(90, 20, 160, 0.18) 0%, transparent 70%),
-    radial-gradient(circle at 85% 95%, rgba(192, 132, 252, 0.08) 0%, transparent 50%);
-  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* El fondo decorativo lo pinta <ShaderBackground> (fijo, detrás de todo). */
 }
 
+/* Clases propias dentro de la capa "components" de Tailwind: así una utilidad
+   puesta en el mismo elemento (rounded-none, border-0, p-*) las puede pisar. */
+@layer components {
 /* ═══════════════════════════════════════════════════════════
    GLASSMORPHISM SYSTEM
    ═══════════════════════════════════════════════════════════ */
@@ -165,4 +167,58 @@ body {
 
 .tracking-luxury {
   letter-spacing: 0.25em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SUPERFICIES LIVIANAS
+   Para elementos que se repiten mucho (cards del catálogo): mismo look que
+   .glass pero sin backdrop-filter, que obliga al navegador a re-difuminar el
+   fondo en cada frame de scroll y hacía muy lento el catálogo en celulares.
+   ═══════════════════════════════════════════════════════════ */
+.card-surface {
+  background: linear-gradient(180deg, rgba(28, 18, 48, 0.92), rgba(16, 11, 30, 0.92));
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.card-hover {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card-hover:hover {
+  border-color: rgba(192, 132, 252, 0.35);
+  box-shadow: 0 12px 32px rgba(123, 47, 190, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACCESIBILIDAD
+   ═══════════════════════════════════════════════════════════ */
+
+/* Foco visible solo al navegar con teclado (no al hacer click). */
+:focus-visible {
+  outline: 2px solid var(--color-lila-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Quien pidió menos movimiento en su sistema no ve animaciones decorativas. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Oculta la barra de scroll de los sliders horizontales. */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

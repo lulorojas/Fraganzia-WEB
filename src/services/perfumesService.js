@@ -15,42 +15,44 @@ function ordenarPorFechaDesc(perfumes) {
 }
 
 /**
- * Trae todos los perfumes con `activo == true` (único filtro resuelto por
- * Firestore, con índice de campo simple automático — sin necesidad de
- * índices compuestos) y aplica el resto de los filtros combinados en el
- * cliente: `disponible`, `genero`, `marca`, `familiaOlfativa`, `destacado`
- * y `busqueda` (FR-002 exige que los filtros sean combinables entre sí).
+ * Trae todos los perfumes públicos (`activo == true` resuelto por Firestore,
+ * `disponible` en el cliente), ordenados del más nuevo al más viejo.
  *
- * Nota: los 4 índices compuestos de perfumes definidos en
- * firestore.indexes.json (activo+genero, activo+marca, activo+
- * familiaOlfativa, activo+destacado, todos +createdAt) quedan sin uso por
- * esta estrategia. Se dejan tal cual — fueron ratificados en la
- * constitución v1.0.0 y modificarlos requiere una enmienda formal, no una
- * limpieza unilateral. Si el catálogo crece y conviene mover estos filtros
- * a Firestore, ya están definidos y desplegados.
+ * Se lee el catálogo UNA vez y se cachea (ver usePerfumes): los filtros se
+ * aplican en memoria con `filtrarPerfumes`, así tipear en el buscador o
+ * cambiar un filtro no vuelve a leer ~400 documentos de Firestore.
+ *
+ * Nota: los índices compuestos de perfumes definidos en firestore.indexes.json
+ * quedan sin uso por esta estrategia. Se dejan tal cual — fueron ratificados
+ * en la constitución v1.0.0. Si el catálogo crece mucho y conviene mover los
+ * filtros a Firestore, ya están definidos y desplegados.
  */
-export async function listarPerfumesPublicos(filtros = {}) {
+export async function listarPerfumesPublicos() {
   const snap = await getDocs(query(collection(db, COLLECTION), where('activo', '==', true)));
-  let perfumes = ordenarPorFechaDesc(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  return ordenarPorFechaDesc(snap.docs.map((d) => ({ id: d.id, ...d.data() }))).filter(
+    (p) => p.disponible === true
+  );
+}
 
-  perfumes = perfumes.filter((p) => p.disponible === true);
+// Minúsculas y sin tildes: "Lattafá" encuentra "lattafa" y al revés.
+export function normalizarTexto(texto) {
+  return (texto ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
 
-  if (filtros.genero) perfumes = perfumes.filter((p) => p.genero === filtros.genero);
-  if (filtros.marca) perfumes = perfumes.filter((p) => p.marca === filtros.marca);
-  if (filtros.familiaOlfativa) {
-    perfumes = perfumes.filter((p) => p.familiaOlfativa === filtros.familiaOlfativa);
-  }
-  if (filtros.destacado) perfumes = perfumes.filter((p) => p.destacado === true);
-
-  if (filtros.busqueda) {
-    const termino = filtros.busqueda.trim().toLowerCase();
-    perfumes = perfumes.filter(
-      (p) =>
-        p.nombre?.toLowerCase().includes(termino) || p.marca?.toLowerCase().includes(termino)
-    );
-  }
-
-  return perfumes;
+/** Aplica los filtros combinables del catálogo (FR-002) sobre la lista cacheada. */
+export function filtrarPerfumes(perfumes, filtros = {}) {
+  if (!perfumes) return perfumes;
+  const termino = normalizarTexto(filtros.busqueda);
+  return perfumes.filter(
+    (p) =>
+      (!filtros.genero || p.genero === filtros.genero) &&
+      (!filtros.marca || p.marca === filtros.marca) &&
+      (!filtros.familiaOlfativa || p.familiaOlfativa === filtros.familiaOlfativa) &&
+      (!filtros.destacado || p.destacado === true) &&
+      (!termino ||
+        normalizarTexto(p.nombre).includes(termino) ||
+        normalizarTexto(p.marca).includes(termino))
+  );
 }
 
 export async function obtenerPerfumePorId(id) {

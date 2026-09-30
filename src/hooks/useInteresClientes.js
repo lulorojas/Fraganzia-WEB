@@ -30,7 +30,8 @@ export function useInteresClientes({ limite = 8 } = {}) {
 
   const data = useMemo(() => {
     const stats = estadisticas.data ?? VACIO;
-    const nombreDe = (id) => perfumes?.find((p) => p.id === id)?.nombre ?? id;
+    const nombres = new Map((perfumes ?? []).map((p) => [p.id, p.nombre]));
+    const nombreDe = (id) => nombres.get(id) ?? id;
 
     const conNombre = stats.map((s) => ({
       perfumeId: s.perfumeId,

@@ -3,8 +3,10 @@ import { GlassCard } from '../components/ui/GlassCard';
 import { Button } from '../components/ui/Button';
 import { construirLinkWhatsApp } from '../utils/whatsapp';
 import { useConfig } from '../hooks/useConfig';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export default function Contacto() {
+  useDocumentMeta({ title: 'Contacto', description: 'Consultanos por WhatsApp o Instagram. Envíos en AMBA.', path: '/contacto' });
   const { data: config } = useConfig();
   const numero = config?.whatsappNumero ?? '';
 

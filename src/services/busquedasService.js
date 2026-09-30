@@ -2,6 +2,7 @@ import {
   collection, doc, getDocs, setDoc, increment, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { yaRegistradoEnSesion } from '../utils/sesion';
 
 const COLLECTION = 'busquedas';
 const MIN_LARGO = 3;
@@ -28,16 +29,6 @@ function normalizar(termino) {
     .trim();
 }
 
-function yaRegistrado(clave) {
-  try {
-    if (sessionStorage.getItem(clave)) return true;
-    sessionStorage.setItem(clave, '1');
-    return false;
-  } catch {
-    return false;
-  }
-}
-
 /**
  * Se llama con debounce desde el catálogo (no en cada tecla). Ignora términos
  * de menos de 3 caracteres y repeticiones del mismo término en la misma sesión.
@@ -45,7 +36,7 @@ function yaRegistrado(clave) {
 export function registrarBusqueda(termino, huboResultados) {
   const normalizado = normalizar(termino ?? '');
   if (normalizado.length < MIN_LARGO) return Promise.resolve();
-  if (yaRegistrado(`busqueda:${normalizado}:${huboResultados ? 1 : 0}`)) return Promise.resolve();
+  if (yaRegistradoEnSesion(`busqueda:${normalizado}:${huboResultados ? 1 : 0}`)) return Promise.resolve();
 
   return setDoc(
     doc(db, COLLECTION, normalizado),

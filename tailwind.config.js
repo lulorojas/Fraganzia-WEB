@@ -20,9 +20,10 @@ export default {
         error: '#EF4444',
       },
       fontFamily: {
-        display: ['Outfit', 'sans-serif'],
-        body: ['Manrope', 'sans-serif'],
-        luxury: ['Cinzel', 'serif'],
+        display: ['Outfit', 'system-ui', 'sans-serif'],
+        body: ['Manrope', 'system-ui', 'sans-serif'],
+        luxury: ['Cinzel', 'Georgia', 'serif'],
+        logo: ['"Playfair Logo"', 'Georgia', 'serif'],
       },
       letterSpacing: {
         luxury: '0.25em',

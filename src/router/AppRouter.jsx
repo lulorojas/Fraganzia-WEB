@@ -5,17 +5,18 @@ import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Spinner } from '../components/ui/Spinner';
 
+// Las páginas públicas van en el bundle principal (son chicas: ~25 KB entre
+// todas). Así, al arrancar, React renderiza la página de una, igual al HTML
+// pre-renderizado (tools/prerender.mjs), sin pasar por un spinner de carga.
 import Home from '../pages/Home';
+import Catalogo from '../pages/Catalogo';
+import PerfumeDetalle from '../pages/PerfumeDetalle';
+import Carrito from '../pages/Carrito';
+import SobreNosotros from '../pages/SobreNosotros';
+import Contacto from '../pages/Contacto';
+import NotFound from '../pages/NotFound';
 
-// La home va en el bundle principal (es la página de entrada más común); el
-// resto de las páginas públicas se descargan recién al navegar a ellas.
-const Catalogo = lazy(() => import('../pages/Catalogo'));
-const PerfumeDetalle = lazy(() => import('../pages/PerfumeDetalle'));
-const Carrito = lazy(() => import('../pages/Carrito'));
 const Login = lazy(() => import('../pages/Login'));
-const SobreNosotros = lazy(() => import('../pages/SobreNosotros'));
-const Contacto = lazy(() => import('../pages/Contacto'));
-const NotFound = lazy(() => import('../pages/NotFound'));
 
 // Todo lo de /admin se carga en un chunk aparte: un visitante del catálogo
 // nunca debería descargar el código de finanzas/analytics/etc.
@@ -55,10 +56,10 @@ function PublicLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main id="main" className="flex-1">
-        <PageSuspense>
-          <Outlet />
-        </PageSuspense>
+      {/* Alto mínimo = pantalla completa: mientras carga una página el footer
+          queda fuera de vista, y no "salta" cuando llega el contenido (CLS). */}
+      <main id="main" className="min-h-screen flex-1">
+        <Outlet />
       </main>
       <Footer />
     </div>

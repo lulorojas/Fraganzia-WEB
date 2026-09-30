@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeAuth, indexedDBLocalPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { activarAppCheck } from '@app-check';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,13 +19,12 @@ const app = initializeApp(firebaseConfig);
 // de esta web (bots, scripts). Costo: carga el script de reCAPTCHA en cada
 // visita, lo que resta algo de puntaje en PageSpeed. Ver README.
 // Se inicializa antes de getFirestore() para que ninguna lectura salga sin token.
-const recaptchaKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
-if (recaptchaKey) {
-  initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(recaptchaKey),
-    isTokenAutoRefreshEnabled: true,
-  });
-}
+activarAppCheck(app);
 
-export const auth = getAuth(app);
+// initializeAuth en vez de getAuth: getAuth incluye el soporte de login con
+// popup/redirect, que descarga un iframe de Google (gapi) en cada visita.
+// Acá solo se usa email + contraseña, así que no hace falta.
+export const auth = initializeAuth(app, {
+  persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+});
 export const db = getFirestore(app);

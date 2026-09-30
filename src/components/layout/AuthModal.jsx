@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,7 +23,33 @@ const schemaRegistro = z.object({
   path: ['confirmar'],
 });
 
-const INPUT = 'w-full rounded-xl border border-border bg-transparent px-3 py-2 text-text text-sm';
+const INPUT =
+  'w-full rounded-xl border border-border bg-white/[0.03] px-3 py-2.5 text-text text-sm placeholder:text-text-secondary focus:border-violet focus:outline-none transition-colors';
+
+// Campo con etiqueta visible y el error asociado (lectores de pantalla lo leen).
+// forwardRef: react-hook-form necesita el ref del <input> real.
+const Campo = forwardRef(function Campo({ id, label, error, ...inputProps }, ref) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={id} className="font-body text-xs text-text-secondary">
+        {label}
+      </label>
+      <input
+        ref={ref}
+        id={id}
+        className={INPUT}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : undefined}
+        {...inputProps}
+      />
+      {error && (
+        <p id={`${id}-error`} className="text-xs text-error">
+          {error.message}
+        </p>
+      )}
+    </div>
+  );
+});
 
 function FormLogin({ onSuccess }) {
   const [error, setError] = useState(null);
@@ -43,15 +69,9 @@ function FormLogin({ onSuccess }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-      <div>
-        <input className={INPUT} placeholder="Email" type="email" {...register('email')} />
-        {errors.email && <p className="text-xs text-error mt-1">{errors.email.message}</p>}
-      </div>
-      <div>
-        <input className={INPUT} placeholder="Contraseña" type="password" {...register('password')} />
-        {errors.password && <p className="text-xs text-error mt-1">{errors.password.message}</p>}
-      </div>
-      {error && <p className="text-sm text-error">{error}</p>}
+      <Campo id="login-email" label="Email" type="email" autoComplete="email" error={errors.email} {...register('email')} />
+      <Campo id="login-password" label="Contraseña" type="password" autoComplete="current-password" error={errors.password} {...register('password')} />
+      {error && <p className="text-sm text-error" role="alert">{error}</p>}
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Ingresando…' : 'Iniciar sesión'}
       </Button>
@@ -72,15 +92,11 @@ function FormRegistro({ onSuccess }) {
       await updateProfile(user, { displayName: nombre });
       
       // Enviar email de bienvenida al usuario (no bloqueante)
-      enviarEmailBienvenida(email, nombre).catch(err => {
-        console.warn('No se pudo enviar email de bienvenida:', err);
-      });
-      
+      enviarEmailBienvenida(email, nombre);
+
       // Notificar al admin del nuevo registro (no bloqueante)
-      notificarNuevoRegistro(email, nombre).catch(err => {
-        console.warn('No se pudo notificar registro al admin:', err);
-      });
-      
+      notificarNuevoRegistro(email, nombre);
+
       onSuccess();
     } catch (e) {
       if (e.code === 'auth/email-already-in-use') {
@@ -93,23 +109,11 @@ function FormRegistro({ onSuccess }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-      <div>
-        <input className={INPUT} placeholder="Tu nombre" {...register('nombre')} />
-        {errors.nombre && <p className="text-xs text-error mt-1">{errors.nombre.message}</p>}
-      </div>
-      <div>
-        <input className={INPUT} placeholder="Email" type="email" {...register('email')} />
-        {errors.email && <p className="text-xs text-error mt-1">{errors.email.message}</p>}
-      </div>
-      <div>
-        <input className={INPUT} placeholder="Contraseña (mín. 6 caracteres)" type="password" {...register('password')} />
-        {errors.password && <p className="text-xs text-error mt-1">{errors.password.message}</p>}
-      </div>
-      <div>
-        <input className={INPUT} placeholder="Confirmar contraseña" type="password" {...register('confirmar')} />
-        {errors.confirmar && <p className="text-xs text-error mt-1">{errors.confirmar.message}</p>}
-      </div>
-      {error && <p className="text-sm text-error">{error}</p>}
+      <Campo id="registro-nombre" label="Tu nombre" autoComplete="name" maxLength={100} error={errors.nombre} {...register('nombre')} />
+      <Campo id="registro-email" label="Email" type="email" autoComplete="email" error={errors.email} {...register('email')} />
+      <Campo id="registro-password" label="Contraseña (mínimo 6 caracteres)" type="password" autoComplete="new-password" error={errors.password} {...register('password')} />
+      <Campo id="registro-confirmar" label="Confirmar contraseña" type="password" autoComplete="new-password" error={errors.confirmar} {...register('confirmar')} />
+      {error && <p className="text-sm text-error" role="alert">{error}</p>}
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Creando cuenta…' : 'Crear cuenta'}
       </Button>
@@ -117,7 +121,9 @@ function FormRegistro({ onSuccess }) {
   );
 }
 
-export function AuthModal({ open, onClose }) {
+// `isOpen` es el mismo nombre que usa <Modal>. Antes este componente esperaba
+// `open` mientras Navbar le pasaba `isOpen`, y el modal nunca se abría.
+export function AuthModal({ isOpen, onClose }) {
   const [tab, setTab] = useState('login');
 
   function handleClose() {
@@ -126,16 +132,15 @@ export function AuthModal({ open, onClose }) {
   }
 
   return (
-    <Modal isOpen={open} onClose={handleClose}>
+    <Modal isOpen={isOpen} onClose={handleClose} title={tab === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}>
       <div className="flex flex-col gap-4">
-        <h2 className="font-display text-xl text-text">
-          {tab === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
-        </h2>
-
-        <div className="flex border-b border-border mb-1">
+        <div className="flex border-b border-border mb-1" role="tablist">
           {['login', 'registro'].map((t) => (
             <button
               key={t}
+              type="button"
+              role="tab"
+              aria-selected={tab === t}
               onClick={() => setTab(t)}
               className={`pb-2 px-4 text-sm font-body transition-base ${
                 tab === t

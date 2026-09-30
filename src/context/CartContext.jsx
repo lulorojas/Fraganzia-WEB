@@ -1,6 +1,10 @@
-import { createContext, useContext, useEffect, useReducer } from 'react';
+import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
 import { leerCarrito, guardarCarrito } from '../utils/cartStorage';
-import { obtenerPerfumePorId } from '../services/perfumesService';
+
+// Tope por producto: coincide con el schema del pedido y evita pedidos
+// absurdos por un click de más.
+export const CANTIDAD_MAX = 10;
+const acotar = (n) => Math.min(CANTIDAD_MAX, Math.max(1, Math.floor(Number(n) || 1)));
 
 const initialState = {
   items: [],
@@ -16,12 +20,15 @@ function cartReducer(state, action) {
           ...state,
           items: state.items.map((item) =>
             item.perfumeId === action.payload.perfumeId
-              ? { ...item, cantidad: item.cantidad + action.payload.cantidad }
+              ? { ...item, cantidad: acotar(item.cantidad + action.payload.cantidad) }
               : item
           ),
         };
       }
-      return { ...state, items: [...state.items, action.payload] };
+      return {
+        ...state,
+        items: [...state.items, { ...action.payload, cantidad: acotar(action.payload.cantidad) }],
+      };
     }
     case 'REMOVE_ITEM':
       return {
@@ -33,7 +40,7 @@ function cartReducer(state, action) {
         ...state,
         items: state.items.map((item) =>
           item.perfumeId === action.payload.perfumeId
-            ? { ...item, cantidad: action.payload.cantidad }
+            ? { ...item, cantidad: acotar(action.payload.cantidad) }
             : item
         ),
       };
@@ -41,8 +48,6 @@ function cartReducer(state, action) {
       return { ...state, metodoPago: action.payload };
     case 'CLEAR_CART':
       return initialState;
-    case 'MIGRATE_ITEMS':
-      return { ...state, items: action.payload };
     default:
       return state;
   }
@@ -56,46 +61,17 @@ export function CartProvider({ children }) {
     return guardado ?? init;
   });
 
-  // Migración: actualizar items sin imagenes desde Firestore
-  useEffect(() => {
-    async function migrateItems() {
-      const itemsSinImagenes = state.items.filter(item => !item.imagenes || item.imagenes.length === 0);
-      
-      if (itemsSinImagenes.length > 0) {
-        const itemsActualizados = await Promise.all(
-          state.items.map(async (item) => {
-            if (!item.imagenes || item.imagenes.length === 0) {
-              try {
-                const perfume = await obtenerPerfumePorId(item.perfumeId);
-                if (perfume?.imagenes) {
-                  return { ...item, imagenes: perfume.imagenes };
-                }
-              } catch (err) {
-                console.warn('No se pudo cargar imagen para', item.perfumeId);
-              }
-            }
-            return item;
-          })
-        );
-        
-        dispatch({ type: 'MIGRATE_ITEMS', payload: itemsActualizados });
-      }
-    }
-    
-    migrateItems();
-  }, []); // Solo ejecutar una vez al montar
-
   useEffect(() => {
     guardarCarrito(state);
   }, [state]);
 
-  return (
-    <CartContext.Provider value={{ state, dispatch }}>
-      {children}
-    </CartContext.Provider>
-  );
+  const value = useMemo(() => ({ state, dispatch }), [state]);
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
-  return useContext(CartContext);
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error('useCart debe usarse dentro de <CartProvider>');
+  return ctx;
 }

@@ -1,72 +1,114 @@
-import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ShoppingBag, Instagram, User, LogOut, Settings } from 'lucide-react';
+import { lazy, Suspense, useState, useRef, useEffect } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { ShoppingBag, Instagram, User, LogOut, Settings, Menu, X } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { LogoFraganzia } from '../ui/LogoFraganzia';
-import { AuthModal } from './AuthModal';
+
+// El modal de login (con react-hook-form, zod y framer-motion) solo se
+// descarga cuando alguien lo abre: la mayoría de las visitas nunca lo usa.
+const AuthModal = lazy(() => import('./AuthModal').then((m) => ({ default: m.AuthModal })));
+
+const LINKS = [
+  { to: '/catalogo', label: 'Catálogo' },
+  { to: '/sobre-nosotros', label: 'Nosotros' },
+  { to: '/contacto', label: 'Contacto' },
+];
+
+// Cierra un menú desplegable al hacer click afuera o apretar Escape.
+function useCerrarAlSalir(ref, abierto, cerrar) {
+  useEffect(() => {
+    if (!abierto) return undefined;
+    function onPointer(e) {
+      if (ref.current && !ref.current.contains(e.target)) cerrar();
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') cerrar();
+    }
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [ref, abierto, cerrar]);
+}
 
 export function Navbar() {
   const { state } = useCart();
   const { user, isAdmin } = useAuth();
+  const { pathname } = useLocation();
   const cantidadItems = state.items.reduce((acc, item) => acc + item.cantidad, 0);
   const [authOpen, setAuthOpen] = useState(false);
+  const [authCargado, setAuthCargado] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef(null);
+  const mobileRef = useRef(null);
 
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  useCerrarAlSalir(menuRef, menuOpen, () => setMenuOpen(false));
+  useCerrarAlSalir(mobileRef, mobileOpen, () => setMobileOpen(false));
+
+  // Al navegar, cerrar el menú mobile.
+  useEffect(() => setMobileOpen(false), [pathname]);
+
+  function abrirLogin() {
+    setAuthCargado(true);
+    setAuthOpen(true);
+  }
 
   const nombreCorto = user?.displayName?.split(' ')[0] || user?.email?.split('@')[0];
+  const claseLink = ({ isActive }) =>
+    `transition-colors duration-200 hover:text-text ${isActive ? 'text-text' : ''}`;
 
   return (
     <>
-      <nav className="glass-frosted sticky top-0 z-40 backdrop-blur-[32px] border-b border-violet/10">
-        <div className="flex items-center justify-between px-6 py-3.5 max-w-7xl mx-auto">
+      <nav
+        ref={mobileRef}
+        aria-label="Principal"
+        className="glass-frosted sticky top-0 z-40 rounded-none border-x-0 border-t-0 border-b border-violet/10"
+      >
+        <div className="relative flex items-center justify-between px-4 sm:px-6 py-3 max-w-7xl mx-auto">
           {/* Logo izquierda */}
-          <Link to="/" className="transition-all duration-300 hover:opacity-80 hover:scale-105">
+          <Link to="/" aria-label="Fraganzia, ir al inicio" className="transition-opacity duration-300 hover:opacity-80">
             <LogoFraganzia size={1.2} />
           </Link>
 
-          {/* Links centro (ocultos en mobile) */}
+          {/* Links centro (desktop) */}
           <div className="hidden lg:flex items-center gap-8 font-body text-text-secondary text-sm absolute left-1/2 -translate-x-1/2">
-            <Link to="/catalogo" className="transition-all duration-200 hover:text-text hover:scale-105">
-              Catálogo
-            </Link>
-            <Link to="/sobre-nosotros" className="transition-all duration-200 hover:text-text hover:scale-105">
-              Nosotros
-            </Link>
-            <Link to="/contacto" className="transition-all duration-200 hover:text-text hover:scale-105">
-              Contacto
-            </Link>
+            {LINKS.map(({ to, label }) => (
+              <NavLink key={to} to={to} className={claseLink}>
+                {label}
+              </NavLink>
+            ))}
           </div>
 
           {/* Actions derecha */}
-          <div className="flex items-center justify-end gap-4 font-body text-text-secondary">
+          <div className="flex items-center justify-end gap-1 sm:gap-2 font-body text-text-secondary">
             <a
               href="https://www.instagram.com/fraganzia.ar/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden md:flex items-center gap-1.5 transition-all duration-200 hover:text-lila hover:scale-110"
-              aria-label="Instagram"
+              className="hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-lila"
+              aria-label="Instagram de Fraganzia"
             >
-              <Instagram size={19} />
+              <Instagram size={19} aria-hidden="true" />
             </a>
 
             {/* Carrito */}
-            <Link to="/carrito" aria-label="Carrito" className="relative flex items-center transition-all duration-200 hover:text-text hover:scale-110">
-              <ShoppingBag size={21} />
+            <Link
+              to="/carrito"
+              aria-label={cantidadItems > 0 ? `Carrito, ${cantidadItems} productos` : 'Carrito'}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-text"
+            >
+              <ShoppingBag size={21} aria-hidden="true" />
               {cantidadItems > 0 && (
-                <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-violet to-lila text-[11px] font-bold text-white shadow-lg ring-2 ring-bg animate-pulse">
+                <span
+                  aria-hidden="true"
+                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-violet text-[11px] font-bold text-white shadow-lg ring-2 ring-bg"
+                >
                   {cantidadItems}
                 </span>
               )}
@@ -75,53 +117,105 @@ export function Navbar() {
             {/* Usuario */}
             {!user ? (
               <button
-                onClick={() => setAuthOpen(true)}
-                className="transition-all duration-200 hover:text-text hover:scale-110"
+                type="button"
+                onClick={abrirLogin}
+                className="flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-text"
                 aria-label="Iniciar sesión"
               >
-                <User size={20} />
+                <User size={20} aria-hidden="true" />
               </button>
             ) : (
               <div className="relative" ref={menuRef}>
                 <button
+                  type="button"
                   onClick={() => setMenuOpen((o) => !o)}
                   aria-label="Menú de usuario"
-                  className="flex items-center gap-1.5 transition-all duration-200 hover:text-text"
+                  aria-expanded={menuOpen}
+                  aria-haspopup="menu"
+                  className="flex h-10 items-center gap-1.5 rounded-full px-2 transition-colors duration-200 hover:text-text"
                 >
-                  <User size={20} />
+                  <User size={20} aria-hidden="true" />
                   <span className="text-xs hidden sm:block">{nombreCorto}</span>
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 top-9 glass z-50 min-w-[160px] p-2 flex flex-col gap-0.5 rounded-xl">
+                  <div role="menu" className="absolute right-0 top-11 glass-frosted z-50 min-w-[180px] p-2 flex flex-col gap-0.5 rounded-xl">
                     <p className="px-3 py-1 text-xs text-text-secondary truncate">{user.email}</p>
                     <div className="border-t border-border my-1" />
                     {isAdmin && (
                       <Link
                         to="/admin"
+                        role="menuitem"
                         onClick={() => setMenuOpen(false)}
                         className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-lila hover:text-text transition-base"
                       >
-                        <Settings size={14} />
+                        <Settings size={14} aria-hidden="true" />
                         Panel Admin
                       </Link>
                     )}
                     <button
+                      type="button"
+                      role="menuitem"
                       onClick={() => { signOut(auth); setMenuOpen(false); }}
                       className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-secondary hover:text-error transition-base"
                     >
-                      <LogOut size={14} />
+                      <LogOut size={14} aria-hidden="true" />
                       Cerrar sesión
                     </button>
                   </div>
                 )}
               </div>
             )}
+
+            {/* Menú mobile */}
+            <button
+              type="button"
+              onClick={() => setMobileOpen((o) => !o)}
+              aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={mobileOpen}
+              aria-controls="menu-mobile"
+              className="flex lg:hidden h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-text"
+            >
+              {mobileOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+            </button>
           </div>
         </div>
+
+        {mobileOpen && (
+          <div id="menu-mobile" className="lg:hidden border-t border-violet/10 px-4 pb-4 pt-2">
+            <ul className="flex flex-col font-body">
+              {LINKS.map(({ to, label }) => (
+                <li key={to}>
+                  <NavLink
+                    to={to}
+                    className={({ isActive }) =>
+                      `block rounded-lg px-3 py-3 text-base transition-colors hover:bg-violet/10 hover:text-text ${isActive ? 'text-text' : 'text-text-secondary'}`
+                    }
+                  >
+                    {label}
+                  </NavLink>
+                </li>
+              ))}
+              <li>
+                <a
+                  href="https://www.instagram.com/fraganzia.ar/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-lg px-3 py-3 text-base text-text-secondary transition-colors hover:bg-violet/10 hover:text-lila"
+                >
+                  <Instagram size={18} aria-hidden="true" />
+                  @fraganzia.ar
+                </a>
+              </li>
+            </ul>
+          </div>
+        )}
       </nav>
 
-      <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
+      {authCargado && (
+        <Suspense fallback={null}>
+          <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 }
-

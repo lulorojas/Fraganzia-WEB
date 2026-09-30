@@ -5,10 +5,23 @@ import { ToastProvider } from './context/ToastContext';
 import { AppRouter } from './router/AppRouter';
 import { ShaderBackground } from './components/ui/ShaderBackground';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
-// Fondo animado 100% CSS (sin WebGL/canvas): evita bloqueo de main-thread
-// continuo que disparaba el Total Blocking Time en Lighthouse.
+import { sembrarDatosIniciales } from './utils/datosIniciales';
 
-const queryClient = new QueryClient();
+// Defaults pensados para un catálogo que cambia poco: no volver a leer de
+// Firestore cada vez que el usuario vuelve a la pestaña, y mantener en memoria
+// lo ya cargado mientras navega. Cada hook puede pisar estos valores.
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+      gcTime: 30 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
+sembrarDatosIniciales(queryClient);
 
 export default function App() {
   return (

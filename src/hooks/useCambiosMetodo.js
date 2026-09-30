@@ -14,7 +14,6 @@ function useInvalidarCambios() {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: ['cambiosMetodo'] });
-    qc.invalidateQueries({ queryKey: ['panelFinanciero'] });
   };
 }
 

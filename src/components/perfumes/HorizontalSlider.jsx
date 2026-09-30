@@ -24,16 +24,18 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
     <div className="relative group">
       {/* Navigation buttons */}
       <button
+        type="button"
         onClick={() => scroll('left')}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 glass-frosted p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-violet/20"
-        aria-label="Anterior"
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex glass-frosted p-3 rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-300 hover:bg-violet/20"
+        aria-label="Ver perfumes anteriores"
       >
         <ChevronLeft size={20} className="text-text" />
       </button>
       <button
+        type="button"
         onClick={() => scroll('right')}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 glass-frosted p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-violet/20"
-        aria-label="Siguiente"
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex glass-frosted p-3 rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-300 hover:bg-violet/20"
+        aria-label="Ver más perfumes"
       >
         <ChevronRight size={20} className="text-text" />
       </button>
@@ -42,9 +44,11 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
       <div
         ref={scrollRef}
         className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 hide-scrollbar"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        role="region"
+        aria-label="Perfumes destacados"
+        tabIndex={0}
       >
-        {perfumes.map((perfume) => {
+        {perfumes.map((perfume, i) => {
           const precios = dolarMedio ? preciosPorMetodo(perfume.precioUSD, dolarMedio) : null;
           
           return (
@@ -52,8 +56,8 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
               key={perfume.id}
               className="flex-none w-[280px] snap-start group/card"
             >
-              <div className="glass glass-hover-subtle h-full rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2">
-                <Link to={`/perfume/${perfume.id}`} className="block">
+              <div className="card-surface card-hover h-full rounded-2xl overflow-hidden">
+                <Link to={`/perfume/${perfume.id}`} className="block" tabIndex={-1} aria-hidden="true">
                   <div className="relative aspect-[3/4] bg-white overflow-hidden">
                     <picture>
                       {webpSrc(perfume.imagenes?.[0]) && (
@@ -61,9 +65,11 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
                       )}
                       <img
                         src={perfume.imagenes?.[0] || '/placeholder-perfume.svg'}
-                        alt={`${perfume.marca} ${perfume.nombre}`}
-                        loading="lazy"
+                        alt=""
+                        loading={i < 2 ? 'eager' : 'lazy'}
                         decoding="async"
+                        width="280"
+                        height="373"
                         className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover/card:scale-110"
                       />
                     </picture>
@@ -80,13 +86,15 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
                     {perfume.marca}
                   </p>
                   <h3 className="font-display font-semibold text-text mb-3 line-clamp-2">
-                    {perfume.nombre}
+                    <Link to={`/perfume/${perfume.id}`} className="hover:text-lila transition-base">
+                      {perfume.nombre}
+                    </Link>
                   </h3>
 
                   <div className="h-px bg-gradient-to-r from-violet/20 via-violet/50 to-violet/20 mb-3" />
 
                   {precios ? (
-                    <div className="space-y-1 text-sm mb-4">
+                    <div className="space-y-1 text-sm mb-4 tabular-nums">
                       <div className="flex justify-between">
                         <span className="text-text-secondary">Transferencia</span>
                         <span className="text-text font-medium">{formatARS(precios.precioTransferencia)}</span>
@@ -101,8 +109,10 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
                   )}
 
                   <button
+                    type="button"
                     onClick={() => onAgregar(perfume)}
-                    className="w-full py-2.5 px-4 bg-violet/10 hover:bg-violet text-text rounded-xl font-medium text-sm transition-all duration-300 backdrop-blur-sm border border-violet/30 hover:border-violet"
+                    aria-label={`Agregar ${perfume.marca} ${perfume.nombre} al carrito`}
+                    className="w-full py-2.5 px-4 bg-violet/10 hover:bg-violet text-text rounded-xl font-medium text-sm transition-colors duration-300 border border-violet/30 hover:border-violet"
                   >
                     Agregar al carrito
                   </button>
@@ -113,11 +123,6 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
         })}
       </div>
 
-      <style jsx>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 }

@@ -1,2 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /login
+
+Sitemap: https://fraganzia-e9b70.web.app/sitemap.xml

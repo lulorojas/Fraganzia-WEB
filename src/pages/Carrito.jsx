@@ -17,8 +17,10 @@ import { preciosPorMetodo, calcularTotal2x1 } from '../utils/precios';
 import { formatARS } from '../utils/format';
 import { construirLinkWhatsApp } from '../utils/whatsapp';
 import { WHATSAPP_NUMERO } from '../constants';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export default function Carrito() {
+  useDocumentMeta({ title: 'Tu carrito', path: '/carrito' });
   const { state, dispatch } = useCart();
   const { dolarMedio } = useDolarBlue();
   const { data: config } = useConfig();
@@ -184,7 +186,7 @@ export default function Carrito() {
       </div>
 
       {/* Productos */}
-      <div className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-3" aria-label="Productos en el carrito">
         {state.items.map((item) => (
           <CartItem
             key={item.perfumeId}
@@ -194,7 +196,7 @@ export default function Carrito() {
             onQuitar={handleQuitar}
           />
         ))}
-      </div>
+      </ul>
 
       {/* Checkout */}
       <GlassCard className="mt-6 flex flex-col gap-5 p-6">
@@ -224,14 +226,14 @@ export default function Carrito() {
             placeholder="Ingresá tu nombre"
             maxLength={100}
             autoComplete="name"
-            className="rounded-xl border border-border bg-white/[0.03] px-4 py-3 font-body text-sm text-text placeholder:text-text-secondary/50 focus:border-violet focus:outline-none transition-colors"
+            className="rounded-xl border border-border bg-white/[0.03] px-4 py-3 font-body text-sm text-text placeholder:text-text-secondary focus:border-violet focus:outline-none transition-colors"
             required
           />
           {errorNombre && <p className="mt-1 text-xs text-error">{errorNombre}</p>}
         </div>
 
         {avisoDisponibilidad && (
-          <p className="text-sm text-error">{avisoDisponibilidad}</p>
+          <p className="text-sm text-error" role="alert">{avisoDisponibilidad}</p>
         )}
 
         <Button

@@ -7,10 +7,16 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "cleanUrls": true,
+    "trailingSlash": false,
     "rewrites": [
       {
+        "source": "/perfume/**",
+        "destination": "/perfume.html"
+      },
+      {
         "source": "**",
-        "destination": "/index.html"
+        "destination": "/app.html"
       }
     ],
     "headers": [
@@ -42,7 +48,7 @@
         ]
       },
       {
-        "source": "/index.html",
+        "source": "/*.html",
         "headers": [
           {
             "key": "Cache-Control",

@@ -32,29 +32,37 @@ export default function Login() {
       <GlassCard className="w-full max-w-sm">
         <h1 className="mb-6 font-display text-2xl text-text">Iniciar sesión</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="admin-email" className="font-body text-xs text-text-secondary">
+              Email
+            </label>
             <input
+              id="admin-email"
               type="email"
-              placeholder="Email"
-              className="w-full rounded-xl border border-border bg-transparent px-3 py-2 text-text"
+              autoComplete="email"
+              className="w-full rounded-xl border border-border bg-white/[0.03] px-3 py-2.5 text-text focus:border-violet focus:outline-none"
               {...register('email')}
             />
             {errors.email && (
               <p className="mt-1 text-sm text-error">{errors.email.message}</p>
             )}
           </div>
-          <div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="admin-password" className="font-body text-xs text-text-secondary">
+              Contraseña
+            </label>
             <input
+              id="admin-password"
               type="password"
-              placeholder="Contraseña"
-              className="w-full rounded-xl border border-border bg-transparent px-3 py-2 text-text"
+              autoComplete="current-password"
+              className="w-full rounded-xl border border-border bg-white/[0.03] px-3 py-2.5 text-text focus:border-violet focus:outline-none"
               {...register('password')}
             />
             {errors.password && (
               <p className="mt-1 text-sm text-error">{errors.password.message}</p>
             )}
           </div>
-          {error && <p className="text-sm text-error">{error}</p>}
+          {error && <p className="text-sm text-error" role="alert">{error}</p>}
           <Button type="submit" disabled={isSubmitting}>
             Ingresar
           </Button>

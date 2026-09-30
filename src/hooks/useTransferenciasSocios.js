@@ -14,7 +14,6 @@ function useInvalidarTransferencias() {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: ['transferenciasSocios'] });
-    qc.invalidateQueries({ queryKey: ['panelFinanciero'] });
   };
 }
 
