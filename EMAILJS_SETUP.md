@@ -8,6 +8,17 @@ Este sistema envía emails automáticos cuando:
 - ✨ Se agrega un nuevo perfume (notificación al admin)
 - 🎁 Se crea una promoción (notificación al admin)
 
+## ⚠️ Seguridad (leer primero)
+
+- Las credenciales van en `.env.local` (`VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_PUBLIC_KEY`,
+  `VITE_EMAILJS_ADMIN_EMAIL`) y como secrets del workflow de GitHub. Sin `PUBLIC_KEY`, la web
+  simplemente no envía emails.
+- La public key es visible para cualquiera. En el panel de EmailJS → Account → Security:
+  restringí los dominios permitidos a tu dominio de Firebase Hosting.
+- En las plantillas de **notificaciones al admin**, escribí tu email fijo en el campo "To Email"
+  en lugar de `{{to_email}}`. Si la plantilla usa `{{to_email}}`, cualquiera puede usar tu cuenta
+  para mandar emails a quien quiera.
+
 ## Pasos para configurar:
 
 ### 1. Crear cuenta en EmailJS

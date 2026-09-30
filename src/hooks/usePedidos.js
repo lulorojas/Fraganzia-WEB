@@ -5,8 +5,7 @@ export function useCrearPedido() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: crearPedido,
-    onSuccess: (pedidoId) => {
-      console.log('✅ usePedidos - onSuccess ejecutado, ID:', pedidoId);
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pedidos'] });
     },
   });

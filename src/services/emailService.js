@@ -8,28 +8,39 @@
 
 import emailjs from '@emailjs/browser';
 
-// CONFIGURACIÓN - Reemplazar con tus credenciales de EmailJS
+// Credenciales en variables de entorno (ver .env.example y EMAILJS_SETUP.md).
+// La public key de EmailJS es pública por diseño; se protege restringiendo
+// los dominios permitidos en el panel de EmailJS.
 const EMAILJS_CONFIG = {
-  SERVICE_ID: 'service_fraganzia',
-  PUBLIC_KEY: 'YOUR_PUBLIC_KEY',
+  SERVICE_ID: import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_fraganzia',
+  PUBLIC_KEY: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
   TEMPLATES: {
     WELCOME: 'template_welcome',
     PEDIDO: 'template_pedido',
     NUEVO_PERFUME: 'template_nuevo_perfume',
     PROMOCION: 'template_promocion',
   },
-  // Email del admin para recibir notificaciones
-  ADMIN_EMAIL: 'benjuserra@gmail.com',
+  // Destinatario de las notificaciones internas. Conviene fijarlo también en
+  // la plantilla de EmailJS en vez de confiar en este parámetro.
+  ADMIN_EMAIL: import.meta.env.VITE_EMAILJS_ADMIN_EMAIL,
 };
 
-// Inicializar EmailJS
-if (EMAILJS_CONFIG.PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+const configurado = Boolean(EMAILJS_CONFIG.PUBLIC_KEY);
+
+if (configurado) {
   emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+}
+
+// Sin credenciales no intentamos enviar: antes cada envío fallaba en silencio
+// contra la API. Devolvemos el mismo formato que un fallo normal.
+function noConfigurado() {
+  return { success: false, error: 'EmailJS no está configurado' };
 }
 
 // ============= EMAILS A USUARIOS =============
 
 export async function enviarEmailBienvenida(email, nombre) {
+  if (!configurado) return noConfigurado();
   try {
     const templateParams = {
       to_email: email,
@@ -38,21 +49,19 @@ export async function enviarEmailBienvenida(email, nombre) {
       message: `¡Bienvenido a Fraganzia! Tu cuenta ha sido creada exitosamente.`,
     };
 
-    const response = await emailjs.send(
+    await emailjs.send(
       EMAILJS_CONFIG.SERVICE_ID,
       EMAILJS_CONFIG.TEMPLATES.WELCOME,
       templateParams
     );
-
-    console.log('✅ Email de bienvenida enviado:', response);
     return { success: true };
   } catch (error) {
-    console.error('❌ Error al enviar email de bienvenida:', error);
     return { success: false, error: error.message };
   }
 }
 
 export async function enviarEmailPedidoConfirmado(email, nombre, items, total) {
+  if (!configurado) return noConfigurado();
   try {
     const itemsList = items.map(item => 
       `${item.cantidad}x ${item.marca} ${item.nombre}`
@@ -66,16 +75,13 @@ export async function enviarEmailPedidoConfirmado(email, nombre, items, total) {
       from_name: 'Fraganzia',
     };
 
-    const response = await emailjs.send(
+    await emailjs.send(
       EMAILJS_CONFIG.SERVICE_ID,
       EMAILJS_CONFIG.TEMPLATES.PEDIDO,
       templateParams
     );
-
-    console.log('✅ Email de pedido enviado:', response);
     return { success: true };
   } catch (error) {
-    console.error('❌ Error al enviar email de pedido:', error);
     return { success: false, error: error.message };
   }
 }
@@ -83,6 +89,7 @@ export async function enviarEmailPedidoConfirmado(email, nombre, items, total) {
 // ============= NOTIFICACIONES AL ADMIN =============
 
 export async function notificarNuevoRegistro(email, nombre) {
+  if (!configurado) return noConfigurado();
   try {
     const templateParams = {
       to_email: EMAILJS_CONFIG.ADMIN_EMAIL,
@@ -92,21 +99,19 @@ export async function notificarNuevoRegistro(email, nombre) {
       from_name: 'Sistema Fraganzia',
     };
 
-    const response = await emailjs.send(
+    await emailjs.send(
       EMAILJS_CONFIG.SERVICE_ID,
       EMAILJS_CONFIG.TEMPLATES.WELCOME,
       templateParams
     );
-
-    console.log('✅ Notificación de registro enviada al admin');
     return { success: true };
   } catch (error) {
-    console.error('❌ Error al notificar registro:', error);
     return { success: false, error: error.message };
   }
 }
 
 export async function notificarNuevoPedido(clienteEmail, clienteNombre, items, total) {
+  if (!configurado) return noConfigurado();
   try {
     const itemsList = items.map(item => 
       `• ${item.cantidad}x ${item.marca} ${item.nombre} - $${item.precioARS}`
@@ -116,25 +121,23 @@ export async function notificarNuevoPedido(clienteEmail, clienteNombre, items, t
       to_email: EMAILJS_CONFIG.ADMIN_EMAIL,
       to_name: 'Admin Fraganzia',
       subject: '🛍️ Nuevo pedido recibido',
-      message: `Nuevo pedido de ${clienteNombre} (${clienteEmail}):\n\n${itemsList}\n\nTotal: ${total}\n\nRevisá el panel admin para más detalles.`,
+      message: `Nuevo pedido de ${clienteNombre}${clienteEmail ? ` (${clienteEmail})` : ''}:\n\n${itemsList}\n\nTotal: ${total}\n\nRevisá el panel admin para más detalles.`,
       from_name: 'Sistema Fraganzia',
     };
 
-    const response = await emailjs.send(
+    await emailjs.send(
       EMAILJS_CONFIG.SERVICE_ID,
       EMAILJS_CONFIG.TEMPLATES.PEDIDO,
       templateParams
     );
-
-    console.log('✅ Notificación de pedido enviada al admin');
     return { success: true };
   } catch (error) {
-    console.error('❌ Error al notificar pedido:', error);
     return { success: false, error: error.message };
   }
 }
 
 export async function notificarNuevoPerfume(perfume) {
+  if (!configurado) return noConfigurado();
   try {
     const templateParams = {
       to_email: EMAILJS_CONFIG.ADMIN_EMAIL,
@@ -144,21 +147,19 @@ export async function notificarNuevoPerfume(perfume) {
       from_name: 'Sistema Fraganzia',
     };
 
-    const response = await emailjs.send(
+    await emailjs.send(
       EMAILJS_CONFIG.SERVICE_ID,
       EMAILJS_CONFIG.TEMPLATES.NUEVO_PERFUME,
       templateParams
     );
-
-    console.log('✅ Notificación de perfume enviada al admin');
     return { success: true };
   } catch (error) {
-    console.error('❌ Error al notificar perfume:', error);
     return { success: false, error: error.message };
   }
 }
 
 export async function notificarNuevaPromocion(promocion) {
+  if (!configurado) return noConfigurado();
   try {
     const mensaje = promocion.tipo === '2x1' 
       ? `Nueva promoción 2x1: ${promocion.titulo}`
@@ -172,16 +173,13 @@ export async function notificarNuevaPromocion(promocion) {
       from_name: 'Sistema Fraganzia',
     };
 
-    const response = await emailjs.send(
+    await emailjs.send(
       EMAILJS_CONFIG.SERVICE_ID,
       EMAILJS_CONFIG.TEMPLATES.PROMOCION,
       templateParams
     );
-
-    console.log('✅ Notificación de promoción enviada al admin');
     return { success: true };
   } catch (error) {
-    console.error('❌ Error al notificar promoción:', error);
     return { success: false, error: error.message };
   }
 }

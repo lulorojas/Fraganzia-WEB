@@ -41,31 +41,79 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Un contador público solo puede quedar igual o subir de a 1 por escritura
+    // (el cliente usa `increment(1)`). Si el campo no existía, parte de 0.
+    function contadorValido(campo) {
+      let antes = resource == null ? 0 : resource.data.get(campo, 0);
+      let despues = request.resource.data.get(campo, 0);
+      return despues is int && (despues == antes || despues == antes + 1);
+    }
+
     // Pedidos: el cliente PUEDE crear su pedido; solo admin lee/edita/borra.
-    // La creación exige estado 'confirmado' y método de pago válido.
+    // Sin backend, el precio lo calcula el navegador: la regla no puede
+    // verificarlo, pero sí limita la forma, los tipos y los tamaños para que no
+    // se puedan inyectar campos extra ni documentos gigantes. El admin revisa
+    // el pedido al confirmarlo por WhatsApp.
     match /pedidos/{pedidoId} {
-      allow create: if request.resource.data.estado == 'confirmado'
-        && request.resource.data.metodoPago in ['Transferencia', 'Efectivo'];
+      allow create: if request.resource.data.keys().hasOnly([
+            'items', 'metodoPago', 'dolarBlueUsado', 'subtotalARS', 'descuentoARS',
+            'totalARS', 'clienteNombre', 'clienteEmail', 'estado', 'creadoEn'])
+        && request.resource.data.keys().hasAll([
+            'items', 'metodoPago', 'dolarBlueUsado', 'subtotalARS', 'descuentoARS',
+            'totalARS', 'clienteNombre', 'estado', 'creadoEn'])
+        && request.resource.data.estado == 'confirmado'
+        && request.resource.data.metodoPago in ['Transferencia', 'Efectivo']
+        && request.resource.data.items is list
+        && request.resource.data.items.size() >= 1
+        && request.resource.data.items.size() <= 30
+        && request.resource.data.clienteNombre is string
+        && request.resource.data.clienteNombre.size() >= 1
+        && request.resource.data.clienteNombre.size() <= 100
+        && (!('clienteEmail' in request.resource.data)
+            || (request.resource.data.clienteEmail is string
+                && request.resource.data.clienteEmail.size() <= 120))
+        && request.resource.data.dolarBlueUsado is number
+        && request.resource.data.dolarBlueUsado > 0
+        && request.resource.data.subtotalARS is number
+        && request.resource.data.subtotalARS > 0
+        && request.resource.data.descuentoARS is number
+        && request.resource.data.totalARS is number
+        && request.resource.data.totalARS > 0
+        && request.resource.data.totalARS < 1000000000
+        && request.resource.data.creadoEn == request.time;
       allow read, update, delete: if isAdmin();
     }
 
     // Estadísticas: sin Cloud Functions, el cliente incrementa contadores
     // desde el navegador. Lectura solo admin (dashboard). La escritura pública
-    // se restringe a los campos permitidos para evitar abuso de otros datos.
+    // se limita a los campos permitidos, al id del perfume del documento y a
+    // subir cada contador de a 1, para que nadie pueda inflarlos de golpe.
     match /estadisticas/{perfumeId} {
       allow read: if isAdmin();
-      allow write: if request.resource.data.keys()
-        .hasOnly(['perfumeId', 'vistas', 'agregadosCarrito', 'updatedAt']);
+      allow create, update: if request.resource.data.keys()
+          .hasOnly(['perfumeId', 'vistas', 'agregadosCarrito', 'updatedAt'])
+        && request.resource.data.perfumeId == perfumeId
+        && contadorValido('vistas')
+        && contadorValido('agregadosCarrito')
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isAdmin();
     }
 
     // Términos buscados en el catálogo. Mismo trade-off consciente que
     // `estadisticas` (nota crítica #7 de la constitución): sin backend, el
-    // contador lo incrementa el navegador y la regla se limita a restringir
-    // los campos escribibles. Lectura solo admin.
+    // contador lo incrementa el navegador y la regla limita campos, largo del
+    // término y cuánto puede subir cada contador. Lectura solo admin.
     match /busquedas/{termino} {
       allow read: if isAdmin();
-      allow write: if request.resource.data.keys()
-        .hasOnly(['termino', 'conteo', 'sinResultados', 'updatedAt']);
+      allow create, update: if request.resource.data.keys()
+          .hasOnly(['termino', 'conteo', 'sinResultados', 'updatedAt'])
+        && termino.size() >= 3
+        && termino.size() <= 80
+        && request.resource.data.termino == termino
+        && contadorValido('conteo')
+        && contadorValido('sinResultados')
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isAdmin();
     }
 
     // Admins: solo admins leen; alta/baja se hace manualmente (consola).

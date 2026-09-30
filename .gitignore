@@ -3,7 +3,13 @@ dist
 .env.local
 .DS_Store
 *.log
-scripts/serviceAccount.json
+# Credenciales de servicio: nunca al repo (cubre mayúsculas/minúsculas)
+**/*[Ss]ervice[Aa]ccount*.json
+**/*-adminsdk-*.json
+.env
+.env.*
+!.env.example
+.firebase/
 
 pdf-viewer.html
 pdf-viewer-light.html

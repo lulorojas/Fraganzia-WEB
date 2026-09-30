@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDVaBH9oq9BrFWZN_q_1R4wO9xREWy2phs",
+  apiKey: process.env.VITE_FIREBASE_API_KEY,
   authDomain: "fraganzia-e9b70.firebaseapp.com",
   projectId: "fraganzia-e9b70",
   storageBucket: "fraganzia-e9b70.firebasestorage.app",

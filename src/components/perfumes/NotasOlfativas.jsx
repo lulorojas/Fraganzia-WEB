@@ -27,7 +27,7 @@ export function NotasOlfativas({ notasSalida, notasCorazon, notasFondo, nombre }
           <Grupo titulo="Notas de fondo" notas={notasFondo} />
         </>
       ) : null}
-      {url && (
+      {url?.startsWith('https://') && (
         <a
           href={url}
           target="_blank"

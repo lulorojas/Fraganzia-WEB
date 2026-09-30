@@ -165,7 +165,12 @@ export default function Carrito() {
         window.location.href = linkNotificacion;
       },
       onError: (error) => {
-        setAvisoDisponibilidad(`Error: ${error.message || 'Hubo un error al procesar tu pedido'}`);
+        // Los errores de zod traen el detalle técnico en `issues`; al cliente
+        // solo le mostramos el primer mensaje legible.
+        const detalle = error.issues?.[0]?.message;
+        setAvisoDisponibilidad(
+          detalle ?? 'Hubo un error al procesar tu pedido. Probá de nuevo o escribinos por WhatsApp.'
+        );
       }
     });
   }
@@ -217,6 +222,8 @@ export default function Carrito() {
             value={clienteNombre}
             onChange={(e) => setClienteNombre(e.target.value)}
             placeholder="Ingresá tu nombre"
+            maxLength={100}
+            autoComplete="name"
             className="rounded-xl border border-border bg-white/[0.03] px-4 py-3 font-body text-sm text-text placeholder:text-text-secondary/50 focus:border-violet focus:outline-none transition-colors"
             required
           />
