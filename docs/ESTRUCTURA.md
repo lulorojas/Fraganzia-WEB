@@ -30,21 +30,21 @@ src/
 ├── router/
 │   └── AppRouter.jsx   # Todas las rutas. Públicas en el bundle principal, /admin lazy
 ├── pages/              # Una página por ruta
-│   ├── Home.jsx, Catalogo.jsx, PerfumeDetalle.jsx, Carrito.jsx,
+│   ├── Home.jsx, Catalogo.jsx, PerfumeDetalle.jsx, Carrito.jsx, Favoritos.jsx,
 │   ├── SobreNosotros.jsx, Contacto.jsx, Login.jsx, NotFound.jsx
 │   └── admin/          # Panel interno: perfumes, pedidos, promociones, usuarios,
 │                       # config y finanzas (ventas, compras, gastos, stock, analytics…)
 ├── components/
 │   ├── layout/         # Navbar, Footer, AdminLayout, AuthModal, ProtectedRoute
-│   ├── perfumes/       # PerfumeCard, PerfumeGrid, ImagenProducto, Filtros, slider, notas olfativas
+│   ├── perfumes/       # PerfumeCard, PerfumeGrid, ImagenProducto, BotonFavorito, Filtros, slider, notas olfativas
 │   ├── asistente/      # Botón flotante y chat "Encontrá tu perfume"
-│   ├── cart/           # Ítem del carrito, selector de pago, resumen
+│   ├── cart/           # Ítem del carrito, mini-carrito (al agregar), selector de pago, resumen
 │   ├── admin/          # Formularios, tablas y gráficos del panel
 │   └── ui/             # Piezas genéricas: Button, Modal, Toast, Spinner, Logo, ErrorBoundary
 ├── hooks/              # Un hook por dato (usePerfumes, usePedidos, useConfig…), todos con React Query
 ├── services/           # Única capa que habla con Firestore / APIs externas
 ├── schemas/            # Validación con zod (formularios y pedidos)
-├── context/            # Estado global: sesión (Auth), carrito, toasts
+├── context/            # Estado global: sesión (Auth), carrito, favoritos, toasts
 ├── firebase/           # Inicialización de Firebase (+ App Check opcional)
 ├── constants/          # WhatsApp, géneros, familias olfativas, marcas, socios
 ├── data/               # imagenes-locales.json: qué fotos ya están optimizadas en el sitio
@@ -65,6 +65,13 @@ Firestore ──► services/*.js ──► hooks/use*.js (React Query, caché) 
 ### Fotos de producto
 
 En Firestore cada perfume guarda la URL original de su foto (a veces en otro sitio). En el build, `tools/localizar-imagenes.mjs` descarga cada foto una sola vez y la guarda como `public/img/p/<hash>-400.webp` y `-800.webp`, donde `<hash>` sale de la URL (`src/utils/hash.js`). `<ImagenProducto>` usa la copia local si existe y, si no, la URL original. Si una foto falla al cargar, muestra un placeholder. Firestore nunca se modifica.
+
+### Estado que vive en el navegador
+
+- **Carrito** (`CartContext`, `localStorage`): `agregar(perfume, cantidad)` es la única forma de sumar productos. Registra la estadística y abre el mini-carrito.
+- **Favoritos** (`FavoritosContext`, `localStorage`): solo guarda ids. `/favoritos` los cruza con el catálogo ya cargado, sin lecturas extra.
+
+Ninguno de los dos requiere cuenta. Por eso `/carrito` y `/favoritos` no se pre-renderizan.
 
 ### Arranque rápido: pre-render + datos iniciales
 
@@ -109,7 +116,7 @@ Los scripts de una sola vez que se usaron para armar el catálogo inicial (impor
 | `promociones` | Pública | Admin | Descuentos y 2x1 |
 | `config` | Pública | Admin | WhatsApp, dólar manual |
 | `pedidos` | Admin | Cualquiera puede **crear** (validado) | Pedidos de la tienda |
-| `estadisticas`, `busquedas` | Admin | Pública, solo +1 por vez | Interés de clientes |
+| `estadisticas`, `busquedas` | Admin | Pública, solo +1 por vez | Interés de clientes (vistas, agregados al carrito, favoritos, búsquedas) |
 | `admins` | Admin | Nadie (se da de alta desde la consola) | Quién es admin |
 | `socios`, `ventasSocios`, `ventasDecants`, `compras`, `gastos`, `movimientosPersonales`, `transferenciasSocios`, `ajustesStock`, `cambiosMetodo`, `auditoria` | Admin | Admin | Panel financiero interno |
 

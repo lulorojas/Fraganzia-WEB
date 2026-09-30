@@ -15,6 +15,7 @@ import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
 import { formatARS, nombreCompleto } from '../utils/format';
 import { imagenGrande } from '../utils/image';
 import { ImagenProducto } from '../components/perfumes/ImagenProducto';
+import { BotonFavorito } from '../components/perfumes/BotonFavorito';
 
 
 // Mismo layout que la página cargada, para que nada se mueva al llegar los datos.
@@ -236,6 +237,7 @@ export default function PerfumeDetalle() {
               <Button onClick={() => agregar(perfume, cantidad)} className="h-11 flex-1">
                 Agregar al carrito
               </Button>
+              <BotonFavorito perfume={perfume} variante="borde" />
             </div>
           </div>
 

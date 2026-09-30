@@ -31,6 +31,12 @@ export function incrementarVista(perfumeId) {
   return registrar(perfumeId, { vistas: increment(1) });
 }
 
+// Una vez por perfume por sesión: sacar y volver a guardar no infla el número.
+export function incrementarFavorito(perfumeId) {
+  if (!perfumeId || yaRegistradoEnSesion(`favorito:${perfumeId}`)) return Promise.resolve();
+  return registrar(perfumeId, { favoritos: increment(1) });
+}
+
 export function incrementarAgregadoCarrito(perfumeId) {
   if (!perfumeId) return Promise.resolve();
   return registrar(perfumeId, { agregadosCarrito: increment(1) });

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { preciosPorMetodo } from '../../utils/precios';
 import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from './ImagenProducto';
+import { BotonFavorito } from './BotonFavorito';
 
 export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
   const scrollRef = useRef(null);
@@ -56,7 +57,8 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
               key={perfume.id}
               className="flex-none w-[280px] snap-start group/card"
             >
-              <div className="card-surface card-hover h-full rounded-2xl overflow-hidden">
+              <div className="card-surface card-hover relative h-full rounded-2xl overflow-hidden">
+                <BotonFavorito perfume={perfume} className="absolute left-3 top-3 z-10" />
                 <Link to={`/perfume/${perfume.id}`} className="block" tabIndex={-1} aria-hidden="true">
                   <div className="relative aspect-[3/4] bg-white overflow-hidden">
                     <ImagenProducto

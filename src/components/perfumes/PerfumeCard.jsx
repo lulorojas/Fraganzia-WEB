@@ -3,6 +3,7 @@ import { PrecioNoDisponible } from './PrecioNoDisponible';
 import { preciosPorMetodo, getMejorPromo } from '../../utils/precios';
 import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from './ImagenProducto';
+import { BotonFavorito } from './BotonFavorito';
 
 /**
  * `config` y `promociones` los pasa la grilla (una sola suscripción para
@@ -29,7 +30,10 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
   const imagen = perfume.imagenes?.[0];
 
   return (
-    <article className="card-surface card-hover group flex w-full flex-col overflow-hidden rounded-2xl">
+    <article className="card-surface card-hover group relative flex w-full flex-col overflow-hidden rounded-2xl">
+      {/* Fuera del link de la imagen: un botón no puede ir dentro de un <a>. */}
+      <BotonFavorito perfume={perfume} className="absolute left-2 top-2 z-10 sm:left-3 sm:top-3" />
+
 
       {/* ── Imagen: fondo blanco puro como las fotos ── */}
       {/* El link de la imagen repite el del título: se saca del orden de tabulación

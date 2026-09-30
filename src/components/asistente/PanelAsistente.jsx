@@ -9,6 +9,7 @@ import {
 } from '../../utils/recomendador';
 import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from '../perfumes/ImagenProducto';
+import { BotonFavorito } from '../perfumes/BotonFavorito';
 
 const POR_TANDA = 3;
 
@@ -85,7 +86,8 @@ function Recomendacion({ item, onAgregar, onVer }) {
   const imagen = perfume.imagenes?.[0];
   return (
     <li className="card-surface flex gap-3 rounded-2xl p-3">
-      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-white">
+      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-white">
+        <BotonFavorito perfume={perfume} className="absolute -left-0.5 -top-0.5 z-10 scale-[0.8]" />
         <ImagenProducto url={imagen} sizes="80px" width="80" height="80" className="h-full w-full object-contain p-1.5" />
       </div>
       <div className="flex min-w-0 flex-1 flex-col">

@@ -14,7 +14,7 @@ import {
   PerfumesMasPedidos, MarcasMasPedidas, OportunidadesReposicion, EvolucionPedidos,
 } from '../../components/admin/panel/DashboardAnalitica';
 import {
-  PerfumesMasVistos, MasBuscados, BusquedasSinResultado, BajaConversion,
+  PerfumesMasVistos, MasGuardados, MasBuscados, BusquedasSinResultado, BajaConversion,
 } from '../../components/admin/panel/InteresClientes';
 import { useInteresClientes } from '../../hooks/useInteresClientes';
 
@@ -64,6 +64,7 @@ export default function Dashboard() {
           </p>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <PerfumesMasVistos perfumes={interes?.masVistos} />
+            <MasGuardados perfumes={interes?.masFavoritos} />
             <MasBuscados terminos={interes?.masBuscados} />
             <BusquedasSinResultado terminos={interes?.sinResultado} />
             <BajaConversion perfumes={interes?.bajaConversion} />

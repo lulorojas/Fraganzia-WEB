@@ -38,9 +38,14 @@ export function useInteresClientes({ limite = 8 } = {}) {
       nombre: nombreDe(s.perfumeId),
       vistas: s.vistas ?? 0,
       agregados: s.agregadosCarrito ?? 0,
+      favoritos: s.favoritos ?? 0,
     }));
 
     const masVistos = [...conNombre].sort((a, b) => b.vistas - a.vistas).slice(0, limite);
+    const masFavoritos = conNombre
+      .filter((p) => p.favoritos > 0)
+      .sort((a, b) => b.favoritos - a.favoritos)
+      .slice(0, limite);
 
     // Miradas que no se convierten: mucho interés, poco carrito. Es la señal
     // para revisar precio, fotos o descripción de ese perfume.
@@ -59,7 +64,7 @@ export function useInteresClientes({ limite = 8 } = {}) {
       .sort((a, b) => (b.sinResultados ?? 0) - (a.sinResultados ?? 0))
       .slice(0, limite);
 
-    return { masVistos, bajaConversion, masBuscados, sinResultado };
+    return { masVistos, masFavoritos, bajaConversion, masBuscados, sinResultado };
   }, [estadisticas.data, busquedas.data, perfumes, limite]);
 
   return {

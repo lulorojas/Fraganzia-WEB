@@ -19,6 +19,8 @@ import NotFound from '../pages/NotFound';
 // El carrito no se pre-renderiza (depende de lo que cada visitante guardó) y
 // arrastra la validación del pedido (zod) y EmailJS: va en su propio chunk.
 const Carrito = lazy(() => import('../pages/Carrito'));
+// Favoritos depende de lo guardado en cada navegador: tampoco se pre-renderiza.
+const Favoritos = lazy(() => import('../pages/Favoritos'));
 const Login = lazy(() => import('../pages/Login'));
 
 // Todo lo de /admin se carga en un chunk aparte: un visitante del catálogo
@@ -80,6 +82,7 @@ export function AppRouter() {
           <Route path="/catalogo" element={<Catalogo />} />
           <Route path="/perfume/:id" element={<PerfumeDetalle />} />
           <Route path="/carrito" element={s(<Carrito />)} />
+          <Route path="/favoritos" element={s(<Favoritos />)} />
           <Route path="/sobre-nosotros" element={<SobreNosotros />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="*" element={<NotFound />} />

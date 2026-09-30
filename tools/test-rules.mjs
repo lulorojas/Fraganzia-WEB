@@ -41,6 +41,9 @@ const est = (id, campos) => setDoc(doc(anon, 'estadisticas', id), { perfumeId: i
 await t('vista nueva', est('p1', { vistas: increment(1) }), true);
 await t('vista +1', est('p1', { vistas: increment(1) }), true);
 await t('carrito en doc existente', est('p1', { agregadosCarrito: increment(1) }), true);
+await t('favorito +1', est('p1', { favoritos: increment(1) }), true);
+await t('favorito +5', est('p1', { favoritos: increment(5) }), false);
+await t('campo inventado', est('p1', { compras: increment(1) }), false);
 await t('vista +100', est('p1', { vistas: increment(100) }), false);
 await t('vista fija enorme', est('p2', { vistas: 999999 }), false);
 await t('perfumeId distinto al id', setDoc(doc(anon, 'estadisticas', 'p3'), { perfumeId: 'otro', vistas: 1, updatedAt: serverTimestamp() }), false);

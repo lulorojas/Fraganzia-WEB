@@ -1,4 +1,4 @@
-import { Eye, Search, SearchX, MousePointerClick } from 'lucide-react';
+import { Eye, Search, SearchX, MousePointerClick, Heart } from 'lucide-react';
 import { GlassCard } from '../../ui/GlassCard';
 
 function Titulo({ Icon, children, sub }) {
@@ -44,6 +44,30 @@ export function PerfumesMasVistos({ perfumes }) {
             </span>
             <span className="shrink-0 text-right text-text">
               {p.vistas} <span className="text-xs text-text-secondary">vistas</span>
+            </span>
+          </>
+        )}
+      />
+    </GlassCard>
+  );
+}
+
+export function MasGuardados({ perfumes }) {
+  return (
+    <GlassCard>
+      <Titulo Icon={Heart} sub="Los que la gente guarda con el corazón para decidir después">
+        Más guardados en favoritos
+      </Titulo>
+      <Lista
+        items={perfumes}
+        vacio="Todavía nadie guardó favoritos. Se cuenta una vez por perfume por visita."
+        render={(p, i) => (
+          <>
+            <span className="min-w-0 truncate text-text">
+              <span className="text-text-secondary">{i + 1}.</span> {p.nombre}
+            </span>
+            <span className="shrink-0 text-right text-text">
+              {p.favoritos} <span className="text-xs text-text-secondary">veces</span>
             </span>
           </>
         )}

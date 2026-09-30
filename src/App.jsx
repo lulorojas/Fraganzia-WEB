@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { FavoritosProvider } from './context/FavoritosContext';
 import { ToastProvider } from './context/ToastContext';
 import { AppRouter } from './router/AppRouter';
 import { ShaderBackground } from './components/ui/ShaderBackground';
@@ -29,12 +30,14 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <CartProvider>
-            <ToastProvider>
-              <ShaderBackground opacity={0.5} />
-              <div className="relative z-10">
-                <AppRouter />
-              </div>
-            </ToastProvider>
+            <FavoritosProvider>
+              <ToastProvider>
+                <ShaderBackground opacity={0.5} />
+                <div className="relative z-10">
+                  <AppRouter />
+                </div>
+              </ToastProvider>
+            </FavoritosProvider>
           </CartProvider>
         </AuthProvider>
       </QueryClientProvider>

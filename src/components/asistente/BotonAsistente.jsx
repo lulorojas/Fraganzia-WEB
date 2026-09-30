@@ -1,9 +1,16 @@
-import { lazy, Suspense, useCallback, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 
 // El chat se descarga recién la primera vez que alguien lo abre.
 const PanelAsistente = lazy(() => import('./PanelAsistente'));
+
+const EVENTO_ABRIR = 'fraganzia:abrir-asistente';
+
+/** Abre el asistente desde cualquier parte de la app (por ejemplo, un estado vacío). */
+export function abrirAsistente() {
+  window.dispatchEvent(new Event(EVENTO_ABRIR));
+}
 
 /** Botón flotante (abajo a la derecha) que abre el asistente para elegir perfume. */
 export function BotonAsistente() {
@@ -20,6 +27,11 @@ export function BotonAsistente() {
     setCargado(true);
     setAbierto(true);
   }
+
+  useEffect(() => {
+    window.addEventListener(EVENTO_ABRIR, abrir);
+    return () => window.removeEventListener(EVENTO_ABRIR, abrir);
+  }, []);
 
   // Al cerrar, el foco vuelve al botón (teclado y lectores de pantalla).
   const cerrar = useCallback(() => {

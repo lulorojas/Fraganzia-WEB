@@ -1,10 +1,11 @@
 import { lazy, Suspense, useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ShoppingBag, Instagram, User, LogOut, Settings, Menu, X } from 'lucide-react';
+import { ShoppingBag, Instagram, User, LogOut, Settings, Menu, X, Heart } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useFavoritos } from '../../context/FavoritosContext';
 import { LogoFraganzia } from '../ui/LogoFraganzia';
 
 // El modal de login (con react-hook-form, zod y framer-motion) solo se
@@ -39,6 +40,7 @@ function useCerrarAlSalir(ref, abierto, cerrar) {
 export function Navbar() {
   const { state } = useCart();
   const { user, isAdmin } = useAuth();
+  const { ids: favoritos } = useFavoritos();
   const { pathname } = useLocation();
   const cantidadItems = state.items.reduce((acc, item) => acc + item.cantidad, 0);
   const [authOpen, setAuthOpen] = useState(false);
@@ -96,6 +98,23 @@ export function Navbar() {
             >
               <Instagram size={19} aria-hidden="true" />
             </a>
+
+            {/* Favoritos (en mobile está en el menú, para no apretar la barra) */}
+            <Link
+              to="/favoritos"
+              aria-label={favoritos.length ? `Favoritos, ${favoritos.length} guardados` : 'Favoritos'}
+              className="relative hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-text"
+            >
+              <Heart size={20} aria-hidden="true" />
+              {favoritos.length > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-[#E11D74] text-[11px] font-bold text-white ring-2 ring-bg"
+                >
+                  {favoritos.length}
+                </span>
+              )}
+            </Link>
 
             {/* Carrito */}
             <Link
@@ -198,6 +217,17 @@ export function Navbar() {
                   </NavLink>
                 </li>
               ))}
+              <li>
+                <NavLink
+                  to="/favoritos"
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 rounded-lg px-3 py-3 text-base transition-colors hover:bg-violet/10 hover:text-text ${isActive ? 'text-text' : 'text-text-secondary'}`
+                  }
+                >
+                  <Heart size={18} aria-hidden="true" />
+                  Favoritos{favoritos.length > 0 && ` (${favoritos.length})`}
+                </NavLink>
+              </li>
               <li>
                 <a
                   href="https://www.instagram.com/fraganzia.ar/"
