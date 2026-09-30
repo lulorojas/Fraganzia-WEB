@@ -106,8 +106,11 @@ export function Navbar() {
               <ShoppingBag size={21} aria-hidden="true" />
               {cantidadItems > 0 && (
                 <span
+                  // La key cambia con la cantidad: React recrea el badge y la
+                  // animación "bump" vuelve a correr en cada agregado.
+                  key={cantidadItems}
                   aria-hidden="true"
-                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-violet text-[11px] font-bold text-white shadow-lg ring-2 ring-bg"
+                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-violet text-[11px] font-bold text-white shadow-lg ring-2 ring-bg animate-bump"
                 >
                   {cantidadItems}
                 </span>

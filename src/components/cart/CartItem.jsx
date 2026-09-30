@@ -1,10 +1,10 @@
 import { Minus, Plus, X } from 'lucide-react';
-import { formatARS } from '../../utils/format';
+import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from '../perfumes/ImagenProducto';
 import { CANTIDAD_MAX } from '../../context/CartContext';
 
 export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
-  const nombreCompleto = `${item.marca} ${item.nombre}`;
+  const nombre = nombreCompleto(item);
 
   return (
     <li className="card-surface relative flex items-center gap-3 rounded-xl p-3 pr-12">
@@ -21,12 +21,12 @@ export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
       </div>
 
       {/* Controles de cantidad: 44px de área táctil */}
-      <div className="flex items-center flex-shrink-0 rounded-xl border border-border" role="group" aria-label={`Cantidad de ${nombreCompleto}`}>
+      <div className="flex items-center flex-shrink-0 rounded-xl border border-border" role="group" aria-label={`Cantidad de ${nombre}`}>
         <button
           type="button"
           onClick={() => onCambiarCantidad(item.perfumeId, Math.max(1, item.cantidad - 1))}
           disabled={item.cantidad <= 1}
-          aria-label={`Restar una unidad de ${nombreCompleto}`}
+          aria-label={`Restar una unidad de ${nombre}`}
           className="flex h-11 w-9 items-center justify-center text-text transition-base hover:text-lila disabled:opacity-40"
         >
           <Minus size={14} aria-hidden="true" />
@@ -38,7 +38,7 @@ export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
           type="button"
           onClick={() => onCambiarCantidad(item.perfumeId, Math.min(CANTIDAD_MAX, item.cantidad + 1))}
           disabled={item.cantidad >= CANTIDAD_MAX}
-          aria-label={`Sumar una unidad de ${nombreCompleto}`}
+          aria-label={`Sumar una unidad de ${nombre}`}
           className="flex h-11 w-9 items-center justify-center text-text transition-base hover:text-lila disabled:opacity-40"
         >
           <Plus size={14} aria-hidden="true" />
@@ -50,7 +50,7 @@ export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
         type="button"
         onClick={() => onQuitar(item.perfumeId)}
         className="absolute top-1 right-1 flex h-10 w-10 items-center justify-center rounded-full text-text-secondary hover:text-error transition-base"
-        aria-label={`Quitar ${nombreCompleto} del carrito`}
+        aria-label={`Quitar ${nombre} del carrito`}
       >
         <X size={16} aria-hidden="true" />
       </button>

@@ -4,12 +4,10 @@ import { Sparkles, X, RotateCcw, Undo2, ShoppingBag } from 'lucide-react';
 import { usePerfumes } from '../../hooks/usePerfumes';
 import { useDolarBlue } from '../../hooks/useDolarBlue';
 import { useCart } from '../../context/CartContext';
-import { useToast } from '../../context/ToastContext';
-import { incrementarAgregadoCarrito } from '../../services/estadisticasService';
 import {
   AROMAS, MOMENTOS, GENEROS_ASISTENTE, recomendar, rangosDePresupuesto,
 } from '../../utils/recomendador';
-import { formatARS } from '../../utils/format';
+import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from '../perfumes/ImagenProducto';
 
 const POR_TANDA = 3;
@@ -111,7 +109,7 @@ function Recomendacion({ item, onAgregar, onVer }) {
             <button
               type="button"
               onClick={() => onAgregar(perfume)}
-              aria-label={`Agregar ${perfume.marca} ${perfume.nombre} al carrito`}
+              aria-label={`Agregar ${nombreCompleto(perfume)} al carrito`}
               className="flex items-center gap-1 rounded-lg bg-violet px-2.5 py-1.5 font-body text-xs font-semibold text-white transition-colors hover:bg-violet-light"
             >
               <ShoppingBag size={13} aria-hidden="true" />
@@ -127,8 +125,7 @@ function Recomendacion({ item, onAgregar, onVer }) {
 export default function PanelAsistente({ abierto, onCerrar, subir }) {
   const { data: perfumes, isLoading } = usePerfumes();
   const { dolarMedio } = useDolarBlue();
-  const { dispatch } = useCart();
-  const { showToast } = useToast();
+  const { agregar } = useCart();
   const [respuestas, setRespuestas] = useState({});
   const [tandas, setTandas] = useState(1);
   const tituloId = useId();
@@ -173,22 +170,6 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
     if (!ultimo) return;
     setRespuestas(({ [ultimo.id]: _, ...resto }) => resto);
     setTandas(1);
-  }
-
-  function agregar(perfume) {
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: {
-        perfumeId: perfume.id,
-        nombre: perfume.nombre,
-        marca: perfume.marca,
-        precioUSD: perfume.precioUSD,
-        imagenes: perfume.imagenes,
-        cantidad: 1,
-      },
-    });
-    incrementarAgregadoCarrito(perfume.id);
-    showToast(`${perfume.marca} ${perfume.nombre}`, 'success');
   }
 
   if (!abierto) return null;

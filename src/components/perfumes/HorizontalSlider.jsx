@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { preciosPorMetodo } from '../../utils/precios';
-import { formatARS } from '../../utils/format';
+import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from './ImagenProducto';
 
 export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
@@ -104,7 +104,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
                   <button
                     type="button"
                     onClick={() => onAgregar(perfume)}
-                    aria-label={`Agregar ${perfume.marca} ${perfume.nombre} al carrito`}
+                    aria-label={`Agregar ${nombreCompleto(perfume)} al carrito`}
                     className="w-full py-2.5 px-4 bg-violet/10 hover:bg-violet text-text rounded-xl font-medium text-sm transition-colors duration-300 border border-violet/30 hover:border-violet"
                   >
                     Agregar al carrito

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { PrecioNoDisponible } from './PrecioNoDisponible';
 import { preciosPorMetodo, getMejorPromo } from '../../utils/precios';
-import { formatARS } from '../../utils/format';
+import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from './ImagenProducto';
 
 /**
@@ -104,7 +104,7 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
         <button
           type="button"
           onClick={() => onAgregar?.(perfume)}
-          aria-label={`Agregar ${perfume.marca} ${perfume.nombre} al carrito`}
+          aria-label={`Agregar ${nombreCompleto(perfume)} al carrito`}
           className="w-full rounded-xl bg-violet/10 hover:bg-violet border border-violet/30 hover:border-violet py-2.5 text-xs sm:text-sm font-semibold text-text transition-colors duration-300"
         >
           Agregar al carrito

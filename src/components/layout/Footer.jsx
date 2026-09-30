@@ -10,7 +10,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <LogoFraganzia />
-            <p className="mt-3 font-luxury text-sm italic text-text-secondary">
+            <p className="mt-3 font-luxury text-sm tracking-wide text-text-secondary">
               Venta de perfumes árabes
             </p>
             <a

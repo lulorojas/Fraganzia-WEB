@@ -5,6 +5,7 @@ import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Spinner } from '../components/ui/Spinner';
 import { BotonAsistente } from '../components/asistente/BotonAsistente';
+import { MiniCarrito } from '../components/cart/MiniCarrito';
 
 // Las páginas públicas pre-renderizadas van en el bundle principal (son chicas). Así, al arrancar, React renderiza la página de una, igual al HTML
 // pre-renderizado (tools/prerender.mjs), sin pasar por un spinner de carga.
@@ -65,6 +66,7 @@ function PublicLayout() {
       </main>
       <Footer />
       <BotonAsistente />
+      <MiniCarrito />
     </div>
   );
 }

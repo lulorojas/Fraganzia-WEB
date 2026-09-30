@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import { leerCarrito, guardarCarrito } from '../utils/cartStorage';
+import { incrementarAgregadoCarrito } from '../services/estadisticasService';
 
 // Tope por producto: coincide con el schema del pedido y evita pedidos
 // absurdos por un click de más.
@@ -61,11 +62,37 @@ export function CartProvider({ children }) {
     return guardado ?? init;
   });
 
+  // Último producto agregado: lo usa el mini-carrito para abrirse. No va al
+  // estado persistido (no tiene sentido reabrirlo al recargar la página).
+  const [ultimoAgregado, setUltimoAgregado] = useState(null);
+
   useEffect(() => {
     guardarCarrito(state);
   }, [state]);
 
-  const value = useMemo(() => ({ state, dispatch }), [state]);
+  /** Agrega un perfume (objeto del catálogo) y registra la estadística. */
+  const agregar = useCallback((perfume, cantidad = 1) => {
+    dispatch({
+      type: 'ADD_ITEM',
+      payload: {
+        perfumeId: perfume.id,
+        nombre: perfume.nombre,
+        marca: perfume.marca,
+        precioUSD: perfume.precioUSD,
+        imagenes: perfume.imagenes,
+        cantidad,
+      },
+    });
+    incrementarAgregadoCarrito(perfume.id);
+    setUltimoAgregado({ perfumeId: perfume.id, cantidad, momento: Date.now() });
+  }, []);
+
+  const olvidarUltimoAgregado = useCallback(() => setUltimoAgregado(null), []);
+
+  const value = useMemo(
+    () => ({ state, dispatch, agregar, ultimoAgregado, olvidarUltimoAgregado }),
+    [state, agregar, ultimoAgregado, olvidarUltimoAgregado]
+  );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

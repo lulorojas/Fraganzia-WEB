@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Minus, Plus, ChevronLeft } from 'lucide-react';
 import { usePerfume } from '../hooks/usePerfume';
-import { incrementarVista, incrementarAgregadoCarrito } from '../services/estadisticasService';
+import { incrementarVista } from '../services/estadisticasService';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart, CANTIDAD_MAX } from '../context/CartContext';
-import { useToast } from '../context/ToastContext';
 import { useConfig } from '../hooks/useConfig';
 import { usePromocionesActivas } from '../hooks/usePromociones';
 import { useDocumentMeta, SITE_URL } from '../hooks/useDocumentMeta';
@@ -13,7 +12,7 @@ import { NotasOlfativas } from '../components/perfumes/NotasOlfativas';
 import { PrecioNoDisponible } from '../components/perfumes/PrecioNoDisponible';
 import { Button } from '../components/ui/Button';
 import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
-import { formatARS } from '../utils/format';
+import { formatARS, nombreCompleto } from '../utils/format';
 import { imagenGrande } from '../utils/image';
 import { ImagenProducto } from '../components/perfumes/ImagenProducto';
 
@@ -43,8 +42,7 @@ export default function PerfumeDetalle() {
   const { dolarMedio } = useDolarBlue();
   const { data: config } = useConfig();
   const { data: promociones } = usePromocionesActivas();
-  const { dispatch } = useCart();
-  const { showToast } = useToast();
+  const { agregar } = useCart();
   const [cantidad, setCantidad] = useState(1);
 
   // Registra la vista una sola vez por perfume por sesión (ver
@@ -117,22 +115,6 @@ export default function PerfumeDetalle() {
     );
   }
 
-  function agregar() {
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: {
-        perfumeId: perfume.id,
-        nombre: perfume.nombre,
-        marca: perfume.marca,
-        precioUSD: perfume.precioUSD,
-        imagenes: perfume.imagenes,
-        cantidad,
-      },
-    });
-    incrementarAgregadoCarrito(perfume.id);
-    showToast(`${cantidad}x ${perfume.marca} ${perfume.nombre}`, 'success');
-  }
-
   return (
     <div className="mx-auto max-w-6xl px-4 pb-12 pt-6 sm:px-6 md:pt-10">
       <Link
@@ -150,7 +132,7 @@ export default function PerfumeDetalle() {
             {imagen ? (
               <ImagenProducto
                 url={imagen}
-                alt={`${perfume.marca} ${perfume.nombre}`}
+                alt={nombreCompleto(perfume)}
                 sizes="(min-width: 1152px) 540px, (min-width: 768px) 46vw, 100vw"
                 width="600"
                 height="600"
@@ -251,7 +233,7 @@ export default function PerfumeDetalle() {
                   <Plus size={16} aria-hidden="true" />
                 </button>
               </div>
-              <Button onClick={agregar} className="h-11 flex-1">
+              <Button onClick={() => agregar(perfume, cantidad)} className="h-11 flex-1">
                 Agregar al carrito
               </Button>
             </div>

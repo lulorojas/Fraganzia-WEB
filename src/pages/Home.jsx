@@ -3,7 +3,6 @@ import { Instagram, Sparkles, Star } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../context/ToastContext';
 import { usePromocionesActivas } from '../hooks/usePromociones';
 import { HorizontalSlider } from '../components/perfumes/HorizontalSlider';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
@@ -12,25 +11,9 @@ import { LogoFraganzia } from '../components/ui/LogoFraganzia';
 export default function Home() {
   const { data: destacados, isLoading } = usePerfumes({ destacado: true });
   const { dolarMedio } = useDolarBlue();
-  const { dispatch } = useCart();
-  const { showToast } = useToast();
+  const { agregar } = useCart();
   const { data: promociones } = usePromocionesActivas();
   useDocumentMeta({ path: '/' });
-
-  function handleAgregar(perfume) {
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: {
-        perfumeId: perfume.id,
-        nombre: perfume.nombre,
-        marca: perfume.marca,
-        precioUSD: perfume.precioUSD,
-        imagenes: perfume.imagenes,
-        cantidad: 1,
-      },
-    });
-    showToast(`${perfume.marca} ${perfume.nombre}`, 'success');
-  }
 
   return (
     <div className="relative min-h-screen">
@@ -69,7 +52,7 @@ export default function Home() {
             </div>
 
             {/* Tagline con Cinzel */}
-            <h1 className="font-luxury text-2xl sm:text-4xl md:text-5xl italic text-transparent bg-clip-text bg-gradient-to-r from-text via-lila to-text mb-3 text-center leading-tight">
+            <h1 className="font-luxury text-2xl sm:text-4xl md:text-5xl tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-text via-lila to-text mb-3 text-center leading-tight text-balance">
               Perfumes Árabes de Alta Gama
             </h1>
 
@@ -149,7 +132,7 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <HorizontalSlider perfumes={destacados} dolarMedio={dolarMedio} onAgregar={handleAgregar} />
+          <HorizontalSlider perfumes={destacados} dolarMedio={dolarMedio} onAgregar={agregar} />
         )}
       </section>
 

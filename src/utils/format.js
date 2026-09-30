@@ -12,3 +12,11 @@ export function formatUSD(valor) {
     currency: 'USD',
   }).format(valor);
 }
+
+/**
+ * "Marca Nombre" para textos accesibles y títulos, sin repetir la marca cuando
+ * el nombre ya la incluye (en el catálogo suele venir "LATTAFA KHAMRAH 100ML").
+ */
+export function nombreCompleto({ marca = '', nombre = '' }) {
+  return nombre.toLowerCase().includes(marca.toLowerCase()) ? nombre : `${marca} ${nombre}`.trim();
+}

@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../context/ToastContext';
-import { incrementarAgregadoCarrito } from '../services/estadisticasService';
 import { registrarBusqueda } from '../services/busquedasService';
 import { Filtros } from '../components/perfumes/Filtros';
 import { PerfumeGrid } from '../components/perfumes/PerfumeGrid';
@@ -20,8 +18,7 @@ export default function Catalogo() {
     path: '/catalogo',
   });
   const { dolarMedio } = useDolarBlue();
-  const { dispatch } = useCart();
-  const { showToast } = useToast();
+  const { agregar } = useCart();
 
   const busqueda = filtros.busqueda ?? '';
 
@@ -37,21 +34,6 @@ export default function Catalogo() {
     return () => clearTimeout(timer);
   }, [busqueda, isLoading, perfumes]);
 
-  function handleAgregar(perfume) {
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: {
-        perfumeId: perfume.id,
-        nombre: perfume.nombre,
-        marca: perfume.marca,
-        precioUSD: perfume.precioUSD,
-        imagenes: perfume.imagenes,
-        cantidad: 1,
-      },
-    });
-    incrementarAgregadoCarrito(perfume.id);
-    showToast(`${perfume.marca} ${perfume.nombre}`, 'success');
-  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -80,7 +62,7 @@ export default function Catalogo() {
           <PerfumeGrid
             perfumes={perfumes}
             dolarMedio={dolarMedio}
-            onAgregar={handleAgregar}
+            onAgregar={agregar}
             vacio={
               <div className="card-surface mx-auto max-w-md rounded-2xl p-8 text-center">
                 <p className="mb-4 font-body text-text-secondary">

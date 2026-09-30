@@ -37,11 +37,29 @@ export default {
         'fade-in': 'fade-in 1s ease-out forwards',
         'fade-up': 'fade-up 0.8s ease-out forwards',
         'gradient-shift': 'gradient-shift 3s ease-in-out infinite',
+        // Curvas tipo resorte (sobrepasan apenas y vuelven), solo con transform
+        // y opacity para que corran en el compositor.
+        hoja: 'hoja 0.38s cubic-bezier(0.32, 0.72, 0, 1)',
+        panel: 'panel 0.32s cubic-bezier(0.32, 0.72, 0, 1)',
+        bump: 'bump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
         'orb-1': 'orb-1 22s ease-in-out infinite',
         'orb-2': 'orb-2 26s ease-in-out infinite',
         'orb-3': 'orb-3 19s ease-in-out infinite',
       },
       keyframes: {
+        hoja: {
+          from: { transform: 'translateY(100%)' },
+          to: { transform: 'translateY(0)' },
+        },
+        panel: {
+          from: { opacity: '0', transform: 'translateX(24px) scale(0.98)' },
+          to: { opacity: '1', transform: 'translateX(0) scale(1)' },
+        },
+        bump: {
+          '0%': { transform: 'scale(1)' },
+          '40%': { transform: 'scale(1.35)' },
+          '100%': { transform: 'scale(1)' },
+        },
         'orb-1': {
           '0%, 100%': { transform: 'translate(-10%, -10%)' },
           '50%': { transform: 'translate(20%, 15%)' },
