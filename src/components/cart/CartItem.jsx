@@ -3,7 +3,7 @@ import { formatARS } from '../../utils/format';
 import { webpSrc } from '../../utils/image';
 
 export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
-  const imagenUrl = item.imagenes?.[0] || 'https://via.placeholder.com/80';
+  const imagenUrl = item.imagenes?.[0] || '/placeholder-perfume.svg';
 
   return (
     <div className="glass relative flex items-center gap-3 rounded-xl p-3 pr-8">

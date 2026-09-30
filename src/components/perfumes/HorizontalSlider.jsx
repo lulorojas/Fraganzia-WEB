@@ -60,7 +60,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
                         <source srcSet={webpSrc(perfume.imagenes[0])} type="image/webp" />
                       )}
                       <img
-                        src={perfume.imagenes?.[0] || '/placeholder.png'}
+                        src={perfume.imagenes?.[0] || '/placeholder-perfume.svg'}
                         alt={`${perfume.marca} ${perfume.nombre}`}
                         loading="lazy"
                         decoding="async"
