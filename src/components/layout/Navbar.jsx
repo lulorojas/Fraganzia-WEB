@@ -100,7 +100,7 @@ export function Navbar() {
             {/* Carrito */}
             <Link
               to="/carrito"
-              aria-label={cantidadItems > 0 ? `Carrito, ${cantidadItems} productos` : 'Carrito'}
+              aria-label={cantidadItems > 0 ? `Carrito, ${cantidadItems} ${cantidadItems === 1 ? "producto" : "productos"}` : "Carrito"}
               className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-text"
             >
               <ShoppingBag size={21} aria-hidden="true" />

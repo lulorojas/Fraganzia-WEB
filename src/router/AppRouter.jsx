@@ -4,18 +4,20 @@ import { ProtectedRoute } from '../components/layout/ProtectedRoute';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Spinner } from '../components/ui/Spinner';
+import { BotonAsistente } from '../components/asistente/BotonAsistente';
 
-// Las páginas públicas van en el bundle principal (son chicas: ~25 KB entre
-// todas). Así, al arrancar, React renderiza la página de una, igual al HTML
+// Las páginas públicas pre-renderizadas van en el bundle principal (son chicas). Así, al arrancar, React renderiza la página de una, igual al HTML
 // pre-renderizado (tools/prerender.mjs), sin pasar por un spinner de carga.
 import Home from '../pages/Home';
 import Catalogo from '../pages/Catalogo';
 import PerfumeDetalle from '../pages/PerfumeDetalle';
-import Carrito from '../pages/Carrito';
 import SobreNosotros from '../pages/SobreNosotros';
 import Contacto from '../pages/Contacto';
 import NotFound from '../pages/NotFound';
 
+// El carrito no se pre-renderiza (depende de lo que cada visitante guardó) y
+// arrastra la validación del pedido (zod) y EmailJS: va en su propio chunk.
+const Carrito = lazy(() => import('../pages/Carrito'));
 const Login = lazy(() => import('../pages/Login'));
 
 // Todo lo de /admin se carga en un chunk aparte: un visitante del catálogo
@@ -62,6 +64,7 @@ function PublicLayout() {
         <Outlet />
       </main>
       <Footer />
+      <BotonAsistente />
     </div>
   );
 }
@@ -74,7 +77,7 @@ export function AppRouter() {
           <Route path="/" element={<Home />} />
           <Route path="/catalogo" element={<Catalogo />} />
           <Route path="/perfume/:id" element={<PerfumeDetalle />} />
-          <Route path="/carrito" element={<Carrito />} />
+          <Route path="/carrito" element={s(<Carrito />)} />
           <Route path="/sobre-nosotros" element={<SobreNosotros />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="*" element={<NotFound />} />

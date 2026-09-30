@@ -3,6 +3,7 @@ import {
   addDoc, updateDoc, deleteDoc, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { normalizarTexto } from '../utils/texto';
 
 const COLLECTION = 'perfumes';
 
@@ -32,11 +33,6 @@ export async function listarPerfumesPublicos() {
   return ordenarPorFechaDesc(snap.docs.map((d) => ({ id: d.id, ...d.data() }))).filter(
     (p) => p.disponible === true
   );
-}
-
-// Minúsculas y sin tildes: "Lattafá" encuentra "lattafa" y al revés.
-export function normalizarTexto(texto) {
-  return (texto ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 }
 
 /** Aplica los filtros combinables del catálogo (FR-002) sobre la lista cacheada. */
