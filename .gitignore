@@ -13,3 +13,4 @@ dist
 
 pdf-viewer.html
 pdf-viewer-light.html
+tools/*.csv

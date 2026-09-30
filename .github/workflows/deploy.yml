@@ -30,6 +30,13 @@ jobs:
           VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          # Opcionales: si el secret no existe, la función queda desactivada.
+          VITE_EMAILJS_SERVICE_ID: ${{ secrets.VITE_EMAILJS_SERVICE_ID }}
+          VITE_EMAILJS_PUBLIC_KEY: ${{ secrets.VITE_EMAILJS_PUBLIC_KEY }}
+          VITE_EMAILJS_ADMIN_EMAIL: ${{ secrets.VITE_EMAILJS_ADMIN_EMAIL }}
+          VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
+          # Chrome preinstalado en ubuntu-latest, para el pre-render.
+          CHROME_PATH: /usr/bin/google-chrome
 
       - name: Deploy a Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

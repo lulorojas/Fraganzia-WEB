@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node tools/generate-sitemap.mjs && node tools/prerender.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && npx --yes firebase-tools@latest deploy --only hosting --project fraganzia-e9b70",
+    "deploy:rules": "npx --yes firebase-tools@latest deploy --only firestore:rules,firestore:indexes --project fraganzia-e9b70",
+    "test:rules": "npx --yes firebase-tools@latest emulators:exec --only firestore --project demo-fraganzia \"node tools/test-rules.mjs\""
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -22,20 +25,22 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.4",
     "@fontsource-variable/cinzel": "^5.3.0",
     "@fontsource-variable/manrope": "^5.3.0",
     "@fontsource-variable/outfit": "^5.3.0",
     "@fontsource/playfair-display": "^5.3.0",
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.0",
-    "canvas": "^3.2.3",
     "firebase-admin": "^14.1.0",
-    "pdf-parse": "^2.4.5",
     "postcss": "^8.4.0",
     "puppeteer-core": "^25.5.0",
     "sharp": "^0.35.4",
     "tailwindcss": "^3.4.0",
     "terser": "^5.51.2",
     "vite": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

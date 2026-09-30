@@ -1,132 +1,48 @@
 # Fraganzia WEB 🌸
 
-Tienda online de perfumes/fragancias construida con **React + Vite**, estilizada con **Tailwind CSS** y respaldada por **Firebase** (Authentication, Firestore y Hosting).
+Tienda online de perfumes árabes: catálogo con precios en pesos actualizados según el dólar blue, carrito, pedidos por WhatsApp y un panel interno de administración y finanzas para los socios.
 
-## ✨ Características
+**En vivo:** https://fraganzia-e9b70.web.app
 
-- 🛍️ Catálogo de productos
-- 🛒 Carrito de compras
-- 👤 Autenticación de usuarios (Firebase Auth)
-- ⚙️ Panel de administración
-- 📄 Formularios validados con React Hook Form + Zod
-- 🎨 Animaciones con Framer Motion
-- ⚡ Manejo de estado de servidor con TanStack React Query
+## Documentación
 
-## 🛠️ Stack técnico
-
-| Categoría | Tecnología |
+| Documento | Contenido |
 |---|---|
-| Frontend | React 18, Vite 5 |
-| Estilos | Tailwind CSS, PostCSS |
-| Backend / Datos | Firebase (Auth, Firestore, Hosting) |
-| Formularios | React Hook Form + Zod |
-| Data fetching | TanStack React Query |
-| Ruteo | React Router DOM |
-| Animaciones | Framer Motion |
-| Íconos | Lucide React |
-| Metodología de desarrollo | [Spec Kit](https://github.com/github/spec-kit) (spec-driven development) |
+| [📁 Estructura](docs/ESTRUCTURA.md) | Qué hay en cada carpeta, cómo fluyen los datos y dónde tocar para cada cambio |
+| [🚀 Deploy desde cero](docs/DEPLOY.md) | Crear el proyecto de Firebase, configurar, publicar y automatizar |
+| [🧰 Tecnologías](docs/TECNOLOGIAS.md) | Qué se usa, para qué y por qué |
+| [🎨 Design system](DESIGN_SYSTEM.md) | Colores, tipografías y componentes visuales |
+| [✉️ EmailJS](EMAILJS_SETUP.md) | Configurar los avisos por email (opcional) |
 
-## 📋 Requisitos previos
-
-- [Node.js](https://nodejs.org/) 18 o superior
-- [npm](https://www.npmjs.com/)
-- Una cuenta de [Firebase](https://console.firebase.google.com/) con un proyecto creado
-- [Firebase CLI](https://firebase.google.com/docs/cli) (`npm install -g firebase-tools`) si vas a deployar
-
-## 🚀 Instalación
-
-1. Cloná el repositorio:
-   ```bash
-   git clone https://github.com/lulorojas/Fraganzia-WEB.git
-   cd Fraganzia-WEB
-   ```
-
-2. Instalá las dependencias:
-   ```bash
-   npm install
-   ```
-
-3. Configurá las variables de entorno. Copiá el archivo de ejemplo y completá tus credenciales de Firebase:
-   ```bash
-   cp .env.example .env
-   ```
-
-   Completá `.env` con los datos de tu proyecto Firebase (Consola → ⚙️ Configuración del proyecto → Tus apps → configuración del SDK):
-   ```env
-   VITE_FIREBASE_API_KEY=
-   VITE_FIREBASE_AUTH_DOMAIN=
-   VITE_FIREBASE_PROJECT_ID=
-   VITE_FIREBASE_STORAGE_BUCKET=
-   VITE_FIREBASE_MESSAGING_SENDER_ID=
-   VITE_FIREBASE_APP_ID=
-   ```
-
-4. Iniciá el servidor de desarrollo:
-   ```bash
-   npm run dev
-   ```
-
-   La app va a estar disponible en `http://localhost:5173`.
-
-## 📦 Scripts disponibles
-
-| Comando | Descripción |
-|---|---|
-| `npm run dev` | Levanta el servidor de desarrollo con hot-reload |
-| `npm run build` | Genera el build de producción en `dist/` |
-| `npm run preview` | Sirve localmente el build de producción para probarlo |
-
-## 🔥 Firebase
-
-Este proyecto usa tres servicios de Firebase:
-
-- **Authentication**: gestión de usuarios (login, registro).
-- **Firestore**: base de datos de productos, pedidos y usuarios. Las reglas de seguridad están en [`firestore.rules`](./firestore.rules) y los índices en [`firestore.indexes.json`](./firestore.indexes.json).
-- **Hosting**: despliegue del sitio estático, configurado en [`firebase.json`](./firebase.json).
-
-### Deploy manual
+## Arranque rápido
 
 ```bash
-npm run build
-firebase deploy
+npm install
+cp .env.example .env.local   # completar con la config de Firebase
+npm run dev                  # http://localhost:5173
 ```
 
-O por partes:
-```bash
-firebase deploy --only hosting
-firebase deploy --only firestore:rules
-```
+## Scripts
 
-## 📁 Estructura del proyecto
+| Comando | Qué hace |
+|---|---|
+| `npm run dev` | Servidor de desarrollo con recarga instantánea |
+| `npm run build` | Build de producción en `dist/` (incluye sitemap y pre-render) |
+| `npm run preview` | Sirve el build localmente |
+| `npm run deploy` | Build y publicación en Firebase Hosting |
+| `npm run deploy:rules` | Publica las reglas e índices de Firestore |
+| `npm run test:rules` | Prueba las reglas de Firestore en el emulador (requiere Java) |
 
-```
-Fraganzia-WEB/
-├── .claude/skills/       # Skills de Claude Code
-├── .specify/             # Configuración de Spec Kit (constitution, templates)
-├── specs/                # Especificaciones de features (spec-driven development)
-│   └── 001-catalogo-carrito-admin/
-├── scripts/               # Scripts auxiliares
-├── src/                   # Código fuente de la app React
-├── firebase.json          # Configuración de Firebase Hosting
-├── firestore.rules        # Reglas de seguridad de Firestore
-├── firestore.indexes.json # Índices de Firestore
-├── vite.config.js
-├── tailwind.config.js
-└── package.json
-```
+Cada push a `main` se publica automáticamente con GitHub Actions (solo hosting; las reglas se publican con `npm run deploy:rules`).
 
-## 🧭 Metodología de desarrollo
+## Stack
 
-Este proyecto sigue **spec-driven development** con [Spec Kit](https://github.com/github/spec-kit): cada feature se define primero como especificación (`specs/<feature>/spec.md`), luego se planifica (`plan.md`, `research.md`, `data-model.md`, `quickstart.md`) y recién después se implementa, todo guiado por Claude Code.
+React 18 · Vite 5 · Tailwind CSS · React Router · TanStack Query · React Hook Form + Zod · Firebase (Auth, Firestore, Hosting)
 
-## 🤝 Contribuir
+## Metodología
 
-1. Hacé un fork del proyecto
-2. Creá tu rama de feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Hacé commit de tus cambios (`git commit -m 'Agrega nueva funcionalidad'`)
-4. Pusheá la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abrí un Pull Request
+El proyecto sigue *spec-driven development* con [Spec Kit](https://github.com/github/spec-kit): cada feature se especifica en `specs/<feature>/` (spec, plan, tareas) antes de implementarse.
 
-## 📄 Licencia
+## Licencia
 
-Este proyecto no especifica licencia actualmente. Todos los derechos reservados salvo indicación contraria.
+Sin licencia especificada: todos los derechos reservados.
