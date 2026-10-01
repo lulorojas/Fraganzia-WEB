@@ -16,7 +16,7 @@ export const MARCAS = [
   'Afnan', 'Al Haramain', 'Al Wataniah', 'Anfar', 'Armaf', 'Bharara',
   'Dumont', 'Emper', 'Fragrance World', 'French Avenue', 'Grandeur',
   'Khadlaj', "L'Affair", 'Lattafa', 'Maison Alhambra', 'Nautica',
-  'Orientica', 'Paris Corner', 'Rasasi', 'Rave', 'Rayhaan', 'Riiffs', 'Zimaya',
+  'Orientica', 'Paris Corner', 'Pendora Scents', 'Rasasi', 'Rave', 'Rayhaan', 'Riiffs', 'Zimaya',
 ];
 
 export const METODOS_PAGO = ['Transferencia', 'Efectivo'];

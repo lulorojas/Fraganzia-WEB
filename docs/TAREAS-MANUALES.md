@@ -90,6 +90,13 @@ Panel admin → Perfumes → editar → *Notas de salida / corazón / fondo* (se
 ### [ ] Completar descripciones faltantes
 79 de los 405 perfumes publicados no tienen descripción. Además de mostrarse en la ficha, la descripción mejora el SEO y las recomendaciones del asistente, que busca palabras como "vainilla" u "oud".
 
+### [ ] (Opcional) Unificar marcas escritas en mayúsculas
+89 perfumes tienen la marca en mayúsculas ("LATTAFA", "MAISON ALHAMBRA", "ARMAF"…), cargados por importaciones viejas.
+
+- **La web ya los trata como la misma marca**: el filtro, el buscador y la lista de marcas los unifican.
+- **Corrección automática:** al **editar y guardar** cualquiera de esos perfumes desde el admin, la marca queda guardada en la forma correcta ("Lattafa").
+- Antes había un bug: editar uno de esos perfumes **le cambiaba la marca a "Afnan" sin avisar**. Ya está corregido. Si alguno de los 89 se editó antes del 30/09, revisá que su marca sea la correcta.
+
 ### [ ] (Opcional) Limpiar estadísticas de prueba
 Durante las pruebas del 30/09 se sumaron unas 15 vistas falsas a **Lattafa Atlas Canyon 55ml** y algunas a la home. Si te molesta en el dashboard: Firebase → Firestore → `estadisticas` → documento `00WxVBQoLMLZgqU6lX7R` → bajá `vistas` en ~15.
 

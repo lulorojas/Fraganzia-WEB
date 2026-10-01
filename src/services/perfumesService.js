@@ -4,6 +4,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { normalizarTexto } from '../utils/texto';
+import { coincide } from '../utils/busqueda';
 
 const COLLECTION = 'perfumes';
 
@@ -38,16 +39,16 @@ export async function listarPerfumesPublicos() {
 /** Aplica los filtros combinables del catálogo (FR-002) sobre la lista cacheada. */
 export function filtrarPerfumes(perfumes, filtros = {}) {
   if (!perfumes) return perfumes;
-  const termino = normalizarTexto(filtros.busqueda);
+  // La marca se compara sin mayúsculas ni tildes: en la base conviven
+  // "Lattafa" y "LATTAFA". La búsqueda es por palabras sueltas (utils/busqueda).
+  const marca = normalizarTexto(filtros.marca);
   return perfumes.filter(
     (p) =>
       (!filtros.genero || p.genero === filtros.genero) &&
-      (!filtros.marca || p.marca === filtros.marca) &&
+      (!marca || normalizarTexto(p.marca) === marca) &&
       (!filtros.familiaOlfativa || p.familiaOlfativa === filtros.familiaOlfativa) &&
       (!filtros.destacado || p.destacado === true) &&
-      (!termino ||
-        normalizarTexto(p.nombre).includes(termino) ||
-        normalizarTexto(p.marca).includes(termino))
+      coincide(p, filtros.busqueda)
   );
 }
 

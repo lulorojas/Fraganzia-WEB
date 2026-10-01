@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { perfumeSchema } from '../../schemas/perfumeSchema';
 import { GENEROS, FAMILIAS_OLFATIVAS, MARCAS } from '../../constants';
 import { Button } from '../ui/Button';
+import { normalizarTexto } from '../../utils/texto';
 
 function Campo({ label, error, children }) {
   return (
@@ -24,11 +25,20 @@ function arr(v, sep = ', ') {
   return Array.isArray(v) ? v.join(sep) : String(v);
 }
 
+// En la base hay marcas cargadas en mayúsculas ("LATTAFA") por importaciones
+// viejas. Se llevan a la forma de la lista para que el <select> las muestre;
+// si no, el navegador elegía la primera opción y al guardar la marca quedaba
+// cambiada en silencio.
+function marcaDeLista(marca) {
+  return MARCAS.find((m) => normalizarTexto(m) === normalizarTexto(marca)) ?? marca;
+}
+
 // Serializa un perfume existente para que los inputs muestren strings
 function toFormValues(p) {
   if (!p) return null;
   return {
     ...p,
+    marca: marcaDeLista(p.marca),
     notasSalida: arr(p.notasSalida),
     notasCorazon: arr(p.notasCorazon),
     notasFondo: arr(p.notasFondo),
@@ -66,6 +76,11 @@ export function PerfumeForm({ perfume, onSubmit, onCancel, cargando }) {
         </Campo>
         <Campo label="Marca" error={errors.marca?.message}>
           <select className={SELECT} {...register('marca')}>
+            {/* Una marca que no está en la lista se muestra igual (y la
+                validación avisa) en lugar de reemplazarse por otra. */}
+            {perfume?.marca && !MARCAS.includes(marcaDeLista(perfume.marca)) && (
+              <option>{perfume.marca}</option>
+            )}
             {MARCAS.map((m) => <option key={m}>{m}</option>)}
           </select>
         </Campo>
