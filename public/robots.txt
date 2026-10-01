@@ -2,5 +2,9 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /login
+Disallow: /carrito
+Disallow: /favoritos
+Disallow: /pedido/
+Disallow: /mis-pedidos
 
 Sitemap: https://fraganzia-e9b70.web.app/sitemap.xml

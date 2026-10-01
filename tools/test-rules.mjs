@@ -3,7 +3,7 @@
 // (levanta el emulador de Firestore, corre este archivo y lo apaga; requiere Java).
 import { readFileSync } from 'node:fs';
 import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
-import { doc, setDoc, addDoc, collection, increment, serverTimestamp, deleteDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, addDoc, collection, increment, serverTimestamp, deleteDoc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 
 const env = await initializeTestEnvironment({
   projectId: 'demo-fraganzia',
@@ -35,7 +35,11 @@ await t('nombre enorme', addDoc(ped, { ...pedidoOk(), clienteNombre: 'x'.repeat(
 await t('sin items', addDoc(ped, { ...pedidoOk(), items: [] }), false);
 await t('estado distinto', addDoc(ped, { ...pedidoOk(), estado: 'cancelado' }), false);
 await t('fecha falsa', addDoc(ped, { ...pedidoOk(), creadoEn: new Date(2000, 1, 1) }), false);
-await t('leer pedido anónimo', getDoc(doc(anon, 'pedidos', 'x')), false);
+// Seguimiento: un pedido puntual se puede leer con su id; listar, no.
+const refPedido = await addDoc(ped, pedidoOk());
+await t('leer un pedido por id (seguimiento)', getDoc(doc(anon, 'pedidos', refPedido.id)), true);
+await t('listar pedidos anónimo', getDocs(collection(anon, 'pedidos')), false);
+await t('cambiar estado anónimo', updateDoc(doc(anon, 'pedidos', refPedido.id), { estado: 'entregado' }), false);
 
 const est = (id, campos) => setDoc(doc(anon, 'estadisticas', id), { perfumeId: id, ...campos, updatedAt: serverTimestamp() }, { merge: true });
 await t('vista nueva', est('p1', { vistas: increment(1) }), true);

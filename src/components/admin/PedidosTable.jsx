@@ -1,24 +1,39 @@
+import { useState } from 'react';
 import { GlassCard } from '../ui/GlassCard';
-import { formatARS } from '../../utils/format';
+import { formatARS, formatFechaHora } from '../../utils/format';
+import { ESTADOS_PEDIDO, ESTADO_PEDIDO_INFO, numeroPedido } from '../../constants';
+import { SITE_URL } from '../../hooks/useDocumentMeta';
 
-const ESTADO_BADGE = {
-  en_proceso: { label: 'En proceso', cls: 'text-yellow-400' },
-  confirmado: { label: 'Confirmado', cls: 'text-success' },
-  cancelado: { label: 'Cancelado', cls: 'text-error' },
-};
+// Los pedidos se guardan con `creadoEn`; los muy viejos pueden tener `createdAt`.
+export const fechaPedido = (p) => p.creadoEn ?? p.createdAt;
 
-export function PedidosTable({ pedidos, onVerDetalle, onConfirmar, onCancelar, onEliminar }) {
+function CopiarSeguimiento({ id }) {
+  const [copiado, setCopiado] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(`${SITE_URL}/pedido/${id}`);
+          setCopiado(true);
+          setTimeout(() => setCopiado(false), 1500);
+        } catch {
+          window.prompt('Link de seguimiento:', `${SITE_URL}/pedido/${id}`);
+        }
+      }}
+      className="text-lila underline text-xs hover:opacity-75"
+    >
+      {copiado ? 'Copiado ✓' : 'Link'}
+    </button>
+  );
+}
+
+export function PedidosTable({ pedidos, onVerDetalle, onCambiarEstado, onEliminar }) {
   if (!pedidos?.length) return (
     <GlassCard className="py-10 text-center">
       <p className="font-body text-text-secondary">No hay pedidos todavía.</p>
     </GlassCard>
   );
-
-  function formatFecha(ts) {
-    if (!ts) return '—';
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  }
 
   return (
     <GlassCard>
@@ -26,6 +41,7 @@ export function PedidosTable({ pedidos, onVerDetalle, onConfirmar, onCancelar, o
         <table className="w-full text-left text-sm text-text">
         <thead>
           <tr className="border-b border-border text-text-secondary">
+            <th className="pb-2 pr-4">Pedido</th>
             <th className="pb-2 pr-4">Fecha</th>
             <th className="pb-2 pr-4">Cliente</th>
             <th className="pb-2 pr-4">Pago</th>
@@ -36,39 +52,40 @@ export function PedidosTable({ pedidos, onVerDetalle, onConfirmar, onCancelar, o
         </thead>
         <tbody>
           {pedidos.map((p) => {
-            const badge = ESTADO_BADGE[p.estado] ?? { label: p.estado ?? '—', cls: 'text-text-secondary' };
+            const info = ESTADO_PEDIDO_INFO[p.estado];
             return (
               <tr key={p.id} className="border-b border-border">
-                <td className="py-2 pr-4 text-text-secondary">{formatFecha(p.createdAt)}</td>
+                <td className="py-2 pr-4 font-mono text-xs text-text-secondary">{numeroPedido(p.id)}</td>
+                <td className="py-2 pr-4 text-text-secondary">{formatFechaHora(fechaPedido(p))}</td>
                 <td className="py-2 pr-4">{p.clienteNombre}</td>
                 <td className="py-2 pr-4">{p.metodoPago}</td>
                 <td className="py-2 pr-4 font-luxury">{formatARS(p.totalARS)}</td>
-                <td className={`py-2 pr-4 text-xs font-medium ${badge.cls}`}>{badge.label}</td>
+                <td className="py-2 pr-4">
+                  {/* Cambia lo que ve el cliente en su link de seguimiento. */}
+                  <select
+                    value={p.estado}
+                    onChange={(e) => onCambiarEstado(p.id, e.target.value)}
+                    aria-label={`Estado del pedido ${numeroPedido(p.id)}`}
+                    className={`rounded-lg border border-border bg-bg px-2 py-1 text-xs font-medium ${info?.cls ?? 'text-text'}`}
+                  >
+                    {!ESTADOS_PEDIDO.includes(p.estado) && <option value={p.estado}>{info?.label ?? p.estado}</option>}
+                    {ESTADOS_PEDIDO.map((e) => (
+                      <option key={e} value={e}>{ESTADO_PEDIDO_INFO[e].label}</option>
+                    ))}
+                  </select>
+                </td>
                 <td className="py-2">
                   <div className="flex gap-3 flex-wrap">
                     <button
+                      type="button"
                       onClick={() => onVerDetalle(p)}
                       className="text-lila underline text-xs hover:opacity-75"
                     >
                       Ver
                     </button>
-                    {p.estado === 'en_proceso' && (
-                      <button
-                        onClick={() => onConfirmar(p.id)}
-                        className="text-success underline text-xs hover:opacity-75"
-                      >
-                        Confirmar
-                      </button>
-                    )}
-                    {p.estado !== 'cancelado' && (
-                      <button
-                        onClick={() => onCancelar(p.id)}
-                        className="text-yellow-400 underline text-xs hover:opacity-75"
-                      >
-                        Cancelar
-                      </button>
-                    )}
+                    <CopiarSeguimiento id={p.id} />
                     <button
+                      type="button"
                       onClick={() => onEliminar(p.id)}
                       className="text-error underline text-xs hover:opacity-75"
                     >

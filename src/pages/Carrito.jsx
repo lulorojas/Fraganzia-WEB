@@ -15,8 +15,7 @@ import { Button } from '../components/ui/Button';
 import { GlassCard } from '../components/ui/GlassCard';
 import { preciosPorMetodo, calcularTotal2x1 } from '../utils/precios';
 import { formatARS } from '../utils/format';
-import { construirLinkWhatsApp } from '../utils/whatsapp';
-import { WHATSAPP_NUMERO } from '../constants';
+import { guardarPedidoLocal } from '../utils/misPedidos';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export default function Carrito() {
@@ -135,23 +134,6 @@ export default function Carrito() {
       estado: 'confirmado',
     };
 
-    // Generar mensaje de notificación para el admin
-    const mensajeAdmin = [
-      '🔔 NUEVO PEDIDO - Fraganzia',
-      '',
-      `👤 Cliente: ${pedido.clienteNombre}`,
-      '',
-      '🛍️ Productos:',
-      ...itemsConPrecio.map(it => `  • ${it.cantidad}x ${it.marca} ${it.nombre} - ${formatARS(it.precioARS)}`),
-      '',
-      `💳 Método: ${pedido.metodoPago}`,
-      `💰 Total: ${formatARS(totalARS)}`,
-      '',
-      `ID: ${Date.now()}`,
-    ].join('\n');
-
-    const linkNotificacion = construirLinkWhatsApp(WHATSAPP_NUMERO, mensajeAdmin);
-
     crearPedidoMutation(pedido, {
       onSuccess: (pedidoId) => {
         dispatch({ type: 'CLEAR_CART' });
@@ -163,8 +145,11 @@ export default function Carrito() {
           formatARS(totalARS)
         ).catch(() => {});
         
-        // Abrir WhatsApp para notificar al admin
-        window.location.href = linkNotificacion;
+        // Al seguimiento del pedido: ahí está el botón para mandarlo por
+        // WhatsApp (con el link de seguimiento incluido) y queda guardado en
+        // "Mis pedidos". Se pasan los datos para mostrarlo sin esperar a Firestore.
+        guardarPedidoLocal(pedidoId);
+        navigate(`/pedido/${pedidoId}?nuevo=1`, { state: { pedido } });
       },
       onError: (error) => {
         // Los errores de zod traen el detalle técnico en `issues`; al cliente

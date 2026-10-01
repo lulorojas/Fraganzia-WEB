@@ -24,8 +24,13 @@ export async function obtenerPedidoPorId(id) {
   return { id: snap.id, ...snap.data() };
 }
 
+// Guarda también cuándo pasó a cada estado (lo muestra la línea de tiempo del
+// seguimiento que ve el cliente).
 export async function actualizarEstadoPedido(id, estado) {
-  await updateDoc(doc(db, COLLECTION, id), { estado });
+  await updateDoc(doc(db, COLLECTION, id), {
+    estado,
+    [`historial.${estado}`]: serverTimestamp(),
+  });
 }
 
 export async function eliminarPedido(id) {

@@ -21,6 +21,9 @@ import NotFound from '../pages/NotFound';
 const Carrito = lazy(() => import('../pages/Carrito'));
 // Favoritos depende de lo guardado en cada navegador: tampoco se pre-renderiza.
 const Favoritos = lazy(() => import('../pages/Favoritos'));
+// Seguimiento de pedidos: privado (link con id), sin pre-render ni indexado.
+const Pedido = lazy(() => import('../pages/Pedido'));
+const MisPedidos = lazy(() => import('../pages/MisPedidos'));
 const Login = lazy(() => import('../pages/Login'));
 
 // Todo lo de /admin se carga en un chunk aparte: un visitante del catálogo
@@ -83,6 +86,8 @@ export function AppRouter() {
           <Route path="/perfume/:id" element={<PerfumeDetalle />} />
           <Route path="/carrito" element={s(<Carrito />)} />
           <Route path="/favoritos" element={s(<Favoritos />)} />
+          <Route path="/pedido/:id" element={s(<Pedido />)} />
+          <Route path="/mis-pedidos" element={s(<MisPedidos />)} />
           <Route path="/sobre-nosotros" element={<SobreNosotros />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="*" element={<NotFound />} />

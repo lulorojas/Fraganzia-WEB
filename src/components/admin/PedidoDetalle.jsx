@@ -1,26 +1,22 @@
-import { formatARS } from '../../utils/format';
+import { formatARS, formatFechaHora } from '../../utils/format';
+import { ESTADO_PEDIDO_INFO, numeroPedido } from '../../constants';
+import { fechaPedido } from './PedidosTable';
 import { Button } from '../ui/Button';
 
 export function PedidoDetalle({ pedido, onCerrar }) {
   if (!pedido) return null;
 
-  function formatFecha(ts) {
-    if (!ts) return '—';
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleString('es-AR');
-  }
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-text-secondary text-sm">{formatFecha(pedido.createdAt)}</p>
+          <p className="text-text-secondary text-sm">Pedido {numeroPedido(pedido.id)} · {formatFechaHora(fechaPedido(pedido))}</p>
           <h3 className="font-display text-xl text-text">{pedido.clienteNombre}</h3>
           <p className="text-text-secondary text-sm">Método: {pedido.metodoPago}</p>
           <p className="text-sm mt-1">
             Estado:{' '}
-            <span className={pedido.estado === 'confirmado' ? 'text-success' : pedido.estado === 'cancelado' ? 'text-error' : 'text-yellow-400'}>
-              {pedido.estado === 'en_proceso' ? 'En proceso' : pedido.estado === 'confirmado' ? 'Confirmado' : pedido.estado === 'cancelado' ? 'Cancelado' : pedido.estado}
+            <span className={ESTADO_PEDIDO_INFO[pedido.estado]?.cls ?? 'text-text'}>
+              {ESTADO_PEDIDO_INFO[pedido.estado]?.label ?? pedido.estado}
             </span>
           </p>
         </div>

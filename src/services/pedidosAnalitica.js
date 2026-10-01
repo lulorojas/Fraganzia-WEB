@@ -61,7 +61,9 @@ export function calcularResumenPedidos(pedidos = []) {
 export function calcularEvolucionPedidos(pedidos = [], meses = 6) {
   const porMes = {};
   pedidos.forEach((p) => {
-    const d = p.createdAt?.toDate ? p.createdAt.toDate() : null;
+    // Los pedidos se guardan con `creadoEn` (createdAt solo en registros muy viejos).
+    const fecha = p.creadoEn ?? p.createdAt;
+    const d = fecha?.toDate ? fecha.toDate() : null;
     if (!d) return;
     const clave = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     porMes[clave] = porMes[clave] ?? { mes: clave, pedidos: 0, ingreso: 0 };

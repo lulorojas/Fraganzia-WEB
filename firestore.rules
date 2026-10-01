@@ -81,7 +81,11 @@ service cloud.firestore {
         && request.resource.data.totalARS > 0
         && request.resource.data.totalARS < 1000000000
         && request.resource.data.creadoEn == request.time;
-      allow read, update, delete: if isAdmin();
+      // Seguimiento: quien tiene el link (/pedido/<id>) puede leer ESE pedido.
+      // El id lo genera Firestore (20 caracteres al azar): no se puede adivinar,
+      // y listar pedidos sigue siendo solo para admin.
+      allow get: if true;
+      allow list, update, delete: if isAdmin();
     }
 
     // Estadísticas: sin Cloud Functions, el cliente incrementa contadores

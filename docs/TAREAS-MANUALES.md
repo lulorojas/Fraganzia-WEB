@@ -19,6 +19,12 @@ El 30/09 se movieron fuera del repo la carpeta `scripts/` (1.314 archivos), los 
   3. Correr `npm install` (cambiaron las dependencias).
   4. Revisar el [README](../README.md): el deploy ahora es `npm run deploy` y los `.bat` ya no existen.
 
+### [ ] Contarle a tu socio cómo funcionan ahora los pedidos
+- **Nuevo flujo del cliente:** al confirmar, el cliente ve su página de seguimiento y manda el pedido por WhatsApp. El mensaje trae un número corto (#ABC123) y el link.
+- **Admin → Pedidos:** el estado se cambia con el selector de cada fila (Recibido → En preparación → Enviado → Entregado / Cancelado), y **el cliente lo ve en su link**. El botón **Link** copia el link de seguimiento para mandárselo a quien lo pida.
+- **Arreglos:** la columna Fecha de Pedidos y el gráfico "Evolución de pedidos" del dashboard estaban siempre vacíos (leían un campo con otro nombre). Ya muestran datos.
+- **Ojo:** las métricas de pedidos del dashboard (facturado, ticket promedio) **cuentan también los cancelados**. Si prefieren excluirlos, avisame.
+
 ### [ ] Cargar fotos que faltan o están rotas
 Panel admin → **Perfumes** → editar → campo **Imágenes**.
 

@@ -29,7 +29,10 @@ export function usePedidoDetalle(id) {
 
 function useInvalidarPedidos() {
   const qc = useQueryClient();
-  return () => qc.invalidateQueries({ queryKey: ['pedidos'] });
+  return () => {
+    qc.invalidateQueries({ queryKey: ['pedidos'] });
+    qc.invalidateQueries({ queryKey: ['pedido'] });
+  };
 }
 
 export function useActualizarEstadoPedido() {

@@ -11,12 +11,9 @@ export default function AdminPedidos() {
   const { mutate: eliminarPedido } = useEliminarPedido();
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
 
-  function handleConfirmar(id) {
-    actualizarEstado({ id, estado: 'confirmado' });
-  }
-
-  function handleCancelar(id) {
-    actualizarEstado({ id, estado: 'cancelado' });
+  function handleCambiarEstado(id, estado) {
+    if (estado === 'cancelado' && !window.confirm('¿Cancelar este pedido? El cliente lo va a ver en su seguimiento.')) return;
+    actualizarEstado({ id, estado });
   }
 
   function handleEliminar(id) {
@@ -34,8 +31,7 @@ export default function AdminPedidos() {
         <PedidosTable
           pedidos={pedidos}
           onVerDetalle={setPedidoSeleccionado}
-          onConfirmar={handleConfirmar}
-          onCancelar={handleCancelar}
+          onCambiarEstado={handleCambiarEstado}
           onEliminar={handleEliminar}
         />
       )}

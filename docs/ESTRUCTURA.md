@@ -31,6 +31,7 @@ src/
 │   └── AppRouter.jsx   # Todas las rutas. Públicas en el bundle principal, /admin lazy
 ├── pages/              # Una página por ruta
 │   ├── Home.jsx, Catalogo.jsx, PerfumeDetalle.jsx, Carrito.jsx, Favoritos.jsx,
+│   ├── Pedido.jsx (seguimiento /pedido/:id), MisPedidos.jsx,
 │   ├── SobreNosotros.jsx, Contacto.jsx, Login.jsx, NotFound.jsx
 │   └── admin/          # Panel interno: perfumes, pedidos, promociones, usuarios,
 │                       # config y finanzas (ventas, compras, gastos, stock, analytics…)
@@ -72,6 +73,15 @@ En Firestore cada perfume guarda la URL original de su foto (a veces en otro sit
 - **Favoritos** (`FavoritosContext`, `localStorage`): solo guarda ids. `/favoritos` los cruza con el catálogo ya cargado, sin lecturas extra.
 
 Ninguno de los dos requiere cuenta. Por eso `/carrito` y `/favoritos` no se pre-renderizan.
+
+### Pedidos y seguimiento
+
+1. El cliente confirma en `/carrito`: se crea el pedido en Firestore con estado `confirmado` ("Recibido") y se guarda su id en el navegador (`utils/misPedidos.js`).
+2. Lo lleva a `/pedido/<id>?nuevo=1`, con un botón para mandarlo por WhatsApp. El mensaje incluye el número corto (#ABC123) y el link de seguimiento.
+3. El admin cambia el estado desde **Pedidos** (Recibido → En preparación → Enviado → Entregado, o Cancelado). Cada cambio queda con fecha en `historial` y el cliente lo ve en su link.
+4. `/mis-pedidos` lista los pedidos hechos desde ese dispositivo.
+
+Los estados y sus textos están en `src/constants/index.js` (`ESTADOS_PEDIDO`, `ESTADO_PEDIDO_INFO`).
 
 ### Arranque rápido: pre-render + datos iniciales
 
@@ -115,7 +125,7 @@ Los scripts de una sola vez que se usaron para armar el catálogo inicial (impor
 | `perfumes` | Pública | Admin | Catálogo |
 | `promociones` | Pública | Admin | Descuentos y 2x1 |
 | `config` | Pública | Admin | WhatsApp, dólar manual |
-| `pedidos` | Admin | Cualquiera puede **crear** (validado) | Pedidos de la tienda |
+| `pedidos` | Admin lista; **cualquiera puede leer uno por su id** (link de seguimiento) | Cualquiera puede **crear** (validado); el estado lo cambia el admin | Pedidos de la tienda |
 | `estadisticas`, `busquedas` | Admin | Pública, solo +1 por vez | Interés de clientes (vistas, agregados al carrito, favoritos, búsquedas) |
 | `admins` | Admin | Nadie (se da de alta desde la consola) | Quién es admin |
 | `socios`, `ventasSocios`, `ventasDecants`, `compras`, `gastos`, `movimientosPersonales`, `transferenciasSocios`, `ajustesStock`, `cambiosMetodo`, `auditoria` | Admin | Admin | Panel financiero interno |
