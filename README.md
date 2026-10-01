@@ -6,8 +6,11 @@ Tienda online de perfumes árabes: catálogo con precios en pesos actualizados s
 
 ## Documentación
 
+> 👉 **Empezá por [Tareas manuales y guía de lectura](docs/TAREAS-MANUALES.md)**: qué hay que hacer a mano (consolas de Firebase, Google Cloud, EmailJS, panel admin) y en qué orden leer el resto.
+
 | Documento | Contenido |
 |---|---|
+| [✅ Tareas manuales y guía de lectura](docs/TAREAS-MANUALES.md) | Checklist de lo que no se automatiza y por dónde empezar a leer |
 | [📁 Estructura](docs/ESTRUCTURA.md) | Qué hay en cada carpeta, cómo fluyen los datos y dónde tocar para cada cambio |
 | [🚀 Deploy desde cero](docs/DEPLOY.md) | Crear el proyecto de Firebase, configurar, publicar y automatizar |
 | [🧰 Tecnologías](docs/TECNOLOGIAS.md) | Qué se usa, para qué y por qué |
