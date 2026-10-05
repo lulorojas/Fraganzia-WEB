@@ -1,5 +1,6 @@
 import { normalizarTexto } from './texto.js';
 import { preciosPorMetodo } from './precios.js';
+import datosAsistente from '../data/asistente-perfumes.json';
 
 /**
  * Motor del asistente "Encontrá tu perfume". Todo corre en el navegador sobre
@@ -7,12 +8,24 @@ import { preciosPorMetodo } from './precios.js';
  *
  * Puntaje de cada perfume según las respuestas:
  *  - aroma: familia olfativa principal +4, relacionada +2, y +1 por cada
- *    palabra clave que aparezca en la descripción (hasta +3);
- *  - momento del día: familia afín +2;
+ *    palabra clave que aparezca en la descripción o en sus notas reales (hasta +3);
+ *  - momento del día: uso ideal afín +2 (si no hay dato, familia afín +2);
  *  - género: exacto +3, unisex +2 (el resto queda afuera);
- *  - destacado +1.
+ *  - destacado +1, y de los más recomendados de la casa +2.
  * El presupuesto filtra; si deja menos de 3 opciones, se relaja al rango vecino.
+ *
+ * Las notas, el uso, la inspiración y los más recomendados salen de
+ * src/data/asistente-perfumes.json (ver tools/generar-datos-asistente.mjs).
+ * Un perfume nuevo que todavía no esté ahí usa solo los datos del catálogo.
  */
+
+/** Datos extra del asistente para un perfume ({} si no hay). */
+const extra = (perfume) => datosAsistente[perfume.id] ?? {};
+
+/** Perfume famoso en el que se inspira, si hay una referencia confiable. */
+export function inspiracion(perfume) {
+  return extra(perfume).i ?? null;
+}
 
 export const AROMAS = {
   dulce: {
@@ -52,10 +65,12 @@ export const AROMAS = {
   },
 };
 
+// `usos`: códigos de uso ideal (C día·calor, O día·oficina, N noche·salidas,
+// F noche·frío, T todo uso) que cuentan como afines a cada momento.
 export const MOMENTOS = {
-  dia: { etiqueta: 'De día / oficina', familias: ['Cítrico', 'Acuático', 'Aromático', 'Floral', 'Verde'] },
-  noche: { etiqueta: 'Noches y salidas', familias: ['Oriental', 'Gourmand', 'Amaderado'] },
-  siempre: { etiqueta: 'Para todo momento', familias: [] },
+  dia: { etiqueta: 'De día / oficina', familias: ['Cítrico', 'Acuático', 'Aromático', 'Floral', 'Verde'], usos: ['C', 'O', 'T'] },
+  noche: { etiqueta: 'Noches y salidas', familias: ['Oriental', 'Gourmand', 'Amaderado'], usos: ['N', 'F', 'T'] },
+  siempre: { etiqueta: 'Para todo momento', familias: [], usos: [] },
 };
 
 export const GENEROS_ASISTENTE = {
@@ -103,18 +118,22 @@ function puntaje(perfume, { genero, aroma, momento }) {
     return null; // "Me da igual" no incluye perfumes infantiles
   }
 
+  const datos = extra(perfume);
   const perfil = AROMAS[aroma];
   if (perfil) {
     if (perfil.familias.includes(perfume.familiaOlfativa)) total += 4;
     else if (perfil.relacionadas.includes(perfume.familiaOlfativa)) total += 2;
-    const descripcion = normalizarTexto(perfume.descripcion);
-    if (descripcion) {
-      total += Math.min(3, perfil.claves.filter((c) => descripcion.includes(c)).length);
-    }
+    const texto = `${normalizarTexto(perfume.descripcion)} ${datos.c ?? ''}`;
+    total += Math.min(3, perfil.claves.filter((c) => texto.includes(c)).length);
   }
 
-  if (MOMENTOS[momento]?.familias.includes(perfume.familiaOlfativa)) total += 2;
+  const momentoElegido = MOMENTOS[momento];
+  if (momentoElegido) {
+    const afin = datos.u ? momentoElegido.usos.includes(datos.u) : momentoElegido.familias.includes(perfume.familiaOlfativa);
+    if (afin) total += 2;
+  }
   if (perfume.destacado) total += 1;
+  if (datos.r) total += 2;
   return total;
 }
 

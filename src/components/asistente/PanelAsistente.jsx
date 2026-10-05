@@ -5,7 +5,7 @@ import { usePerfumes } from '../../hooks/usePerfumes';
 import { useDolarBlue } from '../../hooks/useDolarBlue';
 import { useCart } from '../../context/CartContext';
 import {
-  AROMAS, MOMENTOS, GENEROS_ASISTENTE, recomendar, rangosDePresupuesto,
+  AROMAS, MOMENTOS, GENEROS_ASISTENTE, recomendar, rangosDePresupuesto, inspiracion,
 } from '../../utils/recomendador';
 import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from '../perfumes/ImagenProducto';
@@ -84,6 +84,7 @@ function Burbuja({ de, children }) {
 function Recomendacion({ item, onAgregar, onVer }) {
   const { perfume, precio } = item;
   const imagen = perfume.imagenes?.[0];
+  const inspiradoEn = inspiracion(perfume);
   return (
     <li className="card-surface flex gap-3 rounded-2xl p-3">
       <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-white">
@@ -96,6 +97,11 @@ function Recomendacion({ item, onAgregar, onVer }) {
         <p className="mt-0.5 font-body text-xs text-text-secondary">
           {[perfume.familiaOlfativa, perfume.genero].filter(Boolean).join(' · ')}
         </p>
+        {inspiradoEn && (
+          <p className="mt-0.5 truncate font-body text-xs text-lila" title={`Inspirado en ${inspiradoEn}`}>
+            Inspirado en {inspiradoEn}
+          </p>
+        )}
         <div className="mt-auto flex items-center justify-between gap-2 pt-2">
           <span className="font-body text-sm font-bold tabular-nums text-text">
             {precio ? formatARS(precio) : 'Consultar'}
