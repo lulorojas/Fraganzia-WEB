@@ -117,6 +117,44 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Promociones: antes de los destacados, es lo que más empuja la compra ── */}
+      {promociones?.length > 0 && (
+        <section aria-label="Promociones" className="mx-auto max-w-7xl px-4 pb-8 pt-4 sm:px-6">
+          <div className={`grid gap-5 ${promociones.length > 1 ? 'md:grid-cols-2' : 'mx-auto max-w-5xl'}`}>
+            {promociones.map((promo) => (
+              <Link
+                key={promo.id}
+                to="/catalogo"
+                className="card-surface card-hover group block overflow-hidden rounded-2xl"
+              >
+                {promo.imagen && (
+                  <img
+                    src={promo.imagen}
+                    alt={promo.titulo}
+                    loading="lazy"
+                    decoding="async"
+                    width="1200"
+                    height="675"
+                    className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
+                )}
+                <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
+                  <div className="min-w-0">
+                    <h2 className="font-display text-lg font-semibold text-text">{promo.titulo}</h2>
+                    {promo.descripcion && (
+                      <p className="mt-1 text-sm leading-relaxed text-text-secondary">{promo.descripcion}</p>
+                    )}
+                  </div>
+                  <span className="font-body text-sm font-semibold text-lila transition-colors group-hover:text-text">
+                    Ver perfumes
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ── Destacados Slider ────────────────────────────────── */}
       <section className="px-6 py-16 max-w-7xl mx-auto">
         <div className="mb-8 flex items-baseline justify-between">
@@ -136,38 +174,6 @@ export default function Home() {
           <HorizontalSlider perfumes={destacados} dolarMedio={dolarMedio} onAgregar={agregar} />
         )}
       </section>
-
-      {/* ── Promociones ──────────────────────────────────────── */}
-      {promociones?.length > 0 && (
-        <section className="px-6 py-16 max-w-7xl mx-auto">
-          <h2 className="mb-8 font-luxury text-2xl tracking-wide text-text sm:text-3xl">Promociones</h2>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {promociones.map((promo) => (
-              <div key={promo.id} className="card-surface card-hover overflow-hidden rounded-2xl group">
-                {promo.imagen && (
-                  <div className="overflow-hidden bg-[#F5F2FB]">
-                    <img
-                      src={promo.imagen}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      width="600"
-                      height="192"
-                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                )}
-                <div className="p-5">
-                  <h3 className="font-display text-lg font-semibold text-text mb-2">{promo.titulo}</h3>
-                  {promo.descripcion && (
-                    <p className="text-sm text-text-secondary leading-relaxed">{promo.descripcion}</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
