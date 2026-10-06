@@ -4,6 +4,8 @@
 // Ese archivo es público (va en el bundle del asistente), así que solo exporta
 // datos neutros por perfume:
 //   i: perfume en el que se inspira (solo si es una referencia confiable)
+//   s: similitud estimada con esa referencia (solo cuando hay `i`), para ordenar
+//      los parecidos de más a menos fiel
 //   u: uso ideal (C día·calor, O día·oficina, N noche·salidas, F noche·frío, T todo uso, K infantil)
 //   c: palabras clave de sus notas reales (solo vocabulario de notas)
 //   r: 1 si es de las mejores recomendaciones (solo marca positiva: no hay
@@ -52,8 +54,10 @@ const { perfumes } = JSON.parse(readFileSync(ORIGEN, 'utf8'));
 const salida = {};
 for (const p of perfumes) {
   const texto = normalizar(p.perfil);
+  const i = inspiracionPublica(p);
   const datos = {
-    i: inspiracionPublica(p),
+    i,
+    s: i ? p.similitud : undefined,
     u: USO[p.uso],
     c: NOTAS.filter((n) => texto.includes(n)).join(' ') || undefined,
     r: p.categoria === 'A' || p.categoria === 'D' || (p.categoria === 'B' && p.similitud >= 85) ? 1 : undefined,

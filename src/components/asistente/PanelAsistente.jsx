@@ -1,20 +1,41 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, X, RotateCcw, Undo2, ShoppingBag } from 'lucide-react';
+import { Sparkles, X, RotateCcw, Undo2, ShoppingBag, Search, Check } from 'lucide-react';
 import { usePerfumes } from '../../hooks/usePerfumes';
 import { useDolarBlue } from '../../hooks/useDolarBlue';
 import { useCart } from '../../context/CartContext';
 import {
-  AROMAS, MOMENTOS, GENEROS_ASISTENTE, recomendar, rangosDePresupuesto, inspiracion,
+  AROMAS, EVITAR, MOMENTOS, GENEROS_ASISTENTE, recomendar, rangosDePresupuesto, inspiracion,
+  referenciasDisponibles, buscarReferencias, nombreCorto,
 } from '../../utils/recomendador';
 import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from '../perfumes/ImagenProducto';
 import { BotonFavorito } from '../perfumes/BotonFavorito';
 
 const POR_TANDA = 3;
+const REFERENCIAS_EN_BOTONES = 8;
+const OTRA_REFERENCIA = '__otra';
+
+const buscaParecido = (r) => Boolean(r.parecido) && r.parecido !== 'no';
+const caminoGeneral = (r) => r.parecido === 'no';
+
+// Lo que no tiene sentido ofrecer para evitar según el aroma y el matiz elegidos
+// (si eligió "Dulces" o "Cuero y tabaco", no se le pregunta si quiere evitarlos).
+const CONTRADICE = {
+  dulce: 'dulce', floral: 'floral', vainilla: 'dulce', cafe: 'dulce', cuero: 'cuero', oud: 'oud',
+  frutal: 'frutal', rosa: 'floral', blancas: 'floral',
+};
+const evitablesPara = (r) => {
+  const excluidos = new Set([CONTRADICE[r.aroma], CONTRADICE[r.variante]].filter(Boolean));
+  return Object.entries(EVITAR).filter(([valor]) => !excluidos.has(valor));
+};
 
 // Las preguntas, en orden. `texto` y `opciones` reciben las respuestas previas
-// (para hablarle distinto a quien compra para regalar) y los rangos de precio.
+// (para hablarle distinto a quien compra para regalar) y el contexto
+// ({ rangos, perfumes }). `mostrar` decide si la pregunta aplica: si se elige
+// un perfume de referencia, se saltean aroma, matiz, evitar y momento.
+// `tipo`: 'opciones' (una sola), 'multiple' (varias + Listo) o 'parecido'
+// (botones de referencias + buscador).
 const PASOS = [
   {
     id: 'para',
@@ -38,20 +59,54 @@ const PASOS = [
       })),
   },
   {
+    id: 'parecido',
+    tipo: 'parecido',
+    texto: (r) =>
+      r.para === 'regalo'
+        ? '¿Le gusta algún perfume conocido? Te muestro los nuestros que más se le parecen.'
+        : '¿Buscás algo parecido a algún perfume conocido?',
+    opciones: (r, { perfumes }) => [
+      { valor: 'no', etiqueta: 'No, quiero descubrir' },
+      ...referenciasDisponibles(perfumes, r.genero).slice(0, REFERENCIAS_EN_BOTONES),
+      { valor: OTRA_REFERENCIA, etiqueta: 'Otro…', icono: true },
+    ],
+  },
+  {
     id: 'aroma',
+    mostrar: caminoGeneral,
     texto: (r) => (r.para === 'regalo' ? '¿Qué tipo de aromas le gustan?' : '¿Qué tipo de aromas te gustan más?'),
     opciones: () =>
       Object.entries(AROMAS).map(([valor, a]) => ({ valor, etiqueta: a.etiqueta, detalle: a.detalle })),
   },
   {
+    id: 'variante',
+    mostrar: (r) => caminoGeneral(r) && Boolean(r.aroma) && r.aroma !== 'sorpresa',
+    texto: () => '¿Algún matiz en especial?',
+    opciones: (r) => [
+      ...Object.entries(AROMAS[r.aroma]?.variantes ?? {}).map(([valor, v]) => ({ valor, etiqueta: v.etiqueta })),
+      { valor: 'igual', etiqueta: 'Me da igual' },
+    ],
+  },
+  {
+    id: 'evitar',
+    tipo: 'multiple',
+    mostrar: caminoGeneral,
+    texto: (r) =>
+      r.para === 'regalo'
+        ? '¿Hay algo que sepas que no le gusta? Podés marcar varias.'
+        : '¿Hay algo que prefieras evitar? Podés marcar varias.',
+    opciones: (r) => evitablesPara(r).map(([valor, e]) => ({ valor, etiqueta: e.etiqueta })),
+  },
+  {
     id: 'momento',
+    mostrar: caminoGeneral,
     texto: () => '¿Para qué momento lo querés?',
     opciones: () => Object.entries(MOMENTOS).map(([valor, m]) => ({ valor, etiqueta: m.etiqueta })),
   },
   {
     id: 'presupuesto',
     texto: () => '¿Cuánto querés invertir?',
-    opciones: (_, rangos) => [
+    opciones: (_, { rangos }) => [
       ...rangos.map((rango) => ({
         valor: rango.id,
         etiqueta:
@@ -136,20 +191,27 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
   const { agregar } = useCart();
   const [respuestas, setRespuestas] = useState({});
   const [tandas, setTandas] = useState(1);
+  // Estado de la pregunta en curso: selección múltiple y buscador de referencias.
+  const [seleccion, setSeleccion] = useState([]);
+  const [buscandoOtra, setBuscandoOtra] = useState(false);
+  const [textoReferencia, setTextoReferencia] = useState('');
   const tituloId = useId();
   const listaRef = useRef(null);
   const panelRef = useRef(null);
 
   const rangos = useMemo(() => rangosDePresupuesto(perfumes ?? [], dolarMedio), [perfumes, dolarMedio]);
-  const indicePaso = PASOS.findIndex((p) => !(p.id in respuestas));
-  const pasoActual = indicePaso === -1 ? null : PASOS[indicePaso];
+  const contexto = { rangos, perfumes };
+  const pasosVisibles = PASOS.filter((p) => !p.mostrar || p.mostrar(respuestas));
+  const indicePaso = pasosVisibles.findIndex((p) => !(p.id in respuestas));
+  const pasoActual = indicePaso === -1 ? null : pasosVisibles[indicePaso];
   const terminado = !pasoActual;
 
-  const resultados = useMemo(
-    () => (terminado ? recomendar(perfumes, respuestas, { dolarMedio, rangos }) : []),
+  const { lista: resultados, referenciaSinResultados } = useMemo(
+    () => (terminado ? recomendar(perfumes, respuestas, { dolarMedio, rangos }) : { lista: [] }),
     [terminado, perfumes, respuestas, dolarMedio, rangos]
   );
   const visibles = resultados.slice(0, tandas * POR_TANDA);
+  const sugerencias = buscandoOtra ? buscarReferencias(perfumes, respuestas.genero, textoReferencia) : [];
 
   // Siempre mostrar lo último de la conversación y llevar el foco a las
   // nuevas opciones (para que con teclado se pueda seguir sin el mouse).
@@ -158,7 +220,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
     const lista = listaRef.current;
     if (lista) lista.scrollTop = lista.scrollHeight;
     panelRef.current?.querySelector('[data-opcion]')?.focus({ preventScroll: true });
-  }, [abierto, indicePaso, tandas]);
+  }, [abierto, indicePaso, tandas, buscandoOtra]);
 
   useEffect(() => {
     if (!abierto) return undefined;
@@ -167,23 +229,68 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
     return () => document.removeEventListener('keydown', onKey);
   }, [abierto, onCerrar]);
 
-  function responder(id, valor) {
-    setRespuestas((r) => ({ ...r, [id]: valor }));
+  function limpiarPregunta() {
+    setSeleccion([]);
+    setBuscandoOtra(false);
+    setTextoReferencia('');
     setTandas(1);
   }
 
+  // Responder una pregunta borra las respuestas de las que vienen después:
+  // así cambiar de camino (con o sin referencia) no arrastra respuestas viejas.
+  function responder(id, valor) {
+    const posicion = PASOS.findIndex((p) => p.id === id);
+    setRespuestas((r) => {
+      const previas = Object.fromEntries(
+        Object.entries(r).filter(([clave]) => PASOS.findIndex((p) => p.id === clave) < posicion)
+      );
+      return { ...previas, [id]: valor };
+    });
+    limpiarPregunta();
+  }
+
+  function elegirOpcion(paso, valor) {
+    if (paso.tipo === 'multiple') {
+      setSeleccion((s) => (s.includes(valor) ? s.filter((v) => v !== valor) : [...s, valor]));
+    } else if (paso.tipo === 'parecido' && valor === OTRA_REFERENCIA) {
+      setBuscandoOtra(true);
+    } else {
+      responder(paso.id, valor);
+    }
+  }
+
   function deshacer() {
-    const respondidos = PASOS.filter((p) => p.id in respuestas);
+    const respondidos = pasosVisibles.filter((p) => p.id in respuestas);
     const ultimo = respondidos[respondidos.length - 1];
     if (!ultimo) return;
     setRespuestas(({ [ultimo.id]: _, ...resto }) => resto);
-    setTandas(1);
+    limpiarPregunta();
   }
 
   if (!abierto) return null;
 
-  const etiquetaDe = (paso, valor) =>
-    paso.opciones(respuestas, rangos).find((o) => o.valor === valor)?.etiqueta ?? valor;
+  const etiquetaDe = (paso, valor) => {
+    if (paso.tipo === 'multiple') {
+      return valor.length ? valor.map((v) => EVITAR[v]?.etiqueta ?? v).join(', ') : 'Nada en especial';
+    }
+    if (paso.tipo === 'parecido') return valor === 'no' ? 'No, quiero descubrir' : nombreCorto(valor);
+    return paso.opciones(respuestas, contexto).find((o) => o.valor === valor)?.etiqueta ?? valor;
+  };
+
+  const claseOpcion =
+    'rounded-2xl border px-3.5 py-2 text-left font-body text-sm text-text transition-colors hover:border-violet hover:bg-violet/25';
+
+  let mensajeFinal = 'No encontré perfumes con esas características. Probá cambiar alguna respuesta.';
+  if (visibles.length) {
+    const tuyo = respuestas.para === 'regalo' ? 'le van' : 'te van';
+    if (buscaParecido(respuestas) && !referenciaSinResultados) {
+      mensajeFinal = `¡Listo! Estos son los nuestros más parecidos a ${nombreCorto(respuestas.parecido)}:`;
+    } else if (referenciaSinResultados) {
+      mensajeFinal = `No tengo alternativas a ${nombreCorto(respuestas.parecido)} para ese perfil, pero estos ${tuyo} muy bien:`;
+    } else {
+      mensajeFinal = `¡Listo! Estos son los que mejor ${tuyo}:`;
+    }
+  }
 
   return (
     <section
@@ -218,7 +325,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
 
       {/* Conversación */}
       <div ref={listaRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4" aria-live="polite">
-        {PASOS.slice(0, terminado ? PASOS.length : indicePaso).map((paso) => (
+        {pasosVisibles.slice(0, terminado ? pasosVisibles.length : indicePaso).map((paso) => (
           <div key={paso.id} className="space-y-3">
             <Burbuja de="bot">{paso.texto(respuestas)}</Burbuja>
             <Burbuja de="usuario">{etiquetaDe(paso, respuestas[paso.id])}</Burbuja>
@@ -228,24 +335,89 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
         {pasoActual && (
           <>
             <Burbuja de="bot">{pasoActual.texto(respuestas)}</Burbuja>
-            {pasoActual.id === 'presupuesto' && isLoading ? (
-              <p className="font-body text-xs text-text-secondary">Cargando precios…</p>
+            {(pasoActual.id === 'presupuesto' || pasoActual.tipo === 'parecido') && isLoading ? (
+              <p className="font-body text-xs text-text-secondary">Cargando catálogo…</p>
+            ) : buscandoOtra ? (
+              <div className="space-y-2 pt-1">
+                <label className="flex items-center gap-2 rounded-2xl border border-violet/35 bg-white/[0.04] px-3 py-2 focus-within:border-violet">
+                  <Search size={15} className="text-text-secondary" aria-hidden="true" />
+                  <input
+                    data-opcion=""
+                    type="text"
+                    value={textoReferencia}
+                    onChange={(e) => setTextoReferencia(e.target.value)}
+                    placeholder="Escribí el perfume (ej.: Sauvage)"
+                    aria-label="Perfume conocido al que se parezca"
+                    className="w-full bg-transparent font-body text-sm text-text placeholder:text-text-secondary focus:outline-none"
+                  />
+                </label>
+                {sugerencias.length > 0 && (
+                  <div className="flex flex-wrap gap-2" role="group" aria-label="Perfumes encontrados">
+                    {sugerencias.map((s) => (
+                      <button
+                        key={s.valor}
+                        type="button"
+                        onClick={() => responder('parecido', s.valor)}
+                        className={`${claseOpcion} border-violet/35 bg-violet/10`}
+                      >
+                        {s.etiqueta}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {textoReferencia.trim().length >= 3 && sugerencias.length === 0 && (
+                  <p className="font-body text-xs text-text-secondary">
+                    No tenemos alternativas a ese perfume. Probá con otro nombre o seguí sin referencia.
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setBuscandoOtra(false)}
+                    className="font-body text-xs text-text-secondary underline-offset-2 hover:text-text hover:underline"
+                  >
+                    Ver los más pedidos
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => responder('parecido', 'no')}
+                    className="font-body text-xs text-text-secondary underline-offset-2 hover:text-text hover:underline"
+                  >
+                    Seguir sin referencia
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="flex flex-wrap gap-2 pt-1" role="group" aria-label="Opciones">
-                {pasoActual.opciones(respuestas, rangos).map((opcion, i) => (
+                {pasoActual.opciones(respuestas, contexto).map((opcion, i) => {
+                  const marcada = pasoActual.tipo === 'multiple' && seleccion.includes(opcion.valor);
+                  return (
+                    <button
+                      key={opcion.valor}
+                      type="button"
+                      data-opcion={i === 0 ? '' : undefined}
+                      aria-pressed={pasoActual.tipo === 'multiple' ? marcada : undefined}
+                      onClick={() => elegirOpcion(pasoActual, opcion.valor)}
+                      className={`${claseOpcion} ${marcada ? 'border-violet bg-violet/40' : 'border-violet/35 bg-violet/10'} ${opcion.icono || marcada ? 'flex items-center gap-1.5' : ''}`}
+                    >
+                      {marcada && <Check size={14} aria-hidden="true" />}
+                      {opcion.icono && <Search size={14} aria-hidden="true" />}
+                      {opcion.etiqueta}
+                      {opcion.detalle && (
+                        <span className="block text-xs text-text-secondary">{opcion.detalle}</span>
+                      )}
+                    </button>
+                  );
+                })}
+                {pasoActual.tipo === 'multiple' && (
                   <button
-                    key={opcion.valor}
                     type="button"
-                    data-opcion={i === 0 ? '' : undefined}
-                    onClick={() => responder(pasoActual.id, opcion.valor)}
-                    className="rounded-2xl border border-violet/35 bg-violet/10 px-3.5 py-2 text-left font-body text-sm text-text transition-colors hover:border-violet hover:bg-violet/25"
+                    onClick={() => responder(pasoActual.id, seleccion)}
+                    className="rounded-2xl bg-violet px-4 py-2 font-body text-sm font-semibold text-white transition-colors hover:bg-violet-light"
                   >
-                    {opcion.etiqueta}
-                    {opcion.detalle && (
-                      <span className="block text-xs text-text-secondary">{opcion.detalle}</span>
-                    )}
+                    {seleccion.length ? 'Listo' : 'Nada en especial'}
                   </button>
-                ))}
+                )}
               </div>
             )}
           </>
@@ -253,13 +425,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
 
         {terminado && (
           <>
-            <Burbuja de="bot">
-              {visibles.length
-                ? respuestas.para === 'regalo'
-                  ? '¡Listo! Estos son los que mejor le van:'
-                  : '¡Listo! Estos son los que mejor te van:'
-                : 'No encontré perfumes con esas características. Probá cambiar alguna respuesta.'}
-            </Burbuja>
+            <Burbuja de="bot">{mensajeFinal}</Burbuja>
             {visibles.length > 0 && (
               <ul className="space-y-2.5" aria-label="Perfumes recomendados">
                 {visibles.map((item) => (
@@ -282,7 +448,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
                 type="button"
                 onClick={() => {
                   setRespuestas({});
-                  setTandas(1);
+                  limpiarPregunta();
                 }}
                 className="flex items-center gap-1.5 rounded-2xl px-3 py-2 font-body text-sm text-text-secondary transition-colors hover:text-text"
               >
