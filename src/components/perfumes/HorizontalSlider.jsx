@@ -106,7 +106,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
                   <button
                     type="button"
                     onClick={() => onAgregar(perfume)}
-                    aria-label={`Agregar ${nombreCompleto(perfume)} al carrito`}
+                    aria-label={`Agregar al carrito: ${nombreCompleto(perfume)}`}
                     className="w-full py-2.5 px-4 bg-violet/10 hover:bg-violet text-text rounded-xl font-medium text-sm transition-colors duration-300 border border-violet/30 hover:border-violet"
                   >
                     Agregar al carrito
