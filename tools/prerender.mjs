@@ -15,11 +15,14 @@
 //
 // Si falta Chrome o falla algo, deja todos los archivos como copias del shell
 // (la web funciona igual, solo sin pre-render): nunca rompe el build.
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { preview } from 'vite';
 import { listarColeccion, leerDocumento } from './lib/firestore-rest.mjs';
+import { preciosPorMetodo, getMejorPromo } from '../src/utils/precios.js';
+import { hashTexto } from '../src/utils/hash.js';
 
 const DIST = 'dist';
+const SITE = 'https://fraganzia-e9b70.web.app';
 const PUERTO = 4180;
 const DOLAR_API = 'https://dolarapi.com/v1/dolares/blue';
 
@@ -105,6 +108,7 @@ const shell = (html) => prioridadNormal(sinCanonical(html));
 
 const plantilla = readFileSync(`${DIST}/index.html`, 'utf8');
 let conDatos = plantilla;
+let datos = null;
 
 function escribirShells(html) {
   writeFileSync(`${DIST}/app.html`, shell(html));
@@ -114,7 +118,7 @@ function escribirShells(html) {
 }
 
 try {
-  const datos = await tomarFoto();
+  datos = await tomarFoto();
   conDatos = plantilla.replace('</head>', `    ${scriptDatos(datos)}\n  </head>`);
   console.log(`prerender: foto de datos con ${datos.perfumes.length} perfumes`);
 } catch (err) {
@@ -129,6 +133,79 @@ const chrome = buscarChrome();
 if (!chrome) {
   console.warn('prerender: no se encontró Chrome (definí CHROME_PATH); se sirven shells sin pre-render');
   process.exit(0);
+}
+
+// Al compartir un link de WhatsApp o Instagram no corre JavaScript: el título, la foto
+// y el precio tienen que estar ya en el HTML de cada perfume. Estas páginas pisan el
+// rewrite de /perfume/** (Hosting sirve primero el archivo que existe) y siguen siendo
+// el mismo esqueleto de la app, pero con datos de un solo perfume para no pesar de más.
+function urlImagen(url) {
+  if (!url) return `${SITE}/icon-512.png`;
+  const hash = hashTexto(url);
+  if (existsSync(`${DIST}/img/p/${hash}-800.webp`)) return `${SITE}/img/p/${hash}-800.webp`;
+  return url.startsWith('/') ? `${SITE}${url}` : url;
+}
+
+const reemplazar = (html, regex, valor) => html.replace(regex, (_, a, b) => `${a}${escaparAttr(valor)}${b}`);
+
+async function paginasPorPerfume(rootEsqueleto) {
+  if (!datos) return;
+  const descripciones = new Map(
+    (await listarColeccion('perfumes', { campos: ['descripcion'] })).map((p) => [p.id, p.descripcion])
+  );
+  const dolarMedio = datos.dolarBlue ? (datos.dolarBlue.compra + datos.dolarBlue.venta) / 2 : null;
+  mkdirSync(`${DIST}/perfume`, { recursive: true });
+
+  for (const p of datos.perfumes) {
+    const descripcion = descripciones.get(p.id);
+    const base = dolarMedio && p.precioUSD ? preciosPorMetodo(p.precioUSD, dolarMedio).precioTransferencia : null;
+    const pct = getMejorPromo(p.id, datos.promociones)?.descuentoPorcentaje ?? 0;
+    const precio = base && (pct ? Math.round((base * (1 - pct / 100)) / 1000) * 1000 : base);
+
+    const titulo = `${p.nombre} — ${p.marca} | Fraganzia`;
+    const resumen =
+      descripcion?.slice(0, 155) || `${p.nombre} de ${p.marca}, perfume original. Precio en pesos y envíos en AMBA.`;
+    const url = `${SITE}/perfume/${p.id}`;
+    const imagen = urlImagen(p.imagenes?.[0]);
+    const productoLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: p.nombre,
+      brand: { '@type': 'Brand', name: p.marca },
+      image: imagen,
+      description: descripcion || undefined,
+      ...(precio && {
+        offers: { '@type': 'Offer', url, priceCurrency: 'ARS', price: precio, availability: 'https://schema.org/InStock' },
+      }),
+    };
+    const soloEste = {
+      generadoEn: datos.generadoEn,
+      promociones: datos.promociones,
+      config: datos.config,
+      dolarBlue: datos.dolarBlue,
+      perfume: { ...p, descripcion },
+    };
+    const jsonLd = JSON.stringify(productoLd).replace(/</g, '\\u003c');
+
+    let html = plantilla
+      .replace('</head>', () => `    ${scriptDatos(soloEste)}\n    <script type="application/ld+json">${jsonLd}</script>\n  </head>`)
+      .replace('<div id="root"></div>', () => `<div id="root">${rootEsqueleto}</div>`);
+    html = shell(html).replace(
+      /<title>[^<]*<\/title>/,
+      () => `<title>${escaparAttr(titulo)}</title>\n    <link rel="canonical" href="${url}" />`
+    );
+    html = reemplazar(html, /(<meta name="description"\s+content=")[^"]*(")/, resumen);
+    html = reemplazar(html, /(<meta property="og:title" content=")[^"]*(")/, titulo);
+    html = reemplazar(html, /(<meta property="og:description"\s+content=")[^"]*(")/, resumen);
+    html = reemplazar(html, /(<meta property="og:url" content=")[^"]*(")/, url);
+    html = reemplazar(html, /(<meta property="og:image" content=")[^"]*(")/, imagen);
+    html = html
+      .replace('<meta property="og:type" content="website" />', '<meta property="og:type" content="product" />')
+      .replace('<meta name="twitter:card" content="summary" />', '<meta name="twitter:card" content="summary_large_image" />');
+
+    writeFileSync(`${DIST}/perfume/${p.id}.html`, html);
+  }
+  console.log(`prerender: ${datos.perfumes.length} páginas de perfume`);
 }
 
 const { default: puppeteer } = await import('puppeteer-core');
@@ -178,6 +255,7 @@ try {
     writeFileSync(`${DIST}/${archivo}`, html);
   }
   console.log(`prerender: ${PAGINAS.length} páginas`);
+  await paginasPorPerfume(resultados['perfume.html'].root);
 } catch (err) {
   console.warn(`prerender: falló (${err.message}); se sirven shells sin pre-render`);
 } finally {

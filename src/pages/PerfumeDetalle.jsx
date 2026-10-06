@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { Minus, Plus, ChevronLeft, MessageCircle } from 'lucide-react';
 import { usePerfume } from '../hooks/usePerfume';
-import { usePerfumes } from '../hooks/usePerfumes';
 import { incrementarVista } from '../services/estadisticasService';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart, CANTIDAD_MAX } from '../context/CartContext';
@@ -44,7 +44,8 @@ function precioConPromo(precio, pct) {
 export default function PerfumeDetalle() {
   const { id } = useParams();
   const { data: perfume, isLoading } = usePerfume(id);
-  const { data: catalogo } = usePerfumes();
+  // Solo se lee lo que ya está en caché (si vino del catálogo): pedir los ~400 perfumes por una ficha costaría lecturas de más.
+  const catalogo = useQueryClient().getQueryData(['perfumes', 'public']);
   const { dolarMedio } = useDolarBlue();
   const { data: config } = useConfig();
   const { data: promociones } = usePromocionesActivas();

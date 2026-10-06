@@ -28,6 +28,8 @@ export function sembrarDatosIniciales(queryClient) {
   };
 
   sembrar(['perfumes', 'public'], datos.perfumes);
+  // Páginas de un solo perfume (tools/prerender.mjs): no llevan todo el catálogo.
+  if (datos.perfume) sembrar(['perfume', datos.perfume.id], datos.perfume);
   sembrar(['promociones', 'activas'], datos.promociones);
   sembrar(['config', 'general'], datos.config);
   sembrar(['dolarBlue'], datos.dolarBlue);
