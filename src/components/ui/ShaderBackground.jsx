@@ -4,21 +4,16 @@
 // repintar tres capas gigantes difuminadas en cada frame, y con ellas todo lo
 // que tuviera backdrop-filter encima. Los gradientes radiales ya son difusos
 // por sí mismos, así que el look es el mismo con costo de pintado casi cero.
-export function ShaderBackground({ className = '', opacity = 0.6 }) {
+export function ShaderBackground({ className = '' }) {
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none fixed inset-0 z-0 bg-bg ${className}`}
-      style={{
-        opacity,
-        // El primero va arriba: el velo oscuro atenúa los orbes hacia abajo.
-        backgroundImage: [
-          'linear-gradient(180deg, rgba(6,4,13,0.2) 0%, rgba(6,4,13,0.8) 50%, #06040D 100%)',
-          'radial-gradient(circle at 15% 10%, rgba(123,47,190,0.35) 0%, rgba(123,47,190,0) 45%)',
-          'radial-gradient(circle at 90% 20%, rgba(192,132,252,0.22) 0%, rgba(192,132,252,0) 40%)',
-          'radial-gradient(circle at 55% 95%, rgba(155,89,208,0.28) 0%, rgba(155,89,208,0) 45%)',
-        ].join(', '),
-      }}
+      className={`shader-bg pointer-events-none fixed inset-0 z-0 bg-bg opacity-50 ${className}`}
+      // Nada de `style` inline: cualquier valor ahí (gradientes, colores hex,
+      // incluso un simple opacity) sale re-serializado distinto por el
+      // navegador al capturar el HTML pre-renderizado (ej. "opacity: 0.5;"
+      // vs el "opacity:0.5" que genera React), y React lo marca como
+      // mismatch al hidratar. Todo el look va por clases CSS fijas.
     />
   );
 }

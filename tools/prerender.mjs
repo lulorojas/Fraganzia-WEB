@@ -208,6 +208,27 @@ async function paginasPorPerfume(rootEsqueleto) {
   console.log(`prerender: ${datos.perfumes.length} páginas de perfume`);
 }
 
+// El navegador serializa `style="..."` con espacio después de los ":" y ";"
+// final (ej. "opacity: 0.5;"), pero React compara la hidratación contra su
+// propio formato compacto (ej. "opacity:0.5"). Si no se normaliza, CUALQUIER
+// elemento con `style` inline rompe la hidratación apenas React toca esa
+// página (aunque el contenido sea idéntico). Reescribe cada atributo style
+// capturado al mismo formato que generaría React.
+function normalizarEstilosInline(html) {
+  return html.replace(/ style="([^"]*)"/g, (match, valor) => {
+    const declaraciones = valor
+      .split(';')
+      .map((d) => d.trim())
+      .filter(Boolean)
+      .map((d) => {
+        const i = d.indexOf(':');
+        if (i === -1) return d;
+        return `${d.slice(0, i).trim()}:${d.slice(i + 1).trim()}`;
+      });
+    return ` style="${declaraciones.join(';')}"`;
+  });
+}
+
 const { default: puppeteer } = await import('puppeteer-core');
 const servidor = await preview({ preview: { port: PUERTO, strictPort: false }, logLevel: 'silent' });
 const base = servidor.resolvedUrls.local[0].replace(/\/$/, '');
@@ -245,6 +266,7 @@ try {
         canonical: document.querySelector('link[rel="canonical"]')?.href ?? '',
       },
     }));
+    resultados[pagina.archivo].root = normalizarEstilosInline(resultados[pagina.archivo].root);
     await tab.close();
   }
 

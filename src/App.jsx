@@ -32,7 +32,7 @@ export default function App() {
           <CartProvider>
             <FavoritosProvider>
               <ToastProvider>
-                <ShaderBackground opacity={0.5} />
+                <ShaderBackground />
                 <div className="relative z-10">
                   <AppRouter />
                 </div>
