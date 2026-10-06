@@ -7,6 +7,7 @@ import { usePromocionesActivas } from '../hooks/usePromociones';
 import { HorizontalSlider } from '../components/perfumes/HorizontalSlider';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { LogoFraganzia } from '../components/ui/LogoFraganzia';
+import { abrirAsistente } from '../components/asistente/BotonAsistente';
 
 export default function Home() {
   const { data: destacados, isLoading } = usePerfumes({ destacado: true });
@@ -64,26 +65,24 @@ export default function Home() {
 
             {/* CTAs mejorados */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-12 animate-fade-up w-full sm:w-auto">
-              <Link
-                to="/catalogo"
+              <button
+                type="button"
+                onClick={abrirAsistente}
                 className="relative group/btn px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-body font-bold text-sm sm:text-base text-text tracking-wide overflow-hidden shadow-2xl hover:shadow-violet/50 transition-all duration-300 hover:scale-105 text-center"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-violet via-violet-light to-violet" />
                 <div className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity bg-gradient-to-r from-white/20 to-transparent" />
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  Ver Catálogo
                   <Sparkles size={16} className="sm:w-[18px] sm:h-[18px]" aria-hidden="true" />
+                  Encontrá tu perfume
                 </span>
-              </Link>
-              <a
-                href="https://www.instagram.com/fraganzia.ar/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center justify-center gap-2 sm:gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full glass-hover border border-lila/30 font-body text-sm sm:text-base text-text-secondary hover:text-text transition-all duration-300"
+              </button>
+              <Link
+                to="/catalogo"
+                className="flex items-center justify-center px-6 sm:px-8 py-3.5 sm:py-4 rounded-full glass-hover border border-lila/30 font-body text-sm sm:text-base text-text transition-all duration-300 hover:border-lila/60"
               >
-                <Instagram size={18} className="sm:w-5 sm:h-5 group-hover:text-lila transition-colors" aria-hidden="true" />
-                <span>@fraganzia.ar</span>
-              </a>
+                Ver catálogo
+              </Link>
             </div>
 
             {/* Ornamental divider - más elaborado */}
@@ -112,6 +111,18 @@ export default function Home() {
                 <span className="whitespace-nowrap">Consultas WhatsApp</span>
               </span>
             </div>
+
+            <p className="mt-6 text-center text-xs text-text-secondary">
+              <a
+                href="https://www.instagram.com/fraganzia.ar/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 transition-colors hover:text-lila"
+              >
+                <Instagram size={14} aria-hidden="true" />
+                Seguinos en @fraganzia.ar
+              </a>
+            </p>
           </div>
         </div>
       </section>

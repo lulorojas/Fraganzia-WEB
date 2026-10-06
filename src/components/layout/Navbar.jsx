@@ -1,12 +1,13 @@
 import { lazy, Suspense, useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ShoppingBag, Instagram, User, LogOut, Settings, Menu, X, Heart } from 'lucide-react';
+import { ShoppingBag, Instagram, User, LogOut, Settings, Menu, X, Heart, Sparkles } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useFavoritos } from '../../context/FavoritosContext';
 import { LogoFraganzia } from '../ui/LogoFraganzia';
+import { abrirAsistente } from '../asistente/BotonAsistente';
 
 // El modal de login (con react-hook-form, zod y framer-motion) solo se
 // descarga cuando alguien lo abre: la mayoría de las visitas nunca lo usa.
@@ -89,6 +90,16 @@ export function Navbar() {
 
           {/* Actions derecha */}
           <div className="flex items-center justify-end gap-1 sm:gap-2 font-body text-text-secondary">
+            <button
+              type="button"
+              onClick={abrirAsistente}
+              aria-label="Encontrá tu perfume"
+              className="mr-1 flex h-10 items-center gap-1.5 rounded-full bg-gradient-to-br from-violet to-violet-light px-3 text-sm font-semibold text-white shadow-md shadow-violet/30 transition-transform duration-200 hover:scale-105 active:scale-95 sm:px-4"
+            >
+              <Sparkles size={16} aria-hidden="true" />
+              <span className="hidden sm:inline">Encontrá tu perfume</span>
+            </button>
+
             <a
               href="https://www.instagram.com/fraganzia.ar/"
               target="_blank"
@@ -205,6 +216,16 @@ export function Navbar() {
         {mobileOpen && (
           <div id="menu-mobile" className="lg:hidden border-t border-violet/10 px-4 pb-4 pt-2">
             <ul className="flex flex-col font-body">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => { setMobileOpen(false); abrirAsistente(); }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-3 text-base font-semibold text-lila transition-colors hover:bg-violet/10 hover:text-text"
+                >
+                  <Sparkles size={18} aria-hidden="true" />
+                  Encontrá tu perfume
+                </button>
+              </li>
               {LINKS.map(({ to, label }) => (
                 <li key={to}>
                   <NavLink

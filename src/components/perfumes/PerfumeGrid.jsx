@@ -1,42 +1,98 @@
 import { useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PerfumeCard } from './PerfumeCard';
 import { useConfig } from '../../hooks/useConfig';
 import { usePromocionesActivas } from '../../hooks/usePromociones';
 
 const POR_PAGINA = 24;
 
+// Páginas a mostrar: primera, última y las vecinas a la actual; "…" en los saltos.
+function paginasVisibles(actual, total) {
+  const set = new Set([1, total, actual - 1, actual, actual + 1]);
+  const orden = [...set].filter((n) => n >= 1 && n <= total).sort((a, b) => a - b);
+  return orden.flatMap((n, i) => (i > 0 && n - orden[i - 1] > 1 ? ['…', n] : [n]));
+}
+
+function Paginador({ pagina, total, onCambiar }) {
+  const base =
+    'flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 font-body text-sm transition-base';
+  const inactivo = 'border-border text-text-secondary hover:border-violet hover:text-text';
+  const deshabilitado = 'disabled:pointer-events-none disabled:opacity-40';
+
+  return (
+    <nav aria-label="Páginas del catálogo" className="mt-8 flex flex-wrap items-center justify-center gap-2">
+      <button
+        type="button"
+        onClick={() => onCambiar(pagina - 1)}
+        disabled={pagina === 1}
+        aria-label="Página anterior"
+        className={`${base} ${inactivo} ${deshabilitado}`}
+      >
+        <ChevronLeft size={18} aria-hidden="true" />
+      </button>
+      {paginasVisibles(pagina, total).map((n, i) =>
+        n === '…' ? (
+          <span key={`hueco-${i}`} className="px-1 text-text-secondary" aria-hidden="true">…</span>
+        ) : (
+          <button
+            key={n}
+            type="button"
+            onClick={() => onCambiar(n)}
+            aria-label={`Página ${n}`}
+            aria-current={n === pagina ? 'page' : undefined}
+            className={`${base} ${n === pagina ? 'gradient-violet border-transparent font-semibold text-text' : inactivo}`}
+          >
+            {n}
+          </button>
+        )
+      )}
+      <button
+        type="button"
+        onClick={() => onCambiar(pagina + 1)}
+        disabled={pagina === total}
+        aria-label="Página siguiente"
+        className={`${base} ${inactivo} ${deshabilitado}`}
+      >
+        <ChevronRight size={18} aria-hidden="true" />
+      </button>
+    </nav>
+  );
+}
+
 /**
- * Renderiza de a POR_PAGINA perfumes y agrega más al acercarse al final (o con
- * el botón, para teclado y lectores de pantalla). Con ~400 perfumes, dibujar
- * todo de una vez generaba más de 7.000 nodos y bloqueaba el celular.
+ * Muestra el catálogo de a POR_PAGINA perfumes, con paginador abajo. Con ~400
+ * perfumes, dibujar todo de una vez generaba más de 7.000 nodos y bloqueaba el
+ * celular.
  */
 export function PerfumeGrid({ perfumes, dolarMedio, onAgregar, vacio }) {
   const { data: config } = useConfig();
   const { data: promociones } = usePromocionesActivas();
-  const [visibles, setVisibles] = useState(POR_PAGINA);
-  const sentinelaRef = useRef(null);
+  const [pagina, setPagina] = useState(1);
+  const listaRef = useRef(null);
 
   // Si cambian los filtros, volver a la primera página.
-  useEffect(() => setVisibles(POR_PAGINA), [perfumes]);
+  useEffect(() => setPagina(1), [perfumes]);
 
-  const hayMas = (perfumes?.length ?? 0) > visibles;
+  const total = Math.max(1, Math.ceil((perfumes?.length ?? 0) / POR_PAGINA));
+  const actual = Math.min(pagina, total);
 
-  useEffect(() => {
-    if (!hayMas || !sentinelaRef.current || !('IntersectionObserver' in window)) return undefined;
-    const observer = new IntersectionObserver(
-      ([entrada]) => entrada.isIntersecting && setVisibles((v) => v + POR_PAGINA),
-      { rootMargin: '600px 0px' }
-    );
-    observer.observe(sentinelaRef.current);
-    return () => observer.disconnect();
-  }, [hayMas, visibles]);
+  const cambiarPagina = (n) => {
+    setPagina(n);
+    listaRef.current?.scrollIntoView({ block: 'start' });
+  };
 
   if (!perfumes?.length) return vacio ?? null;
 
+  const desde = (actual - 1) * POR_PAGINA;
+
   return (
     <>
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4" aria-label="Perfumes">
-        {perfumes.slice(0, visibles).map((perfume, i) => (
+      <ul
+        ref={listaRef}
+        className="grid scroll-mt-24 grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
+        aria-label="Perfumes"
+      >
+        {perfumes.slice(desde, desde + POR_PAGINA).map((perfume, i) => (
           <li key={perfume.id} className="flex">
             <PerfumeCard
               perfume={perfume}
@@ -49,16 +105,13 @@ export function PerfumeGrid({ perfumes, dolarMedio, onAgregar, vacio }) {
           </li>
         ))}
       </ul>
-      {hayMas && (
-        <div ref={sentinelaRef} className="mt-8 flex justify-center">
-          <button
-            type="button"
-            onClick={() => setVisibles((v) => v + POR_PAGINA)}
-            className="rounded-xl border border-violet/30 px-6 py-3 font-body text-sm font-semibold text-text transition-base hover:border-violet hover:bg-violet/20"
-          >
-            Ver más perfumes ({perfumes.length - visibles} restantes)
-          </button>
-        </div>
+      {total > 1 && (
+        <>
+          <Paginador pagina={actual} total={total} onCambiar={cambiarPagina} />
+          <p className="mt-3 text-center font-body text-xs text-text-secondary">
+            Mostrando {desde + 1}–{Math.min(desde + POR_PAGINA, perfumes.length)} de {perfumes.length} perfumes
+          </p>
+        </>
       )}
     </>
   );

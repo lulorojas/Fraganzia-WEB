@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Sparkles } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
@@ -50,6 +51,19 @@ export default function Catalogo() {
       <div className="mb-8">
         <p className="tracking-luxury mb-2 font-body text-xs uppercase text-lila">Colección completa</p>
         <h1 className="font-display text-3xl text-text">Catálogo</h1>
+      </div>
+      <div className="card-surface mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3 sm:px-5">
+        <p className="font-body text-sm text-text-secondary">
+          <span className="text-text">¿No sabés cuál elegir?</span> Respondé unas preguntas y te recomendamos el ideal.
+        </p>
+        <button
+          type="button"
+          onClick={abrirAsistente}
+          className="flex items-center gap-2 rounded-xl bg-gradient-to-br from-violet to-violet-light px-4 py-2.5 font-body text-sm font-semibold text-white shadow-md shadow-violet/30 transition-transform hover:scale-105 active:scale-95"
+        >
+          <Sparkles size={16} aria-hidden="true" />
+          Encontrá tu perfume
+        </button>
       </div>
       <Filtros filtros={filtros} onChange={setFiltros} />
       <div className="mt-6">

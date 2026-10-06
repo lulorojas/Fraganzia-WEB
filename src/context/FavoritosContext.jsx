@@ -1,14 +1,27 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { incrementarFavorito } from '../services/estadisticasService';
 
 const STORAGE_KEY = 'fraganzia_favoritos';
 
+// Sin storage (modo privado): los favoritos duran lo que dura la pestaña.
+let enMemoria = [];
+
 function leer() {
   try {
     const guardado = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return Array.isArray(guardado) ? guardado.filter((id) => typeof id === 'string') : [];
+    enMemoria = Array.isArray(guardado) ? guardado.filter((id) => typeof id === 'string') : [];
   } catch {
-    return [];
+    // Se usa la copia en memoria.
+  }
+  return enMemoria;
+}
+
+function guardar(ids) {
+  enMemoria = ids;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+  } catch {
+    // Ya quedó en memoria.
   }
 }
 
@@ -18,33 +31,36 @@ const FavoritosContext = createContext(null);
  * Perfumes guardados por el visitante. Viven en su navegador (localStorage),
  * sin cuenta ni lecturas a Firestore: solo se guardan los ids y los datos
  * salen del catálogo ya cargado.
+ *
+ * El storage es la fuente de verdad: cada cambio parte de lo guardado y se
+ * escribe en el momento, así otra pestaña abierta no pisa la lista con una
+ * copia vieja.
  */
 export function FavoritosProvider({ children }) {
   const [ids, setIds] = useState(leer);
 
+  // Cambios hechos desde otra pestaña.
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-    } catch {
-      // Sin storage (modo privado): los favoritos duran lo que dura la pestaña.
-    }
-  }, [ids]);
-
-  // Copia en ref para saber, fuera del setState, si se está agregando o sacando
-  // (los efectos como la estadística no van dentro del actualizador de estado).
-  const idsRef = useRef(ids);
-  idsRef.current = ids;
+    const alCambiar = (e) => {
+      if (e.key === null || e.key === STORAGE_KEY) setIds(leer());
+    };
+    window.addEventListener('storage', alCambiar);
+    return () => window.removeEventListener('storage', alCambiar);
+  }, []);
 
   const alternar = useCallback((perfumeId) => {
-    const yaEsta = idsRef.current.includes(perfumeId);
-    setIds((actuales) =>
-      actuales.includes(perfumeId) ? actuales.filter((id) => id !== perfumeId) : [perfumeId, ...actuales]
-    );
+    const actuales = leer();
+    const yaEsta = actuales.includes(perfumeId);
+    const nuevos = yaEsta ? actuales.filter((id) => id !== perfumeId) : [perfumeId, ...actuales];
+    guardar(nuevos);
+    setIds(nuevos);
     if (!yaEsta) incrementarFavorito(perfumeId);
   }, []);
 
   const quitar = useCallback((perfumeIds) => {
-    setIds((actuales) => actuales.filter((id) => !perfumeIds.includes(id)));
+    const nuevos = leer().filter((id) => !perfumeIds.includes(id));
+    guardar(nuevos);
+    setIds(nuevos);
   }, []);
 
   const value = useMemo(() => {
