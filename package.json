@@ -10,7 +10,9 @@
     "deploy": "npm run build && npx --yes firebase-tools@latest deploy --only hosting --project fraganzia-e9b70",
     "deploy:rules": "npx --yes firebase-tools@latest deploy --only firestore:rules,firestore:indexes --project fraganzia-e9b70",
     "test:rules": "npx --yes firebase-tools@latest emulators:exec --only firestore --project demo-fraganzia \"node tools/test-rules.mjs\"",
-    "imagenes": "node tools/localizar-imagenes.mjs"
+    "imagenes": "node tools/localizar-imagenes.mjs",
+    "bot:proveedor": "node tools/bot-proveedor.mjs",
+    "test:bot": "node --test tools/test/*.test.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -34,6 +36,7 @@
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.0",
     "firebase-admin": "^14.1.0",
+    "pdfjs-dist": "^6.4.299",
     "postcss": "^8.4.0",
     "puppeteer-core": "^25.5.0",
     "sharp": "^0.35.4",

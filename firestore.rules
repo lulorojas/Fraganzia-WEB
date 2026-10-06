@@ -191,5 +191,13 @@ service cloud.firestore {
       allow create: if isAdmin();
       allow update, delete: if false;
     }
+
+    // Log del bot de precios del proveedor (tools/bot-proveedor.mjs): lo
+    // escribe el script con la cuenta de servicio (sin pasar por estas
+    // reglas), el admin solo lo lee para ver el resumen de cada corrida.
+    match /botProveedorLog/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
   }
 }

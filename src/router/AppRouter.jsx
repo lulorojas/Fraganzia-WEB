@@ -47,6 +47,7 @@ const AdminStock = lazy(() => import('../pages/admin/AdminStock'));
 const AdminMovimientos = lazy(() => import('../pages/admin/AdminMovimientos'));
 const AdminAuditoria = lazy(() => import('../pages/admin/AdminAuditoria'));
 const AdminAnalytics = lazy(() => import('../pages/admin/AdminAnalytics'));
+const AdminBotProveedor = lazy(() => import('../pages/admin/AdminBotProveedor'));
 
 function PageSuspense({ children }) {
   return (
@@ -101,6 +102,7 @@ export function AppRouter() {
           <Route path="perfumes" element={s(<AdminPerfumes />)} />
           <Route path="pedidos" element={s(<AdminPedidos />)} />
           <Route path="promociones" element={s(<AdminPromociones />)} />
+          <Route path="bot-proveedor" element={s(<AdminBotProveedor />)} />
           <Route path="usuarios" element={s(<AdminUsuarios />)} />
           <Route path="config" element={s(<AdminConfig />)} />
           <Route path="finanzas" element={s(<AdminFinanzasLayout />)}>

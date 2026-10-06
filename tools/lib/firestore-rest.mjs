@@ -38,6 +38,19 @@ function config() {
   return { apiKey, base: `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents` };
 }
 
+const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** GET con reintentos (backoff) ante 429: el REST público de Firestore a veces
+ * tira "rate limit" temporal cuando varios scripts de build leen seguido. */
+async function fetchConReintento(url, intentos = 6) {
+  for (let i = 0; i < intentos; i++) {
+    const res = await fetch(url);
+    if (res.status !== 429) return res;
+    if (i < intentos - 1) await esperar(3000 * (i + 1));
+  }
+  return fetch(url);
+}
+
 /** Todos los documentos de una colección como objetos planos `{ id, ...campos }`. */
 export async function listarColeccion(coleccion, { campos } = {}) {
   const { apiKey, base } = config();
@@ -46,7 +59,7 @@ export async function listarColeccion(coleccion, { campos } = {}) {
   let pageToken = '';
   do {
     const url = `${base}/${coleccion}?pageSize=300${mascara}&key=${apiKey}${pageToken ? `&pageToken=${pageToken}` : ''}`;
-    const res = await fetch(url);
+    const res = await fetchConReintento(url);
     if (!res.ok) throw new Error(`Firestore respondió ${res.status} al leer ${coleccion}`);
     const data = await res.json();
     for (const doc of data.documents ?? []) {
@@ -60,7 +73,7 @@ export async function listarColeccion(coleccion, { campos } = {}) {
 /** Un documento o null si no existe. */
 export async function leerDocumento(ruta) {
   const { apiKey, base } = config();
-  const res = await fetch(`${base}/${ruta}?key=${apiKey}`);
+  const res = await fetchConReintento(`${base}/${ruta}?key=${apiKey}`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`Firestore respondió ${res.status} al leer ${ruta}`);
   return decodificarCampos((await res.json()).fields);
