@@ -42,7 +42,7 @@ const TEXTO_INSPIRACION = {
 const normalizar = (t) => (t ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 function inspiracionPublica(p) {
-  if (!['A', 'B'].includes(p.categoria) || p.certeza === 'baja' || !p.imita) return undefined;
+  if (!['A', 'B'].includes(p.categoria) || (p.certezaOriginal ?? p.certeza) === 'baja' || !p.imita) return undefined;
   if (TEXTO_INSPIRACION[p.imita]) return TEXTO_INSPIRACION[p.imita];
   if (/sin confirmar|sin consenso|intento/i.test(p.imita)) return undefined;
   // Sin aclaraciones entre paréntesis, solo la referencia principal y sin el
