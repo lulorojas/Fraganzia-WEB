@@ -6,6 +6,9 @@ import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from './ImagenProducto';
 import { BotonFavorito } from './BotonFavorito';
 
+// Con decenas de destacados, dibujarlos todos encarece el primer pintado: se muestran los primeros y el resto está en el catálogo.
+const MAX_VISIBLES = 16;
+
 export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
   const scrollRef = useRef(null);
 
@@ -49,7 +52,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
         aria-label="Perfumes destacados"
         tabIndex={0}
       >
-        {perfumes.map((perfume) => {
+        {perfumes.slice(0, MAX_VISIBLES).map((perfume) => {
           const precios = dolarMedio ? preciosPorMetodo(perfume.precioUSD, dolarMedio) : null;
           
           return (
@@ -116,6 +119,18 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
             </div>
           );
         })}
+        {perfumes.length > MAX_VISIBLES && (
+          <Link
+            to="/catalogo"
+            className="card-surface card-hover flex w-[280px] flex-none snap-start flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center"
+          >
+            <span className="font-luxury text-xl tracking-wide text-text">Ver todo el catálogo</span>
+            <span className="font-body text-sm text-text-secondary">
+              Hay {perfumes.length - MAX_VISIBLES} destacados más y el resto de la colección
+            </span>
+            <ChevronRight size={22} className="text-lila" aria-hidden="true" />
+          </Link>
+        )}
       </div>
 
     </div>
