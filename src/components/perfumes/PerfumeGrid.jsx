@@ -68,16 +68,22 @@ export function PerfumeGrid({ perfumes, dolarMedio, onAgregar, vacio }) {
   const { data: config } = useConfig();
   const { data: promociones } = usePromocionesActivas();
   const [pagina, setPagina] = useState(1);
+  // Solo se anima al cambiar de página: en la carga inicial las fotos de arriba son el LCP y no pueden arrancar invisibles.
+  const [animar, setAnimar] = useState(false);
   const listaRef = useRef(null);
 
   // Si cambian los filtros, volver a la primera página.
-  useEffect(() => setPagina(1), [perfumes]);
+  useEffect(() => {
+    setPagina(1);
+    setAnimar(false);
+  }, [perfumes]);
 
   const total = Math.max(1, Math.ceil((perfumes?.length ?? 0) / POR_PAGINA));
   const actual = Math.min(pagina, total);
 
   const cambiarPagina = (n) => {
     setPagina(n);
+    setAnimar(true);
     listaRef.current?.scrollIntoView({ block: 'start' });
   };
 
@@ -88,12 +94,17 @@ export function PerfumeGrid({ perfumes, dolarMedio, onAgregar, vacio }) {
   return (
     <>
       <ul
+        key={animar ? actual : 'inicial'}
         ref={listaRef}
         className="grid scroll-mt-24 grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
         aria-label="Perfumes"
       >
         {perfumes.slice(desde, desde + POR_PAGINA).map((perfume, i) => (
-          <li key={perfume.id} className="flex">
+          <li
+            key={perfume.id}
+            className={`flex ${animar ? 'animate-entrada' : ''}`}
+            style={animar ? { animationDelay: `${Math.min(i, 11) * 35}ms` } : undefined}
+          >
             <PerfumeCard
               perfume={perfume}
               dolarMedio={dolarMedio}

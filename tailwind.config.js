@@ -36,6 +36,7 @@ export default {
         'shimmer': 'shimmer 2s linear infinite',
         'fade-in': 'fade-in 1s ease-out forwards',
         'fade-up': 'fade-up 0.8s ease-out forwards',
+        entrada: 'fade-up 0.45s cubic-bezier(0.32, 0.72, 0, 1) both',
         'gradient-shift': 'gradient-shift 3s ease-in-out infinite',
         // Curvas tipo resorte (sobrepasan apenas y vuelven), solo con transform
         // y opacity para que corran en el compositor.
