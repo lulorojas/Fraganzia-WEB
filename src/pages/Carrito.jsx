@@ -13,7 +13,7 @@ import { SelectorPago } from '../components/cart/SelectorPago';
 import { ResumenCheckout } from '../components/cart/ResumenCheckout';
 import { Button } from '../components/ui/Button';
 import { GlassCard } from '../components/ui/GlassCard';
-import { preciosPorMetodo, calcularTotal2x1 } from '../utils/precios';
+import { preciosPorMetodo, calcularCarritoConPromos } from '../utils/precios';
 import { formatARS } from '../utils/format';
 import { guardarPedidoLocal } from '../utils/misPedidos';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
@@ -27,17 +27,6 @@ export default function Carrito() {
   const { data: promociones } = usePromocionesActivas();
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  // Promo 2x1 activa
-  const promo2x1Activa = promociones?.find((p) => p.tipo === '2x1');
-  const totalUnidades = state.items.reduce((sum, i) => sum + i.cantidad, 0);
-  const tienePromo2x1 = Boolean(promo2x1Activa) && totalUnidades >= 2;
-
-  // Mejor descuento entre todas las promociones activas (tipo descuento)
-  const mejorPromo = promociones
-    ?.filter((p) => p.tipo !== '2x1' && (p.descuentoPorcentaje ?? 0) > 0)
-    ?.reduce((best, p) => (!best || p.descuentoPorcentaje > best.descuentoPorcentaje ? p : best), null);
-  const promoDescuentoPct = mejorPromo?.descuentoPorcentaje ?? 0;
 
   const [clienteNombre, setClienteNombre] = useState(user?.displayName ?? '');
   const [errorNombre, setErrorNombre] = useState(null);
@@ -107,21 +96,9 @@ export default function Carrito() {
     }
 
     const esEfectivo = state.metodoPago === 'Efectivo';
-    const itemsConPrecio = state.items.map((item) => {
-      const { precioTransferencia, precioEfectivo } = preciosPorMetodo(item.precioUSD, dolarMedio);
-      return {
-        ...item,
-        precioARS: esEfectivo ? precioEfectivo : precioTransferencia,
-      };
-    });
-    const subtotalARS = itemsConPrecio.reduce(
-      (acc, item) => acc + item.precioARS * item.cantidad,
-      0
+    const { itemsConPrecio, subtotalARS, totalARS, descuentoARS } = calcularCarritoConPromos(
+      state.items, promociones, esEfectivo, dolarMedio
     );
-    const totalARS = tienePromo2x1
-      ? calcularTotal2x1(itemsConPrecio)
-      : Math.round((subtotalARS * (1 - promoDescuentoPct / 100)) / 1000) * 1000;
-    const descuentoARS = subtotalARS - totalARS;
 
     const pedido = {
       items: itemsConPrecio,
@@ -189,10 +166,7 @@ export default function Carrito() {
           metodoPago={state.metodoPago}
           dolarMedio={dolarMedio}
           whatsappNumero={config?.whatsappNumero}
-          promoDescuentoPct={promoDescuentoPct}
-          promoNombre={mejorPromo?.titulo}
-          promo2x1={tienePromo2x1}
-          promo2x1Nombre={promo2x1Activa?.titulo}
+          promociones={promociones}
         />
 
         <SelectorPago value={state.metodoPago} onChange={handleMetodoPago} />

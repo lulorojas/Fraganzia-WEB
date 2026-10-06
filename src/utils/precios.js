@@ -28,13 +28,16 @@ export function getMejorPromo(perfumeId, promociones) {
   if (!promociones?.length) return null;
   const aplicables = promociones.filter((p) => {
     if (!p.descuentoPorcentaje || p.descuentoPorcentaje <= 0) return false;
-    if (!p.perfumeIds || p.perfumeIds.length === 0) return true;
-    return p.perfumeIds.includes(perfumeId);
+    return aplicaAPerfume(p, perfumeId);
   });
   if (!aplicables.length) return null;
   return aplicables.reduce((best, p) =>
     p.descuentoPorcentaje > best.descuentoPorcentaje ? p : best
   );
+}
+
+export function aplicaAPerfume(promo, perfumeId) {
+  return !promo.perfumeIds?.length || promo.perfumeIds.includes(perfumeId);
 }
 
 /**
@@ -51,10 +54,71 @@ export function calcularTotal2x1(items, esEfectivo, dolarMedio) {
           : preciosPorMetodo(item.precioUSD, dolarMedio).precioTransferencia);
     for (let i = 0; i < item.cantidad; i++) units.push(precio);
   }
-  units.sort((a, b) => b - a);
+  return Math.round(costo2x1(units) / 1000) * 1000;
+}
+
+// Por cada 2 unidades, la más barata es gratis.
+function costo2x1(units) {
+  const ordenadas = [...units].sort((a, b) => b - a);
   let total = 0;
-  for (let i = 0; i < units.length; i++) {
-    if (i % 2 === 0) total += units[i];
+  for (let i = 0; i < ordenadas.length; i += 2) total += ordenadas[i];
+  return total;
+}
+
+/**
+ * Subtotal, descuentos y total del carrito, aplicando cada promoción solo a los
+ * perfumes que alcanza (`perfumeIds` vacío = todos).
+ * - 2×1: se arma con las unidades que entran en la promo (mínimo 2).
+ * - Descuento %: cada perfume recibe el mejor % que le corresponde.
+ * `lineas` detalla cuánto descuenta cada promo y suma exactamente `descuentoARS`.
+ */
+export function calcularCarritoConPromos(items, promociones, esEfectivo, dolarMedio) {
+  const itemsConPrecio = items.map((item) => {
+    const { precioTransferencia, precioEfectivo } = preciosPorMetodo(item.precioUSD, dolarMedio);
+    return { ...item, precioARS: esEfectivo ? precioEfectivo : precioTransferencia };
+  });
+  const subtotalARS = itemsConPrecio.reduce((acc, i) => acc + i.precioARS * i.cantidad, 0);
+
+  const promo2x1 = promociones?.find((p) => p.tipo === '2x1') ?? null;
+  const del2x1 = promo2x1 ? itemsConPrecio.filter((i) => aplicaAPerfume(promo2x1, i.perfumeId)) : [];
+  const unidades2x1 = del2x1.reduce((acc, i) => acc + i.cantidad, 0);
+  const usa2x1 = unidades2x1 >= 2;
+
+  const porcentuales = promociones?.filter((p) => p.tipo !== '2x1') ?? [];
+  const descuentos = new Map();
+  let descuentoTotal = 0;
+
+  if (usa2x1) {
+    const units = del2x1.flatMap((i) => Array(i.cantidad).fill(i.precioARS));
+    const ahorro = units.reduce((a, b) => a + b, 0) - costo2x1(units);
+    descuentos.set(promo2x1.id ?? '2x1', { nombre: promo2x1.titulo, tipo: '2x1', monto: ahorro });
+    descuentoTotal += ahorro;
   }
-  return Math.round(total / 1000) * 1000;
+
+  for (const item of itemsConPrecio) {
+    if (usa2x1 && aplicaAPerfume(promo2x1, item.perfumeId)) continue;
+    const promo = getMejorPromo(item.perfumeId, porcentuales);
+    if (!promo) continue;
+    const ahorro = (item.precioARS * item.cantidad * promo.descuentoPorcentaje) / 100;
+    const clave = promo.id ?? promo.titulo;
+    const previo = descuentos.get(clave);
+    descuentos.set(clave, {
+      nombre: promo.titulo,
+      tipo: 'descuento',
+      pct: promo.descuentoPorcentaje,
+      monto: (previo?.monto ?? 0) + ahorro,
+    });
+    descuentoTotal += ahorro;
+  }
+
+  const totalARS = Math.round((subtotalARS - descuentoTotal) / 1000) * 1000;
+  const descuentoARS = subtotalARS - totalARS;
+
+  const lineas = [...descuentos.values()].map((l) => ({ ...l, monto: Math.round(l.monto) }));
+  if (lineas.length) {
+    const resto = descuentoARS - lineas.reduce((acc, l) => acc + l.monto, 0);
+    lineas[lineas.length - 1].monto += resto;
+  }
+
+  return { itemsConPrecio, subtotalARS, totalARS, descuentoARS, lineas };
 }

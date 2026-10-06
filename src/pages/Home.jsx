@@ -144,6 +144,11 @@ export default function Home() {
                     {promo.descripcion && (
                       <p className="mt-1 text-sm leading-relaxed text-text-secondary">{promo.descripcion}</p>
                     )}
+                    {promo.perfumeIds?.length > 0 && (
+                      <p className="mt-1 text-xs text-text-secondary">
+                        Válida en {promo.perfumeIds.length} {promo.perfumeIds.length === 1 ? 'perfume seleccionado' : 'perfumes seleccionados'}
+                      </p>
+                    )}
                   </div>
                   <span className="font-body text-sm font-semibold text-lila transition-colors group-hover:text-text">
                     Ver perfumes

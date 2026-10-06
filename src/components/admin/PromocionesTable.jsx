@@ -19,6 +19,7 @@ export function PromocionesTable({ promociones, onEditar, onEliminar, onToggleAc
             <th className="pb-2 pr-4">Orden</th>
             <th className="pb-2 pr-4">Título</th>
             <th className="pb-2 pr-4">Tipo</th>
+            <th className="pb-2 pr-4">Aplica a</th>
             <th className="pb-2 pr-4">Estado</th>
             <th className="pb-2">Acciones</th>
           </tr>
@@ -29,6 +30,11 @@ export function PromocionesTable({ promociones, onEditar, onEliminar, onToggleAc
               <td className="py-2 pr-4 text-text-secondary">{p.orden}</td>
               <td className="py-2 pr-4">{p.titulo}</td>
               <td className="py-2 pr-4 text-xs text-lila">{TIPO_LABEL[p.tipo] ?? p.tipo ?? '—'}</td>
+              <td className="py-2 pr-4 text-xs text-text-secondary">
+                {p.perfumeIds?.length
+                  ? `${p.perfumeIds.length} ${p.perfumeIds.length === 1 ? 'perfume' : 'perfumes'}`
+                  : 'Todos'}
+              </td>
               <td className="py-2 pr-4">
                 {p.activa
                   ? <span className="text-success text-xs">Activa</span>
