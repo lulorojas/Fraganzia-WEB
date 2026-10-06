@@ -10,6 +10,7 @@ import { PerfumeGridSkeleton } from '../components/perfumes/PerfumeCardSkeleton'
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { abrirAsistente } from '../components/asistente/BotonAsistente';
 import { quisoDecir } from '../utils/busqueda';
+import { bandasDePrecio, aplicarOrdenYPrecio } from '../utils/ordenCatalogo';
 
 export default function Catalogo() {
   const [filtros, setFiltros] = useState({});
@@ -30,6 +31,12 @@ export default function Catalogo() {
   });
   const { dolarMedio } = useDolarBlue();
   const { agregar } = useCart();
+
+  const bandas = useMemo(() => bandasDePrecio(catalogo, dolarMedio), [catalogo, dolarMedio]);
+  const lista = useMemo(
+    () => aplicarOrdenYPrecio(perfumes, filtros, dolarMedio, bandas),
+    [perfumes, filtros, dolarMedio, bandas]
+  );
 
   const busqueda = filtros.busqueda ?? '';
 
@@ -83,7 +90,7 @@ export default function Catalogo() {
           </div>
         ) : (
           <PerfumeGrid
-            perfumes={perfumes}
+            perfumes={lista}
             dolarMedio={dolarMedio}
             onAgregar={agregar}
             vacio={

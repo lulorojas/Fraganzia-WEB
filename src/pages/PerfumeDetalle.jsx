@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Minus, Plus, ChevronLeft } from 'lucide-react';
+import { Minus, Plus, ChevronLeft, MessageCircle } from 'lucide-react';
 import { usePerfume } from '../hooks/usePerfume';
+import { usePerfumes } from '../hooks/usePerfumes';
 import { incrementarVista } from '../services/estadisticasService';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart, CANTIDAD_MAX } from '../context/CartContext';
@@ -9,11 +10,14 @@ import { useConfig } from '../hooks/useConfig';
 import { usePromocionesActivas } from '../hooks/usePromociones';
 import { useDocumentMeta, SITE_URL } from '../hooks/useDocumentMeta';
 import { NotasOlfativas } from '../components/perfumes/NotasOlfativas';
+import { InspiradoEn } from '../components/perfumes/InspiradoEn';
 import { PrecioNoDisponible } from '../components/perfumes/PrecioNoDisponible';
 import { Button } from '../components/ui/Button';
 import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
 import { formatARS, nombreCompleto } from '../utils/format';
 import { imagenGrande } from '../utils/image';
+import { construirLinkWhatsApp } from '../utils/whatsapp';
+import { WHATSAPP_NUMERO } from '../constants';
 import { ImagenProducto } from '../components/perfumes/ImagenProducto';
 import { BotonFavorito } from '../components/perfumes/BotonFavorito';
 
@@ -40,6 +44,7 @@ function precioConPromo(precio, pct) {
 export default function PerfumeDetalle() {
   const { id } = useParams();
   const { data: perfume, isLoading } = usePerfume(id);
+  const { data: catalogo } = usePerfumes();
   const { dolarMedio } = useDolarBlue();
   const { data: config } = useConfig();
   const { data: promociones } = usePromocionesActivas();
@@ -244,6 +249,21 @@ export default function PerfumeDetalle() {
           {perfume.descripcion && (
             <p className="font-body leading-relaxed text-text-secondary">{perfume.descripcion}</p>
           )}
+
+          <InspiradoEn perfume={perfume} catalogo={catalogo} />
+
+          <a
+            href={construirLinkWhatsApp(
+              config?.whatsappNumero ?? WHATSAPP_NUMERO,
+              `Hola! Quiero consultar por ${perfume.nombre}: ${SITE_URL}/perfume/${perfume.id}`
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex w-fit items-center gap-2 font-body text-sm text-lila transition-colors hover:text-text"
+          >
+            <MessageCircle size={16} aria-hidden="true" />
+            Consultar por WhatsApp
+          </a>
 
           <div className="border-t border-violet/15 pt-6">
             <NotasOlfativas

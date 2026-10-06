@@ -11,6 +11,9 @@ import { abrirAsistente } from '../components/asistente/BotonAsistente';
 
 export default function Home() {
   const { data: destacados, isLoading } = usePerfumes({ destacado: true });
+  const { data: catalogo } = usePerfumes();
+  // El catálogo viene ordenado de más nuevo a más viejo.
+  const nuevos = catalogo?.slice(0, 8);
   const { dolarMedio } = useDolarBlue();
   const { agregar } = useCart();
   const { data: promociones } = usePromocionesActivas();
@@ -179,6 +182,18 @@ export default function Home() {
           <HorizontalSlider perfumes={destacados} dolarMedio={dolarMedio} onAgregar={agregar} />
         )}
       </section>
+
+      {nuevos?.length > 0 && (
+        <section className="px-6 pb-16 max-w-7xl mx-auto">
+          <div className="mb-8 flex items-baseline justify-between">
+            <h2 className="font-luxury text-2xl tracking-wide text-text sm:text-3xl">Nuevos ingresos</h2>
+            <Link to="/catalogo" className="font-body text-sm text-lila transition-base hover:text-text">
+              Ver todo el catálogo
+            </Link>
+          </div>
+          <HorizontalSlider perfumes={nuevos} dolarMedio={dolarMedio} onAgregar={agregar} etiqueta="Nuevos ingresos" />
+        </section>
+      )}
     </div>
   );
 }

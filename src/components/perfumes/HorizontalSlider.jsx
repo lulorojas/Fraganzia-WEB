@@ -9,7 +9,7 @@ import { BotonFavorito } from './BotonFavorito';
 // Con decenas de destacados, dibujarlos todos encarece el primer pintado: se muestran los primeros y el resto está en el catálogo.
 const MAX_VISIBLES = 16;
 
-export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
+export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, etiqueta = 'Perfumes destacados' }) {
   const scrollRef = useRef(null);
 
   const scroll = (direction) => {
@@ -49,7 +49,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
         ref={scrollRef}
         className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 hide-scrollbar"
         role="region"
-        aria-label="Perfumes destacados"
+        aria-label={etiqueta}
         tabIndex={0}
       >
         {perfumes.slice(0, MAX_VISIBLES).map((perfume) => {

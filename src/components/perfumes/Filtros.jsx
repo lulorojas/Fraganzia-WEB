@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 import { GENEROS, FAMILIAS_OLFATIVAS } from '../../constants';
 import { usePerfumes } from '../../hooks/usePerfumes';
+import { useDolarBlue } from '../../hooks/useDolarBlue';
 import { marcasDelCatalogo, sugerencias } from '../../utils/busqueda';
+import { bandasDePrecio, ORDENES } from '../../utils/ordenCatalogo';
+import { formatARS } from '../../utils/format';
 import { ImagenProducto } from './ImagenProducto';
 
 const SELECT =
@@ -153,6 +156,11 @@ function Buscador({ valor, onBuscar, onMarca, catalogo }) {
 export function Filtros({ filtros, onChange }) {
   const { data: catalogo } = usePerfumes();
   const marcas = useMemo(() => marcasDelCatalogo(catalogo), [catalogo]);
+  const { dolarMedio } = useDolarBlue();
+  const bandas = useMemo(() => bandasDePrecio(catalogo, dolarMedio), [catalogo, dolarMedio]);
+
+  const etiquetaBanda = ({ id, min, max }) =>
+    id === 'bajo' ? `Hasta ${formatARS(max)}` : id === 'alto' ? `Más de ${formatARS(min)}` : `${formatARS(min)} a ${formatARS(max)}`;
 
   function actualizar(campo, valor) {
     onChange({ ...filtros, [campo]: valor || undefined });
@@ -197,6 +205,30 @@ export function Filtros({ filtros, onChange }) {
         <option value="">Familia olfativa</option>
         {FAMILIAS_OLFATIVAS.map((f) => (
           <option key={f} value={f}>{f}</option>
+        ))}
+      </select>
+      {bandas.length > 0 && (
+        <select
+          value={filtros.precio ?? ''}
+          onChange={(e) => actualizar('precio', e.target.value)}
+          aria-label="Filtrar por precio"
+          className={SELECT}
+        >
+          <option value="">Precio</option>
+          {bandas.map((b) => (
+            <option key={b.id} value={b.id}>{etiquetaBanda(b)}</option>
+          ))}
+        </select>
+      )}
+      <select
+        value={filtros.orden ?? ''}
+        onChange={(e) => actualizar('orden', e.target.value)}
+        aria-label="Ordenar perfumes"
+        className={SELECT}
+      >
+        <option value="">Más nuevos</option>
+        {ORDENES.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
     </div>
