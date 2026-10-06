@@ -60,13 +60,13 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar }) {
               <div className="card-surface card-hover relative h-full rounded-2xl overflow-hidden">
                 <BotonFavorito perfume={perfume} className="absolute left-3 top-3 z-10" />
                 <Link to={`/perfume/${perfume.id}`} className="block" tabIndex={-1} aria-hidden="true">
-                  <div className="relative aspect-[3/4] bg-white overflow-hidden">
+                  <div className="relative aspect-[3/4] plinto overflow-hidden">
                     <ImagenProducto
                       url={perfume.imagenes?.[0]}
                       sizes="280px"
                       width="280"
                       height="373"
-                      className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover/card:scale-110"
+                      className="foto-producto w-full h-full object-contain p-4 transition-transform duration-300 group-hover/card:scale-110"
                     />
                     {perfume.descuento > 0 && (
                       <div className="absolute top-3 right-3 bg-violet px-3 py-1 rounded-full text-xs font-semibold text-white shadow-lg">

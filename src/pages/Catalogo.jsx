@@ -49,8 +49,7 @@ export default function Catalogo() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="mb-8">
-        <p className="tracking-luxury mb-2 font-body text-xs uppercase text-lila">Colección completa</p>
-        <h1 className="font-display text-3xl text-text">Catálogo</h1>
+        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Catálogo</h1>
       </div>
       <div className="card-surface mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3 sm:px-5">
         <p className="font-body text-sm text-text-secondary">

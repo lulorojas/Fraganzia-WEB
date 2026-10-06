@@ -176,6 +176,27 @@ body {
   box-shadow: 0 12px 32px rgba(123, 47, 190, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   transform: translateY(-2px);
 }
+
+/* Fondo de estudio para las fotos de producto: con multiply, el blanco de la
+   foto toma el tono lila en vez de verse como un recorte pegado sobre fondo oscuro. */
+.plinto {
+  background: radial-gradient(ellipse at 50% 38%, #fbf8ff 0%, #efe7f9 58%, #e1d5f1 100%);
+}
+
+.foto-producto {
+  mix-blend-mode: multiply;
+}
+
+/* Grano fino de película sobre una sección (hero): textura sin imágenes extra. */
+.grano::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 }
 
 /* ═══════════════════════════════════════════════════════════

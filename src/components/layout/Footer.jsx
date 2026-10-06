@@ -26,7 +26,7 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <p className="tracking-luxury mb-3 text-xs uppercase text-lila">Navegación</p>
+            <p className="mb-3 font-luxury text-sm tracking-wide text-text">Navegación</p>
             <ul className="space-y-2 font-body text-sm text-text-secondary">
               <li><Link to="/catalogo" className="transition-base hover:text-text">Catálogo</Link></li>
               <li><Link to="/sobre-nosotros" className="transition-base hover:text-text">Nosotros</Link></li>
@@ -39,7 +39,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <p className="tracking-luxury mb-3 text-xs uppercase text-lila">Contacto</p>
+            <p className="mb-3 font-luxury text-sm tracking-wide text-text">Contacto</p>
             <p className="font-body text-sm text-text-secondary">Pedidos al MD vía Instagram</p>
             <p className="mt-1 font-body text-sm text-text-secondary">o por WhatsApp</p>
             <p className="mt-2 font-body text-xs text-lila">Envíos solo al AMBA</p>

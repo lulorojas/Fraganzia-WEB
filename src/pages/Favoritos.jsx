@@ -29,8 +29,7 @@ export default function Favoritos() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="mb-8">
-        <p className="tracking-luxury mb-2 font-body text-xs uppercase text-lila">Tu selección</p>
-        <h1 className="font-display text-3xl text-text">Mis favoritos</h1>
+        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Mis favoritos</h1>
         <p className="mt-2 font-body text-sm text-text-secondary">
           Se guardan en este dispositivo. No hace falta crear una cuenta.
         </p>

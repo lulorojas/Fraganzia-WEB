@@ -46,8 +46,7 @@ export default function MisPedidos() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <div className="mb-8">
-        <p className="tracking-luxury mb-2 font-body text-xs uppercase text-lila">Seguimiento</p>
-        <h1 className="font-display text-3xl text-text">Mis pedidos</h1>
+        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Mis pedidos</h1>
         <p className="mt-2 font-body text-sm text-text-secondary">
           Los pedidos que hiciste desde este dispositivo. Si compraste desde otro, usá el link
           de seguimiento que quedó en tu mensaje de WhatsApp.

@@ -38,7 +38,7 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
       {/* ── Imagen: fondo blanco puro como las fotos ── */}
       {/* El link de la imagen repite el del título: se saca del orden de tabulación
           para que teclado y lectores de pantalla lo encuentren una sola vez. */}
-      <Link to={url} tabIndex={-1} aria-hidden="true" className="relative block overflow-hidden bg-white">
+      <Link to={url} tabIndex={-1} aria-hidden="true" className="relative block overflow-hidden plinto">
         {imagen ? (
           <ImagenProducto
             url={imagen}
@@ -46,10 +46,10 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
             width="400"
             height="400"
             prioridad={prioridad}
-            className="aspect-square w-full object-contain p-3 sm:p-6 transition-transform duration-500 group-hover:scale-105"
+            className="foto-producto aspect-square w-full object-contain p-3 sm:p-6 transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="aspect-square w-full flex items-center justify-center bg-white">
+          <div className="aspect-square w-full flex items-center justify-center">
             <span className="text-6xl opacity-10 select-none text-violet">✦</span>
           </div>
         )}

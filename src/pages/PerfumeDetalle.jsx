@@ -129,7 +129,7 @@ export default function PerfumeDetalle() {
       <div className="grid gap-8 md:grid-cols-2 md:gap-12">
         {/* ── Imagen ── */}
         <div className="md:sticky md:top-24 md:self-start">
-          <div className="relative overflow-hidden rounded-3xl bg-white">
+          <div className="relative overflow-hidden rounded-3xl plinto">
             {imagen ? (
               <ImagenProducto
                 url={imagen}
@@ -138,7 +138,7 @@ export default function PerfumeDetalle() {
                 width="600"
                 height="600"
                 prioridad
-                className="aspect-square w-full object-contain p-8 sm:p-12"
+                className="foto-producto aspect-square w-full object-contain p-8 sm:p-12"
               />
             ) : (
               <div className="flex aspect-square w-full items-center justify-center">

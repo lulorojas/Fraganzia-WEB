@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Sparkles, Star } from 'lucide-react';
+import { Instagram, Sparkles } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen">
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden px-4 sm:px-6 py-16 sm:py-24 lg:py-32">
+      <section className="grano relative overflow-hidden px-4 sm:px-6 py-16 sm:py-24 lg:py-32">
         {/* Resplandores de ambiente: gradientes radiales (ya difusos), sin
             filter: blur ni animación, que costaban mucho repintado. */}
         <div
@@ -33,17 +33,8 @@ export default function Home() {
 
         {/* Glass card container con más profundidad */}
         <div className="relative mx-auto max-w-4xl">
-          <div className="glass-strong relative overflow-hidden p-6 sm:p-10 md:p-16 rounded-2xl sm:rounded-[32px]">
-            {/* Label superior con íconos */}
-            <div className="inline-flex items-center gap-1.5 sm:gap-2.5 mb-6 sm:mb-8 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full glass border border-lila/20 text-lila text-[10px] sm:text-xs uppercase tracking-wide sm:tracking-wide2 font-semibold shadow-lg">
-              <Sparkles size={14} className="shrink-0" aria-hidden="true" />
-              <span className="whitespace-nowrap">Fragancias Importadas</span>
-              <Star size={12} className="text-violet-light shrink-0" aria-hidden="true" />
-            </div>
-
-            {/* Logo principal: una sola imagen que cambia de tamaño por breakpoint.
-                Sin animación de entrada: es el elemento más grande (LCP) y tiene
-                que verse apenas se pinta la página. */}
+          <div className="relative overflow-hidden p-2 sm:p-6 md:p-10">
+            {/* Sin animación de entrada: el logo es el LCP y tiene que verse apenas se pinta. */}
             <div className="mb-6 sm:mb-8 flex justify-center">
               <LogoFraganzia
                 priority
@@ -53,14 +44,13 @@ export default function Home() {
             </div>
 
             {/* Tagline con Cinzel */}
-            <h1 className="font-luxury text-2xl sm:text-4xl md:text-5xl tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-text via-lila to-text mb-3 text-center leading-tight text-balance">
+            <h1 className="font-luxury text-3xl sm:text-5xl md:text-6xl tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-text via-text to-lila mb-5 text-center leading-[1.1] text-balance">
               Perfumes Árabes de Alta Gama
             </h1>
 
-            {/* Descripción mejorada */}
-            <p className="text-text-secondary text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-8 sm:mb-10 text-center leading-relaxed px-2">
-              Descubrí la elegancia de las fragancias orientales. <br className="hidden sm:block" />
-              <span className="text-lila">Exclusividad</span> y <span className="text-lila">calidad premium</span> en cada esencia.
+            {/* Descripción */}
+            <p className="text-text-secondary text-sm sm:text-base md:text-lg max-w-xl mx-auto mb-8 sm:mb-10 text-center leading-relaxed px-2 text-balance">
+              Descubrí la elegancia de las fragancias orientales: exclusividad y calidad premium en cada esencia.
             </p>
 
             {/* CTAs mejorados */}
@@ -130,9 +120,9 @@ export default function Home() {
       {/* ── Destacados Slider ────────────────────────────────── */}
       <section className="px-6 py-16 max-w-7xl mx-auto">
         <div className="mb-8 flex items-baseline justify-between">
-          <h2 className="font-display text-3xl text-text">Destacados</h2>
-          <Link to="/catalogo" className="font-body text-sm text-lila transition-base hover:text-text tracking-wide2 uppercase">
-            Ver todo →
+          <h2 className="font-luxury text-2xl tracking-wide text-text sm:text-3xl">Destacados</h2>
+          <Link to="/catalogo" className="font-body text-sm text-lila transition-base hover:text-text">
+            Ver todo el catálogo
           </Link>
         </div>
         {isLoading ? (
@@ -150,7 +140,7 @@ export default function Home() {
       {/* ── Promociones ──────────────────────────────────────── */}
       {promociones?.length > 0 && (
         <section className="px-6 py-16 max-w-7xl mx-auto">
-          <h2 className="mb-8 font-display text-3xl text-text">Promociones</h2>
+          <h2 className="mb-8 font-luxury text-2xl tracking-wide text-text sm:text-3xl">Promociones</h2>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {promociones.map((promo) => (
               <div key={promo.id} className="card-surface card-hover overflow-hidden rounded-2xl group">

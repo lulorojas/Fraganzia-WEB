@@ -47,7 +47,7 @@ export function BotonAsistente() {
         onClick={abrir}
         aria-haspopup="dialog"
         aria-expanded={abierto}
-        className={`fixed right-4 z-40 flex h-14 items-center gap-2 rounded-full bg-gradient-to-br from-violet to-violet-light px-4 font-body text-sm font-semibold text-white shadow-lg shadow-violet/40 ring-1 ring-white/10 transition-transform duration-200 hover:scale-105 active:scale-95 sm:right-6 md:bottom-6 ${
+        className={`fixed right-4 z-40 flex h-14 items-center gap-2 rounded-full bg-gradient-to-br from-violet to-violet-light px-4 font-body text-sm font-semibold text-white shadow-lg shadow-violet/40 ring-1 ring-white/10 transition-transform duration-200 hover:scale-105 active:scale-95 sm:right-6 md:hidden ${
           subir ? 'bottom-24' : 'bottom-5'
         } ${abierto ? 'hidden' : ''}`}
       >
