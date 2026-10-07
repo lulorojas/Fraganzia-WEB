@@ -1,17 +1,10 @@
-import { lazy, Suspense, useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ShoppingBag, Instagram, User, LogOut, Settings, Menu, X, Heart, Sparkles } from 'lucide-react';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase/config';
+import { ShoppingBag, Instagram, Menu, X, Heart, Sparkles } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { useAuth } from '../../context/AuthContext';
 import { useFavoritos } from '../../context/FavoritosContext';
 import { LogoFraganzia } from '../ui/LogoFraganzia';
 import { abrirAsistente } from '../asistente/BotonAsistente';
-
-// El modal de login (con react-hook-form, zod y framer-motion) solo se
-// descarga cuando alguien lo abre: la mayoría de las visitas nunca lo usa.
-const AuthModal = lazy(() => import('./AuthModal').then((m) => ({ default: m.AuthModal })));
 
 const LINKS = [
   { to: '/catalogo', label: 'Catálogo' },
@@ -40,29 +33,17 @@ function useCerrarAlSalir(ref, abierto, cerrar) {
 
 export function Navbar() {
   const { state } = useCart();
-  const { user, isAdmin } = useAuth();
   const { ids: favoritos } = useFavoritos();
   const { pathname } = useLocation();
   const cantidadItems = state.items.reduce((acc, item) => acc + item.cantidad, 0);
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authCargado, setAuthCargado] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const menuRef = useRef(null);
   const mobileRef = useRef(null);
 
-  useCerrarAlSalir(menuRef, menuOpen, () => setMenuOpen(false));
   useCerrarAlSalir(mobileRef, mobileOpen, () => setMobileOpen(false));
 
   // Al navegar, cerrar el menú mobile.
   useEffect(() => setMobileOpen(false), [pathname]);
 
-  function abrirLogin() {
-    setAuthCargado(true);
-    setAuthOpen(true);
-  }
-
-  const nombreCorto = user?.displayName?.split(' ')[0] || user?.email?.split('@')[0];
   const claseLink = ({ isActive }) =>
     `transition-colors duration-200 hover:text-text ${isActive ? 'text-text' : ''}`;
 
@@ -147,58 +128,6 @@ export function Navbar() {
               )}
             </Link>
 
-            {/* Usuario */}
-            {!user ? (
-              <button
-                type="button"
-                onClick={abrirLogin}
-                className="flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-text"
-                aria-label="Iniciar sesión"
-              >
-                <User size={20} aria-hidden="true" />
-              </button>
-            ) : (
-              <div className="relative" ref={menuRef}>
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen((o) => !o)}
-                  aria-label="Menú de usuario"
-                  aria-expanded={menuOpen}
-                  aria-haspopup="menu"
-                  className="flex h-10 items-center gap-1.5 rounded-full px-2 transition-colors duration-200 hover:text-text"
-                >
-                  <User size={20} aria-hidden="true" />
-                  <span className="text-xs hidden sm:block">{nombreCorto}</span>
-                </button>
-                {menuOpen && (
-                  <div role="menu" className="absolute right-0 top-11 glass-frosted z-50 min-w-[180px] p-2 flex flex-col gap-0.5 rounded-xl">
-                    <p className="px-3 py-1 text-xs text-text-secondary truncate">{user.email}</p>
-                    <div className="border-t border-border my-1" />
-                    {isAdmin && (
-                      <Link
-                        to="/admin"
-                        role="menuitem"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-lila hover:text-text transition-base"
-                      >
-                        <Settings size={14} aria-hidden="true" />
-                        Panel Admin
-                      </Link>
-                    )}
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => { signOut(auth); setMenuOpen(false); }}
-                      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-secondary hover:text-error transition-base"
-                    >
-                      <LogOut size={14} aria-hidden="true" />
-                      Cerrar sesión
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* Menú mobile */}
             <button
               type="button"
@@ -264,12 +193,6 @@ export function Navbar() {
           </div>
         )}
       </nav>
-
-      {authCargado && (
-        <Suspense fallback={null}>
-          <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
-        </Suspense>
-      )}
     </>
   );
 }

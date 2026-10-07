@@ -49,15 +49,6 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
     [compras, ventasSocios, ajustesStock]
   );
 
-  // Solo se puede vender lo que hay en stock. Al editar, el perfume ya elegido
-  // se mantiene disponible aunque su stock haya llegado a 0 con esta misma venta.
-  const perfumesVendibles = useMemo(() => {
-    const idEditando = venta?.perfumeId;
-    return (perfumes ?? []).filter(
-      (p) => (stockPorProducto[p.id] ?? 0) > 0 || p.id === idEditando
-    );
-  }, [perfumes, stockPorProducto, venta]);
-
   const {
     register, handleSubmit, watch, setValue, reset,
     formState: { errors },
@@ -73,8 +64,6 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
   useEffect(() => { if (venta) reset(toFormValues(venta)); }, [venta, reset]);
 
   const perfumeId = watch('perfumeId');
-  const cantidad = Number(watch('cantidad')) || 0;
-  const estado = watch('estado');
 
   function handlePerfumeChange(id, p) {
     setValue('perfumeId', id, { shouldValidate: true });
@@ -85,18 +74,17 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
   }
 
   const stockActual = perfumeId ? (stockPorProducto[perfumeId] ?? 0) : null;
-  const excedeStock = estado === 'cobrada' && stockActual !== null && cantidad > stockActual;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Campo label="Perfume" error={errors.perfumeId?.message}>
           <PerfumeSearchSelect
-            perfumes={perfumesVendibles}
+            perfumes={perfumes ?? []}
             value={perfumeId}
             onChange={handlePerfumeChange}
             stockPorProducto={stockPorProducto}
-            mensajeVacio="No hay perfumes en stock. Cargá una compra primero."
+            mensajeVacio="Sin resultados."
           />
         </Campo>
         <Campo label="Cantidad" error={errors.cantidad?.message}>
@@ -131,13 +119,6 @@ export function VentaSocioForm({ venta, onSubmit, onCancel, cargando }) {
 
       {perfumeId && (
         <p className="text-sm text-text-secondary">Stock disponible: {stockActual}</p>
-      )}
-
-      {excedeStock && (
-        <p className="text-sm text-error">
-          Atención: estás cobrando {cantidad} unidades pero el stock de este perfume es
-          {' '}{stockActual}. Podés guardar igual si el negocio real lo permite.
-        </p>
       )}
 
       <div className="flex flex-wrap gap-3">
