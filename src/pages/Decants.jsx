@@ -4,7 +4,7 @@ import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { preciosPorMetodo } from '../utils/precios';
-import { ML_DECANT, precioDecantUSD } from '../utils/decants';
+import { ML_DECANT, precioDecantUSD, esDecant } from '../utils/decants';
 import { formatARS, nombreCompleto } from '../utils/format';
 import { ImagenProducto } from '../components/perfumes/ImagenProducto';
 import { GlassCard } from '../components/ui/GlassCard';
@@ -79,7 +79,7 @@ export default function Decants() {
   const { dolarMedio } = useDolarBlue();
   const { agregar } = useCart();
 
-  const perfumes = useMemo(() => catalogo?.filter((p) => p.decant === true) ?? [], [catalogo]);
+  const perfumes = useMemo(() => catalogo?.filter(esDecant) ?? [], [catalogo]);
 
   function handleAgregar(perfume, ml) {
     agregar(
