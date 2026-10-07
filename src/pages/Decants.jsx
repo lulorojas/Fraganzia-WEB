@@ -66,7 +66,7 @@ function CardDecant({ perfume, dolarMedio, onAgregar }) {
  * Catálogo de decants: los mismos perfumes marcados `decant: true` en
  * Firestore, vendidos en fracciones de 3/5/10ml en vez de la botella entera.
  * El precio en USD de cada fracción es el costo del líquido por ml (según el
- * precio del perfume completo) x3 — de ahí en adelante usa el mismo cálculo
+ * precio del perfume completo) x2,5 — de ahí en adelante usa el mismo cálculo
  * de transferencia/efectivo que el resto del catálogo (ver utils/decants.js).
  */
 export default function Decants() {
