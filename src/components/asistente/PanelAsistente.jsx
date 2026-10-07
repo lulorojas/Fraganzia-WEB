@@ -6,7 +6,7 @@ import { useDolarBlue } from '../../hooks/useDolarBlue';
 import { useCart } from '../../context/CartContext';
 import {
   AROMAS, EVITAR, MOMENTOS, GENEROS_ASISTENTE, recomendar, rangosDePresupuesto, inspiracion,
-  referenciasDisponibles, buscarReferencias, nombreCorto,
+  referenciasDisponibles, buscarReferencias, nombreCorto, opcionDisponible,
 } from '../../utils/recomendador';
 import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from '../perfumes/ImagenProducto';
@@ -25,10 +25,13 @@ const CONTRADICE = {
   dulce: 'dulce', floral: 'floral', vainilla: 'dulce', cafe: 'dulce', cuero: 'cuero', oud: 'oud',
   frutal: 'frutal', rosa: 'floral', blancas: 'floral',
 };
+const lista = (v) => (Array.isArray(v) ? v : v ? [v] : []);
 const evitablesPara = (r) => {
-  const excluidos = new Set([CONTRADICE[r.aroma], CONTRADICE[r.variante]].filter(Boolean));
+  const excluidos = new Set([...lista(r.aroma), ...lista(r.variante)].map((v) => CONTRADICE[v]).filter(Boolean));
   return Object.entries(EVITAR).filter(([valor]) => !excluidos.has(valor));
 };
+// Aroma elegido cuando es uno solo (el matiz depende de él).
+const aromaUnico = (r) => (lista(r.aroma).length === 1 ? lista(r.aroma)[0] : null);
 
 // Las preguntas, en orden. `texto` y `opciones` reciben las respuestas previas
 // (para hablarle distinto a quien compra para regalar) y el contexto
@@ -73,18 +76,35 @@ const PASOS = [
   },
   {
     id: 'aroma',
+    tipo: 'multiple',
+    minimo: 1,
     mostrar: caminoGeneral,
-    texto: (r) => (r.para === 'regalo' ? '¿Qué tipo de aromas le gustan?' : '¿Qué tipo de aromas te gustan más?'),
-    opciones: () =>
-      Object.entries(AROMAS).map(([valor, a]) => ({ valor, etiqueta: a.etiqueta, detalle: a.detalle })),
+    texto: (r) =>
+      r.para === 'regalo'
+        ? '¿Qué tipo de aromas le gustan? Podés marcar varios.'
+        : '¿Qué tipo de aromas te gustan más? Podés marcar varios.',
+    opciones: (r, { perfumes }) =>
+      Object.entries(AROMAS).map(([valor, a]) => ({
+        valor,
+        etiqueta: a.etiqueta,
+        detalle: a.detalle,
+        exclusiva: valor === 'sorpresa',
+        disponible: opcionDisponible(perfumes, r, 'aroma', valor),
+      })),
   },
   {
     id: 'variante',
-    mostrar: (r) => caminoGeneral(r) && Boolean(r.aroma) && r.aroma !== 'sorpresa',
-    texto: () => '¿Algún matiz en especial?',
-    opciones: (r) => [
-      ...Object.entries(AROMAS[r.aroma]?.variantes ?? {}).map(([valor, v]) => ({ valor, etiqueta: v.etiqueta })),
-      { valor: 'igual', etiqueta: 'Me da igual' },
+    tipo: 'multiple',
+    minimo: 1,
+    mostrar: (r) => caminoGeneral(r) && Boolean(aromaUnico(r)) && aromaUnico(r) !== 'sorpresa',
+    texto: () => '¿Algún matiz en especial? Podés marcar varios.',
+    opciones: (r, { perfumes }) => [
+      ...Object.entries(AROMAS[aromaUnico(r)]?.variantes ?? {}).map(([valor, v]) => ({
+        valor,
+        etiqueta: v.etiqueta,
+        disponible: opcionDisponible(perfumes, r, 'variante', valor),
+      })),
+      { valor: 'igual', etiqueta: 'Me da igual', exclusiva: true },
     ],
   },
   {
@@ -95,13 +115,26 @@ const PASOS = [
       r.para === 'regalo'
         ? '¿Hay algo que sepas que no le gusta? Podés marcar varias.'
         : '¿Hay algo que prefieras evitar? Podés marcar varias.',
-    opciones: (r) => evitablesPara(r).map(([valor, e]) => ({ valor, etiqueta: e.etiqueta })),
+    opciones: (r, { perfumes }) =>
+      evitablesPara(r).map(([valor, e]) => ({
+        valor,
+        etiqueta: e.etiqueta,
+        disponible: opcionDisponible(perfumes, r, 'evitar', valor),
+      })),
   },
   {
     id: 'momento',
+    tipo: 'multiple',
+    minimo: 1,
     mostrar: caminoGeneral,
-    texto: () => '¿Para qué momento lo querés?',
-    opciones: () => Object.entries(MOMENTOS).map(([valor, m]) => ({ valor, etiqueta: m.etiqueta })),
+    texto: () => '¿Para qué momento lo querés? Podés marcar varios.',
+    opciones: (r, { perfumes }) =>
+      Object.entries(MOMENTOS).map(([valor, m]) => ({
+        valor,
+        etiqueta: m.etiqueta,
+        exclusiva: valor === 'siempre',
+        disponible: opcionDisponible(perfumes, r, 'momento', valor),
+      })),
   },
   {
     id: 'presupuesto',
@@ -205,6 +238,14 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
   const indicePaso = pasosVisibles.findIndex((p) => !(p.id in respuestas));
   const pasoActual = indicePaso === -1 ? null : pasosVisibles[indicePaso];
   const terminado = !pasoActual;
+  // Solo se ofrecen las opciones que dejan al menos 3 perfumes (sin callejones sin salida).
+  const opcionesVisibles = useMemo(() => {
+    if (!pasoActual) return [];
+    const todas = pasoActual.opciones(respuestas, contexto);
+    const utiles = todas.filter((o) => o.disponible !== false);
+    return utiles.length ? utiles : todas;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pasoActual, respuestas, perfumes, rangos]);
 
   const { lista: resultados, referenciaSinResultados } = useMemo(
     () => (terminado ? recomendar(perfumes, respuestas, { dolarMedio, rangos }) : { lista: [] }),
@@ -249,8 +290,11 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
     limpiarPregunta();
   }
 
-  function elegirOpcion(paso, valor) {
-    if (paso.tipo === 'multiple') {
+  function elegirOpcion(paso, opcion) {
+    const valor = opcion.valor;
+    if (paso.tipo === 'multiple' && opcion.exclusiva) {
+      responder(paso.id, [valor]);
+    } else if (paso.tipo === 'multiple') {
       setSeleccion((s) => (s.includes(valor) ? s.filter((v) => v !== valor) : [...s, valor]));
     } else if (paso.tipo === 'parecido' && valor === OTRA_REFERENCIA) {
       setBuscandoOtra(true);
@@ -271,7 +315,10 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
 
   const etiquetaDe = (paso, valor) => {
     if (paso.tipo === 'multiple') {
-      return valor.length ? valor.map((v) => EVITAR[v]?.etiqueta ?? v).join(', ') : 'Nada en especial';
+      const todas = paso.opciones(respuestas, contexto);
+      return valor.length
+        ? valor.map((v) => todas.find((o) => o.valor === v)?.etiqueta ?? EVITAR[v]?.etiqueta ?? v).join(', ')
+        : 'Nada en especial';
     }
     if (paso.tipo === 'parecido') return valor === 'no' ? 'No, quiero descubrir' : nombreCorto(valor);
     return paso.opciones(respuestas, contexto).find((o) => o.valor === valor)?.etiqueta ?? valor;
@@ -389,7 +436,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
               </div>
             ) : (
               <div className="flex flex-wrap gap-2 pt-1" role="group" aria-label="Opciones">
-                {pasoActual.opciones(respuestas, contexto).map((opcion, i) => {
+                {opcionesVisibles.map((opcion, i) => {
                   const marcada = pasoActual.tipo === 'multiple' && seleccion.includes(opcion.valor);
                   return (
                     <button
@@ -397,7 +444,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
                       type="button"
                       data-opcion={i === 0 ? '' : undefined}
                       aria-pressed={pasoActual.tipo === 'multiple' ? marcada : undefined}
-                      onClick={() => elegirOpcion(pasoActual, opcion.valor)}
+                      onClick={() => elegirOpcion(pasoActual, opcion)}
                       className={`${claseOpcion} ${marcada ? 'border-violet bg-violet/40' : 'border-violet/35 bg-violet/10'} ${opcion.icono || marcada ? 'flex items-center gap-1.5' : ''}`}
                     >
                       {marcada && <Check size={14} aria-hidden="true" />}
@@ -413,9 +460,10 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
                   <button
                     type="button"
                     onClick={() => responder(pasoActual.id, seleccion)}
-                    className="rounded-2xl bg-violet px-4 py-2 font-body text-sm font-semibold text-white transition-colors hover:bg-violet-light"
+                    disabled={seleccion.length < (pasoActual.minimo ?? 0)}
+                    className="rounded-2xl bg-violet px-4 py-2 font-body text-sm font-semibold text-white transition-colors hover:bg-violet-light disabled:opacity-40"
                   >
-                    {seleccion.length ? 'Listo' : 'Nada en especial'}
+                    {seleccion.length || pasoActual.minimo ? 'Listo' : 'Nada en especial'}
                   </button>
                 )}
               </div>

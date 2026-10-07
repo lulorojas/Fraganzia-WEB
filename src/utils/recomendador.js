@@ -220,6 +220,22 @@ export function buscarReferencias(perfumes, genero, texto, max = 6) {
     .slice(0, max);
 }
 
+// Aroma, matiz y momento admiten varias opciones a la vez; se aceptan también
+// como un solo valor.
+const lista = (v) => (Array.isArray(v) ? v : v ? [v] : []);
+
+const puntosAroma = (perfume, perfil, texto) => {
+  let p = 0;
+  if (perfil.familias.includes(perfume.familiaOlfativa)) p += 4;
+  else if (perfil.relacionadas.includes(perfume.familiaOlfativa)) p += 2;
+  return p + Math.min(3, cuentaClaves(texto, perfil.claves));
+};
+
+const puntosMomento = (perfume, m, datos) => {
+  if (datos.u) return datos.u === m.exacto ? 3 : m.afines.includes(datos.u) ? 1 : 0;
+  return m.familias.includes(perfume.familiaOlfativa) ? 2 : 0;
+};
+
 function puntajeGeneral(perfume, { genero, aroma, variante, momento }) {
   const base = puntosGenero(perfume, genero);
   if (base === null) return null;
@@ -227,23 +243,80 @@ function puntajeGeneral(perfume, { genero, aroma, variante, momento }) {
   const datos = extra(perfume);
   const texto = textoNotas(perfume);
 
-  const perfil = AROMAS[aroma];
-  if (perfil) {
-    if (perfil.familias.includes(perfume.familiaOlfativa)) total += 4;
-    else if (perfil.relacionadas.includes(perfume.familiaOlfativa)) total += 2;
-    total += Math.min(3, cuentaClaves(texto, perfil.claves));
-    const matiz = perfil.variantes[variante];
-    if (matiz) total += Math.min(4, 2 * cuentaClaves(texto, matiz.claves));
+  // Con varias opciones cuenta la que mejor encaja, más un punto por cada
+  // otra que también encaja bien.
+  const perfiles = lista(aroma).map((a) => AROMAS[a]).filter(Boolean);
+  if (perfiles.length) {
+    const pts = perfiles.map((perfil) => puntosAroma(perfume, perfil, texto)).sort((a, b) => b - a);
+    total += pts[0] + Math.min(2, pts.slice(1).filter((x) => x >= 4).length);
+    const matices = lista(variante).map((v) => perfiles[0].variantes[v]).filter(Boolean);
+    if (perfiles.length === 1 && matices.length) {
+      total += Math.max(...matices.map((m) => Math.min(4, 2 * cuentaClaves(texto, m.claves))));
+    }
   }
 
-  const m = MOMENTOS[momento];
-  if (m) {
-    if (datos.u) total += datos.u === m.exacto ? 3 : m.afines.includes(datos.u) ? 1 : 0;
-    else if (m.familias.includes(perfume.familiaOlfativa)) total += 2;
-  }
+  const momentos = lista(momento).map((m) => MOMENTOS[m]).filter(Boolean);
+  if (momentos.length) total += Math.max(...momentos.map((m) => puntosMomento(perfume, m, datos)));
   if (perfume.destacado) total += 1;
   if (datos.r) total += 2;
   return total;
+}
+
+// ─── Evitar opciones sin salida ──────────────────────────────────────────────
+// Un perfume "coincide" con un aroma si es de la familia (o relacionada) o tiene
+// al menos dos notas del perfil; con un matiz, además tiene una nota del matiz.
+const coincideAroma = (p, clave) => {
+  const perfil = AROMAS[clave];
+  if (!perfil) return true;
+  return (
+    perfil.familias.includes(p.familiaOlfativa) ||
+    perfil.relacionadas.includes(p.familiaOlfativa) ||
+    cuentaClaves(textoNotas(p), perfil.claves) >= 2
+  );
+};
+const coincideMatiz = (p, claveAroma, claveMatiz) => {
+  const matiz = AROMAS[claveAroma]?.variantes[claveMatiz];
+  return coincideAroma(p, claveAroma) && (!matiz || cuentaClaves(textoNotas(p), matiz.claves) >= 1);
+};
+const coincideMomento = (p, clave) => {
+  const m = MOMENTOS[clave];
+  if (!m) return true;
+  const u = extra(p).u;
+  return u ? u === m.exacto || m.afines.includes(u) : m.familias.includes(p.familiaOlfativa);
+};
+
+/** Perfumes que cumplen todo lo respondido hasta ahora (género, aroma, matiz, evitar, momento). */
+function candidatosPosibles(perfumes, r) {
+  const aromas = lista(r.aroma).filter((a) => AROMAS[a]?.familias.length);
+  const matices = lista(r.variante).filter((v) => v !== 'igual');
+  const momentos = lista(r.momento);
+  const evitar = lista(r.evitar).flatMap((k) => EVITAR[k]?.claves ?? []);
+  return (perfumes ?? []).filter(
+    (p) =>
+      puntosGenero(p, r.genero) !== null &&
+      (!aromas.length || aromas.some((a) => coincideAroma(p, a))) &&
+      (!matices.length || matices.some((v) => aromas.some((a) => coincideMatiz(p, a, v)))) &&
+      (!momentos.length || momentos.some((m) => coincideMomento(p, m))) &&
+      !(evitar.length && cuentaClaves(textoNotas(p), evitar) > 0)
+  );
+}
+
+const MINIMO_OPCIONES = 3;
+
+/**
+ * ¿Vale la pena ofrecer esta opción? Solo si, junto con lo ya respondido,
+ * quedan al menos 3 perfumes (así no hay combinaciones sin resultados, como
+ * "mujer + marino"). `paso` es 'aroma', 'variante', 'momento' o 'evitar'.
+ */
+export function opcionDisponible(perfumes, respuestas, paso, valor) {
+  if (valor === 'sorpresa' || valor === 'igual') return true;
+  if (paso === 'evitar') {
+    const claves = EVITAR[valor]?.claves ?? [];
+    const base = candidatosPosibles(perfumes, respuestas);
+    const con = base.filter((p) => cuentaClaves(textoNotas(p), claves) > 0).length;
+    return con >= 1 && base.length - con >= MINIMO_OPCIONES;
+  }
+  return candidatosPosibles(perfumes, { ...respuestas, [paso]: [valor] }).length >= MINIMO_OPCIONES;
 }
 
 /** Puntaje en modo "parecido a": inspiración exacta, después variantes; luego similitud. */
