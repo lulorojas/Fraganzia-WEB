@@ -68,10 +68,12 @@ export default function Carrito() {
     }
 
     // FR-030: verificar disponibilidad vigente antes de confirmar.
+    // Los decants tienen un perfumeId compuesto (ver Decants.jsx): se valida
+    // contra perfumeIdBase, el id real del perfume en Firestore.
     const resultados = await Promise.all(
       state.items.map(async (item) => ({
         item,
-        perfumeActual: await obtenerPerfumePorId(item.perfumeId),
+        perfumeActual: await obtenerPerfumePorId(item.perfumeIdBase ?? item.perfumeId),
       }))
     );
     const noDisponibles = resultados.filter(

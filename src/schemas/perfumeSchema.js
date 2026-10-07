@@ -30,6 +30,7 @@ export const perfumeSchema = z.object({
   volumenML: z.coerce.number().positive('El volumen debe ser mayor a 0'),
   imagenes: arrayDesdeLineas,
   destacado: z.boolean().default(false),
+  decant: z.boolean().default(false),
   disponible: z.boolean().default(true),
   activo: z.boolean().default(true),
 });

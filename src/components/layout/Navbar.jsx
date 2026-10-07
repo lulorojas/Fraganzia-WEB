@@ -8,6 +8,7 @@ import { abrirAsistente } from '../asistente/BotonAsistente';
 
 const LINKS = [
   { to: '/catalogo', label: 'Catálogo' },
+  { to: '/decants', label: 'Decants' },
   { to: '/sobre-nosotros', label: 'Nosotros' },
   { to: '/contacto', label: 'Contacto' },
 ];

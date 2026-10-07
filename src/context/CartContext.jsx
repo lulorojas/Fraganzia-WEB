@@ -70,7 +70,13 @@ export function CartProvider({ children }) {
     guardarCarrito(state);
   }, [state]);
 
-  /** Agrega un perfume (objeto del catálogo) y registra la estadística. */
+  /**
+   * Agrega un perfume (objeto del catálogo) y registra la estadística.
+   * Para decants, `perfume.id` ya viene como id compuesto (ver Decants.jsx)
+   * para que 5ml y 10ml del mismo perfume sean líneas separadas del carrito;
+   * `perfumeIdBase` es el id real en Firestore, para la estadística y para
+   * revalidar disponibilidad en el checkout (Carrito.jsx).
+   */
   const agregar = useCallback((perfume, cantidad = 1) => {
     dispatch({
       type: 'ADD_ITEM',
@@ -80,10 +86,13 @@ export function CartProvider({ children }) {
         marca: perfume.marca,
         precioUSD: perfume.precioUSD,
         imagenes: perfume.imagenes,
+        esDecant: perfume.esDecant ?? false,
+        ml: perfume.ml ?? null,
+        perfumeIdBase: perfume.perfumeIdBase ?? perfume.id,
         cantidad,
       },
     });
-    incrementarAgregadoCarrito(perfume.id);
+    incrementarAgregadoCarrito(perfume.perfumeIdBase ?? perfume.id);
     setUltimoAgregado({ perfumeId: perfume.id, cantidad, momento: Date.now() });
   }, []);
 

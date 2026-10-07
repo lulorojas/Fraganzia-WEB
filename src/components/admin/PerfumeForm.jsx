@@ -59,7 +59,7 @@ export function PerfumeForm({ perfume, onSubmit, onCancel, cargando }) {
       familiaOlfativa: FAMILIAS_OLFATIVAS[0], descripcion: '',
       notasSalida: '', notasCorazon: '', notasFondo: '',
       precioUSD: '', volumenML: 100, imagenes: '',
-      destacado: false, disponible: true, activo: true,
+      destacado: false, decant: false, disponible: true, activo: true,
     },
   });
 
@@ -123,6 +123,9 @@ export function PerfumeForm({ perfume, onSubmit, onCancel, cargando }) {
       <div className="flex gap-6">
         <label className="flex items-center gap-2 text-text-secondary cursor-pointer">
           <input type="checkbox" {...register('destacado')} /> Destacado
+        </label>
+        <label className="flex items-center gap-2 text-text-secondary cursor-pointer">
+          <input type="checkbox" {...register('decant')} /> En catálogo de decants
         </label>
         <label className="flex items-center gap-2 text-text-secondary cursor-pointer">
           <input type="checkbox" {...register('disponible')} /> Disponible

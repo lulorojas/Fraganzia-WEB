@@ -19,6 +19,8 @@ import NotFound from '../pages/NotFound';
 // El carrito no se pre-renderiza (depende de lo que cada visitante guardó) y
 // arrastra la validación del pedido (zod) y EmailJS: va en su propio chunk.
 const Carrito = lazy(() => import('../pages/Carrito'));
+// Decants: catálogo chico y secundario, no necesita pre-render.
+const Decants = lazy(() => import('../pages/Decants'));
 // Favoritos depende de lo guardado en cada navegador: tampoco se pre-renderiza.
 const Favoritos = lazy(() => import('../pages/Favoritos'));
 // Seguimiento de pedidos: privado (link con id), sin pre-render ni indexado.
@@ -84,6 +86,7 @@ export function AppRouter() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/catalogo" element={<Catalogo />} />
+          <Route path="/decants" element={s(<Decants />)} />
           <Route path="/perfume/:id" element={<PerfumeDetalle />} />
           <Route path="/carrito" element={s(<Carrito />)} />
           <Route path="/favoritos" element={s(<Favoritos />)} />
