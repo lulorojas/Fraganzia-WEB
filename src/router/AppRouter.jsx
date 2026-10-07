@@ -1,6 +1,8 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { ProtectedRoute } from '../components/layout/ProtectedRoute';
+import { useAuth } from '../context/AuthContext';
+import { registrarVisita } from '../services/visitasService';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Spinner } from '../components/ui/Spinner';
@@ -43,6 +45,7 @@ const AdminFinanzasLayout = lazy(() => import('../pages/admin/AdminFinanzasLayou
 const AdminFinanzasResumen = lazy(() => import('../pages/admin/AdminFinanzasResumen'));
 const AdminVentasSocios = lazy(() => import('../pages/admin/AdminVentasSocios'));
 const AdminCompras = lazy(() => import('../pages/admin/AdminCompras'));
+const AdminVisitas = lazy(() => import('../pages/admin/AdminVisitas'));
 const AdminVentasDecants = lazy(() => import('../pages/admin/AdminVentasDecants'));
 const AdminGastos = lazy(() => import('../pages/admin/AdminGastos'));
 const AdminStock = lazy(() => import('../pages/admin/AdminStock'));
@@ -64,6 +67,8 @@ function PageSuspense({ children }) {
 const s = (el) => <PageSuspense>{el}</PageSuspense>;
 
 function PublicLayout() {
+  const { isAdmin, loading } = useAuth();
+  useEffect(() => { if (!loading && !isAdmin) registrarVisita(); }, [isAdmin, loading]);
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -106,6 +111,7 @@ export function AppRouter() {
           <Route path="pedidos" element={s(<AdminPedidos />)} />
           <Route path="promociones" element={s(<AdminPromociones />)} />
           <Route path="bot-proveedor" element={s(<AdminBotProveedor />)} />
+          <Route path="visitas" element={s(<AdminVisitas />)} />
           <Route path="usuarios" element={s(<AdminUsuarios />)} />
           <Route path="config" element={s(<AdminConfig />)} />
           <Route path="finanzas" element={s(<AdminFinanzasLayout />)}>

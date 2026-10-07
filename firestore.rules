@@ -121,6 +121,23 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Visitas anónimas (una por sesión). El navegador crea el documento con su
+    // forma fija y tamaños acotados; no se puede editar. Lectura solo admin.
+    match /visitas/{visitaId} {
+      allow read: if isAdmin();
+      allow create: if request.resource.data.keys()
+          .hasOnly(['ruta', 'fuente', 'dispositivo', 'navegador', 'so', 'idioma', 'createdAt'])
+        && request.resource.data.ruta is string && request.resource.data.ruta.size() <= 120
+        && request.resource.data.fuente is string && request.resource.data.fuente.size() <= 60
+        && request.resource.data.dispositivo is string && request.resource.data.dispositivo.size() <= 20
+        && request.resource.data.navegador is string && request.resource.data.navegador.size() <= 20
+        && request.resource.data.so is string && request.resource.data.so.size() <= 20
+        && request.resource.data.idioma is string && request.resource.data.idioma.size() <= 10
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
     // Admins: solo admins leen; alta/baja se hace manualmente (consola).
     match /admins/{uid} {
       allow read: if isAdmin();

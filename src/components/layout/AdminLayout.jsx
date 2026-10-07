@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { to: '/admin/pedidos', label: 'Pedidos' },
   { to: '/admin/promociones', label: 'Promociones' },
   { to: '/admin/bot-proveedor', label: 'Bot proveedor' },
+  { to: '/admin/visitas', label: 'Visitas' },
   { to: '/admin/usuarios', label: 'Usuarios' },
   { to: '/admin/config', label: 'Configuración' },
   { to: '/admin/finanzas', label: 'Finanzas' },
