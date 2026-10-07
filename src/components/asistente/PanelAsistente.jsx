@@ -304,20 +304,20 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
     >
       {/* Encabezado */}
       <header className="flex items-center gap-3 border-b border-violet/15 px-4 py-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet to-violet-light" aria-hidden="true">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet to-violet-light" aria-hidden="true">
           <Sparkles size={18} className="text-white" />
         </span>
-        <div className="flex-1">
-          <h2 id={tituloId} className="font-display text-base font-semibold text-text">
+        <div className="min-w-0 flex-1">
+          <h2 id={tituloId} className="truncate font-display text-base font-semibold text-text">
             Encontrá tu perfume
           </h2>
-          <p className="font-body text-xs text-text-secondary">Asistente de Fraganzia</p>
+          <p className="truncate font-body text-xs text-text-secondary">Asistente de Fraganzia</p>
         </div>
         <button
           type="button"
           onClick={onCerrar}
           aria-label="Cerrar asistente"
-          className="flex h-10 w-10 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-white/5 hover:text-text"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-white/5 hover:text-text"
         >
           <X size={18} aria-hidden="true" />
         </button>
