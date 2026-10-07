@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { filasDesdeTextos, cruzar, motivoDeAborto, clave } from '../lib/catalogo-proveedor.mjs';
+import { filasDesdeTextos, cruzar, motivoDeAborto, clave, extraerImagenesCrudas, asociarImagenes } from '../lib/catalogo-proveedor.mjs';
 
 test('filasDesdeTextos une nombres partidos y descarta el encabezado de página', () => {
   const textos = [
@@ -54,4 +54,23 @@ test('motivoDeAborto frena PDFs chicos, cambios masivos y formato roto', () => {
   assert.match(motivoDeAborto(filas, { ...vacio, cambios: new Array(150).fill({}) }, 400), /precios/);
   assert.match(motivoDeAborto(filas, { ...vacio, nuevos: new Array(100).fill({}) }, 400), /nuevas/);
   assert.equal(motivoDeAborto(filas, vacio, 400), null);
+});
+
+test('extraerImagenesCrudas encuentra JPEGs grandes e ignora los chicos (logos/íconos)', () => {
+  const grande = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff]), Buffer.alloc(6000, 1), Buffer.from([0xff, 0xd9])]);
+  const chico = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff]), Buffer.alloc(10, 1), Buffer.from([0xff, 0xd9])]);
+  const buffer = Buffer.concat([Buffer.from('relleno'), chico, Buffer.from('más relleno'), grande]);
+  const imagenes = extraerImagenesCrudas(buffer);
+  assert.equal(imagenes.length, 1);
+  assert.equal(imagenes[0].length, grande.length);
+});
+
+test('asociarImagenes solo empareja por orden si la cantidad coincide exacto', () => {
+  const filas = [{ nombre: 'A' }, { nombre: 'B' }];
+  const img1 = Buffer.from('img1');
+  const img2 = Buffer.from('img2');
+  assert.deepEqual(asociarImagenes(filas, [img1]), filas);
+  const emparejadas = asociarImagenes(filas, [img1, img2]);
+  assert.equal(emparejadas[0].imagenBuffer, img1);
+  assert.equal(emparejadas[1].imagenBuffer, img2);
 });

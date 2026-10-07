@@ -82,6 +82,49 @@ export async function leerFilasDelPdf(buffer) {
   return filas;
 }
 
+const JPEG_SOI = Buffer.from([0xff, 0xd8, 0xff]);
+const JPEG_EOI = Buffer.from([0xff, 0xd9]);
+const PNG_SIG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const PNG_IEND = Buffer.from([0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82]);
+const TAMANO_MINIMO_IMAGEN = 5000; // descarta logos/íconos decorativos del PDF
+
+/**
+ * Imágenes JPEG/PNG embebidas en el PDF, en el orden en que aparecen en el
+ * archivo. El PDF no asocia explícitamente cada foto a su fila de texto; esa
+ * asociación (si es segura) la resuelve `asociarImagenes`.
+ */
+export function extraerImagenesCrudas(buffer) {
+  const imagenes = [];
+  let pos = 0;
+  while (pos < buffer.length - 8) {
+    const soi = buffer.indexOf(JPEG_SOI, pos);
+    const png = buffer.indexOf(PNG_SIG, pos);
+    if (soi === -1 && png === -1) break;
+    const esPng = png !== -1 && (soi === -1 || png < soi);
+    const inicio = esPng ? png : soi;
+    const fin = esPng
+      ? buffer.indexOf(PNG_IEND, inicio + 8)
+      : buffer.indexOf(JPEG_EOI, inicio + 2);
+    if (fin === -1) break;
+    const largoMarcador = esPng ? 8 : 2;
+    const imagen = buffer.subarray(inicio, fin + largoMarcador);
+    if (imagen.length > TAMANO_MINIMO_IMAGEN) imagenes.push(Buffer.from(imagen));
+    pos = fin + largoMarcador;
+  }
+  return imagenes;
+}
+
+/**
+ * Empareja imágenes con filas por orden, pero solo si la cantidad coincide
+ * exacto con la cantidad de filas: si el PDF trajo una cantidad distinta de
+ * fotos que de productos, no hay forma confiable de saber cuál va con cuál,
+ * así que no se asocia ninguna (quedan igual que antes, para carga manual).
+ */
+export function asociarImagenes(filas, imagenes) {
+  if (!filas.length || imagenes.length !== filas.length) return filas;
+  return filas.map((fila, i) => ({ ...fila, imagenBuffer: imagenes[i] }));
+}
+
 /** Clave de comparación: sin tildes, símbolos ni espacios sobrantes ("100 ML" = "100ML"). */
 export function clave(nombre) {
   return normalizarTexto(nombre)

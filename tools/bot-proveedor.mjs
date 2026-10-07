@@ -2,16 +2,22 @@
 // da de alta los perfumes nuevos. Corre en GitHub Actions (bot-proveedor.yml).
 //   node tools/bot-proveedor.mjs [--dry-run] [--forzar] [--pdf archivo.pdf] [--catalogo perfumes.json]
 // Con --catalogo no se toca Firestore (solo simula). --forzar saltea solo el tope de % de cambios.
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import {
   descargarPdf,
   hashPdf,
   leerFilasDelPdf,
+  extraerImagenesCrudas,
+  asociarImagenes,
   cruzar,
   motivoDeAborto,
 } from './lib/catalogo-proveedor.mjs';
+
+const DIR_FOTOS_NUEVAS = 'public/productos-bot';
+const toSlug = (nombre) => nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 const args = process.argv.slice(2);
 const valorDe = (flag) => args[args.indexOf(flag) + 1];
@@ -36,8 +42,9 @@ async function avisar(asunto, texto) {
 
 function resumen(r) {
   const linea = (c) => `  ${c.nombre}: ${c.anterior ?? '-'} -> ${c.nuevo} USD`;
+  const publicados = r.nuevos.filter((n) => n.imagenBuffer).length;
   return [
-    `Nuevos ingresos: ${r.nuevos.length} (ocultos hasta cargarlos: pedile al asistente "cargá los nuevos")`,
+    `Nuevos ingresos: ${r.nuevos.length} (${publicados} publicados con foto automática, ${r.nuevos.length - publicados} ocultos: pedile al asistente "cargá los nuevos")`,
     ...r.nuevos.slice(0, 20).map((n) => `  ${n.nombre}: ${n.precioUSD} USD${n.genero ? ` (${n.genero})` : ''}`),
     r.nuevos.length > 20 ? `  ... y ${r.nuevos.length - 20} más` : '',
     `Precios actualizados: ${r.cambios.length}`,
@@ -63,7 +70,7 @@ async function main() {
     perfumes = (await db.collection('perfumes').get()).docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
-  const filas = await leerFilasDelPdf(pdf);
+  const filas = asociarImagenes(await leerFilasDelPdf(pdf), extraerImagenesCrudas(pdf));
   const resultado = cruzar(filas, perfumes);
   const aborto = motivoDeAborto(filas, resultado, perfumes.length, { forzar: args.includes('--forzar') });
   if (aborto) {
@@ -72,29 +79,41 @@ async function main() {
   }
 
   console.log(`${dryRun ? '[dry-run] ' : ''}${filas.length} filas en el PDF\n${resumen(resultado)}`);
-  if (dryRun) return;
+  if (dryRun) {
+    await avisar('Fraganzia: simulación del bot de precios (no se aplicó nada)', resumen(resultado));
+    return;
+  }
 
   const ahora = FieldValue.serverTimestamp();
   const lote = [
     ...resultado.cambios.map((c) => (b) =>
       b.update(db.doc(`perfumes/${c.id}`), { precioUSD: c.nuevo, ultimaActualizacionPrecios: ahora, updatedAt: ahora })),
-    ...resultado.nuevos.map((n) => (b) =>
+    ...resultado.nuevos.map((n) => (b) => {
+      let imagenes = [];
+      if (n.imagenBuffer) {
+        mkdirSync(DIR_FOTOS_NUEVAS, { recursive: true });
+        const archivo = `${toSlug(n.nombre)}.jpg`;
+        writeFileSync(join(DIR_FOTOS_NUEVAS, archivo), n.imagenBuffer);
+        imagenes = [`/productos-bot/${archivo}`];
+      }
       b.set(db.collection('perfumes').doc(), {
         nombre: n.nombre,
         marca: n.marca,
         ...(n.genero && { genero: n.genero }),
         volumenML: n.volumenML,
         precioUSD: n.precioUSD,
-        imagenes: [],
+        imagenes,
         activo: true,
-        // Oculto hasta cargar familia, notas, descripción y foto.
-        disponible: false,
+        // Con foto emparejada con confianza se publica solo; sin ella queda
+        // oculto como antes (familia, notas y descripción igual se cargan a mano).
+        disponible: imagenes.length > 0,
         pendienteCarga: true,
         destacado: false,
         ultimaActualizacionPrecios: ahora,
         createdAt: ahora,
         updatedAt: ahora,
-      })),
+      });
+    }),
   ];
   for (let i = 0; i < lote.length; i += 400) {
     const batch = db.batch();
@@ -103,7 +122,9 @@ async function main() {
   }
 
   const fecha = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
-  await db.doc(`botProveedorLog/${fecha}`).set({ hash, ...resultado, creadoEn: ahora });
+  // Los buffers de foto no van a Firestore (no son serializables ni hace falta guardarlos).
+  const nuevosSinBuffer = resultado.nuevos.map(({ imagenBuffer, ...n }) => n);
+  await db.doc(`botProveedorLog/${fecha}`).set({ hash, ...resultado, nuevos: nuevosSinBuffer, creadoEn: ahora });
   await db.doc('config/botProveedor').set({ hash, ultimaCorrida: ahora });
 
   if (resultado.cambios.length || resultado.nuevos.length) {

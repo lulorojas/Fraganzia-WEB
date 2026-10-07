@@ -13,6 +13,8 @@ on:
 jobs:
   actualizar:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -32,3 +34,14 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FRAGANZIA_E9B70 }}
           CALLMEBOT_PHONE: ${{ secrets.CALLMEBOT_PHONE }}
           CALLMEBOT_APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
+
+      - name: Subir fotos de nuevos ingresos detectadas automáticamente
+        run: |
+          mkdir -p public/productos-bot
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/productos-bot
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(bot): fotos de nuevos ingresos detectadas automaticamente"
+            git push
+          fi
