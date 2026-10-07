@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { preciosPorMetodo } from '../../utils/precios';
+import { preciosPorMetodo, getMejorPromo } from '../../utils/precios';
 import { formatARS, nombreCompleto } from '../../utils/format';
 import { ImagenProducto } from './ImagenProducto';
 import { BotonFavorito } from './BotonFavorito';
@@ -9,7 +9,7 @@ import { BotonFavorito } from './BotonFavorito';
 // Con decenas de destacados, dibujarlos todos encarece el primer pintado: se muestran los primeros y el resto está en el catálogo.
 const MAX_VISIBLES = 16;
 
-export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, etiqueta = 'Perfumes destacados' }) {
+export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, promociones, etiqueta = 'Perfumes destacados' }) {
   const scrollRef = useRef(null);
 
   const scroll = (direction) => {
@@ -54,7 +54,11 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, etiqueta = '
       >
         {perfumes.slice(0, MAX_VISIBLES).map((perfume) => {
           const precios = dolarMedio ? preciosPorMetodo(perfume.precioUSD, dolarMedio) : null;
-          
+          const promo = getMejorPromo(perfume.id, promociones);
+          const pct = promo?.descuentoPorcentaje ?? 0;
+          const precioTransConPromo = precios && pct ? Math.round(precios.precioTransferencia * (1 - pct / 100) / 1000) * 1000 : null;
+          const precioEfecConPromo  = precios && pct ? Math.round(precios.precioEfectivo      * (1 - pct / 100) / 1000) * 1000 : null;
+
           return (
             <div
               key={perfume.id}
@@ -71,9 +75,9 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, etiqueta = '
                       height="373"
                       className="foto-producto w-full h-full object-contain p-4 transition-transform duration-300 group-hover/card:scale-110"
                     />
-                    {perfume.descuento > 0 && (
+                    {pct > 0 && (
                       <div className="absolute top-3 right-3 bg-violet px-3 py-1 rounded-full text-xs font-semibold text-white shadow-lg">
-                        -{perfume.descuento}%
+                        -{pct}%
                       </div>
                     )}
                   </div>
@@ -92,16 +96,32 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, etiqueta = '
                   <div className="h-px bg-gradient-to-r from-violet/20 via-violet/50 to-violet/20 mb-3" />
 
                   {precios ? (
-                    <div className="space-y-1 text-sm mb-4 tabular-nums">
-                      <div className="flex justify-between">
-                        <span className="text-text-secondary">Transferencia</span>
-                        <span className="text-text font-medium">{formatARS(precios.precioTransferencia)}</span>
+                    pct > 0 ? (
+                      <div className="space-y-1 text-sm mb-4 tabular-nums">
+                        <div className="flex justify-between items-baseline">
+                          <span className="text-text-secondary">Transferencia</span>
+                          <span className="flex items-baseline gap-2">
+                            <span className="text-xs text-text-secondary line-through">{formatARS(precios.precioTransferencia)}</span>
+                            <span className="text-text font-bold text-emerald-400">{formatARS(precioTransConPromo)}</span>
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-text-secondary">Efectivo</span>
+                          <span className="text-text font-semibold text-emerald-400">{formatARS(precioEfecConPromo)}</span>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-text-secondary">Efectivo</span>
-                        <span className="text-text font-medium">{formatARS(precios.precioEfectivo)}</span>
+                    ) : (
+                      <div className="space-y-1 text-sm mb-4 tabular-nums">
+                        <div className="flex justify-between">
+                          <span className="text-text-secondary">Transferencia</span>
+                          <span className="text-text font-medium">{formatARS(precios.precioTransferencia)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-text-secondary">Efectivo</span>
+                          <span className="text-text font-medium">{formatARS(precios.precioEfectivo)}</span>
+                        </div>
                       </div>
-                    </div>
+                    )
                   ) : (
                     <div className="mb-4 text-sm text-text-secondary">Precio no disponible</div>
                   )}

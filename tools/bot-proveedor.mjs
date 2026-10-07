@@ -66,7 +66,14 @@ async function main() {
     initializeApp({ credential: cert(credencial()) });
     db = getFirestore();
     const config = await db.doc('config/botProveedor').get();
-    if (!dryRun && config.exists && config.data().hash === hash) return console.log('catálogo sin cambios');
+    if (!dryRun && config.exists && config.data().hash === hash) {
+      console.log('catálogo sin cambios');
+      // El cron diario se queda calladito para no spamear; un run manual siempre avisa algo.
+      if (process.env.GITHUB_EVENT_NAME === 'workflow_dispatch') {
+        await avisar('Fraganzia: el bot de precios corrió', 'El catálogo del proveedor no cambió desde la última corrida: no hay nada para aplicar.');
+      }
+      return;
+    }
     perfumes = (await db.collection('perfumes').get()).docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 

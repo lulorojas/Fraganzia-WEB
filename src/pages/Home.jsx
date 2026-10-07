@@ -179,7 +179,7 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <HorizontalSlider perfumes={destacados} dolarMedio={dolarMedio} onAgregar={agregar} />
+          <HorizontalSlider perfumes={destacados} dolarMedio={dolarMedio} onAgregar={agregar} promociones={promociones} />
         )}
       </section>
 
@@ -191,7 +191,7 @@ export default function Home() {
               Ver todo el catálogo
             </Link>
           </div>
-          <HorizontalSlider perfumes={nuevos} dolarMedio={dolarMedio} onAgregar={agregar} etiqueta="Nuevos ingresos" />
+          <HorizontalSlider perfumes={nuevos} dolarMedio={dolarMedio} onAgregar={agregar} promociones={promociones} etiqueta="Nuevos ingresos" />
         </section>
       )}
     </div>
