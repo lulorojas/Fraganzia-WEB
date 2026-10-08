@@ -1,12 +1,17 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { listarPerfumesPublicos, filtrarPerfumes } from '../services/perfumesService';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { actualizarPerfumesPublicos, filtrarPerfumes } from '../services/perfumesService';
 
 // Una sola query para todo el catálogo público; cada pantalla filtra en memoria.
+const KEY = ['perfumes', 'public'];
+
 export function usePerfumes(filtros = {}) {
+  const qc = useQueryClient();
   const query = useQuery({
-    queryKey: ['perfumes', 'public'],
-    queryFn: listarPerfumesPublicos,
+    queryKey: KEY,
+    // Con la foto del build (o la lectura anterior) solo se piden los perfumes
+    // que cambiaron desde entonces; sin ella, el catálogo completo.
+    queryFn: () => actualizarPerfumesPublicos(qc.getQueryData(KEY), qc.getQueryState(KEY)?.dataUpdatedAt),
     staleTime: 5 * 60 * 1000,
   });
 

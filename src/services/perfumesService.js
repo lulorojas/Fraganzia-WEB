@@ -1,6 +1,6 @@
 import {
   collection, doc, getDoc, getDocs, query, where,
-  addDoc, updateDoc, deleteDoc, serverTimestamp,
+  addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { normalizarTexto } from '../utils/texto';
@@ -34,6 +34,39 @@ export async function listarPerfumesPublicos() {
   return ordenarPorFechaDesc(snap.docs.map((d) => ({ id: d.id, ...d.data() }))).filter(
     (p) => p.disponible === true
   );
+}
+
+// Margen para el desfase entre el reloj del visitante y el del servidor, y
+// antigüedad máxima de la copia previa antes de volver a leer todo (cubre lo
+// que el modo incremental no ve, como un perfume borrado).
+const MARGEN_RELOJ_MS = 10 * 60 * 1000;
+const EDAD_MAXIMA_COPIA_MS = 3 * 24 * 60 * 60 * 1000;
+
+/**
+ * Actualiza el catálogo que ya se tiene (la "foto" del HTML o la última
+ * lectura) pidiendo SOLO los perfumes modificados desde `desde` (ms): cuesta
+ * una lectura por perfume cambiado en vez de ~400 por visita. Todo lo que
+ * escribe perfumes (admin y bot de precios) actualiza `updatedAt`.
+ *
+ * Sin copia previa, o si es muy vieja, lee el catálogo completo.
+ */
+export async function actualizarPerfumesPublicos(previos, desde) {
+  if (!previos?.length || !desde || Date.now() - desde > EDAD_MAXIMA_COPIA_MS) {
+    return listarPerfumesPublicos();
+  }
+  const snap = await getDocs(
+    query(collection(db, COLLECTION), where('updatedAt', '>', Timestamp.fromMillis(desde - MARGEN_RELOJ_MS)))
+  );
+  if (snap.empty) return previos;
+
+  const cambios = new Map(snap.docs.map((d) => [d.id, { id: d.id, ...d.data() }]));
+  const visible = (p) => p.activo === true && p.disponible === true;
+  const idsPrevios = new Set(previos.map((p) => p.id));
+  const vigentes = previos
+    .filter((p) => !cambios.has(p.id) || visible(cambios.get(p.id)))
+    .map((p) => cambios.get(p.id) ?? p);
+  const nuevos = ordenarPorFechaDesc([...cambios.values()].filter((p) => !idsPrevios.has(p.id) && visible(p)));
+  return [...nuevos, ...vigentes];
 }
 
 /** Aplica los filtros combinables del catálogo (FR-002) sobre la lista cacheada. */

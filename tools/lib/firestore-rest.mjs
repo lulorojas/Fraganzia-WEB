@@ -40,15 +40,23 @@ function config() {
 
 const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** GET con reintentos (backoff) ante 429: el REST público de Firestore a veces
- * tira "rate limit" temporal cuando varios scripts de build leen seguido. */
+/** GET con reintentos (backoff) ante 429, errores 5xx y cortes de red
+ * ("fetch failed", timeout): el REST público de Firestore a veces tira "rate
+ * limit" temporal cuando varios scripts de build leen seguido, y en CI la red
+ * falla de vez en cuando. Si tras todos los intentos sigue fallando, tira error. */
 async function fetchConReintento(url, intentos = 6) {
+  let ultimoError;
   for (let i = 0; i < intentos; i++) {
-    const res = await fetch(url);
-    if (res.status !== 429) return res;
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(30000) });
+      if (res.status !== 429 && res.status < 500) return res;
+      ultimoError = new Error(`Firestore respondió ${res.status}`);
+    } catch (err) {
+      ultimoError = err;
+    }
     if (i < intentos - 1) await esperar(3000 * (i + 1));
   }
-  return fetch(url);
+  throw ultimoError;
 }
 
 /** Todos los documentos de una colección como objetos planos `{ id, ...campos }`. */

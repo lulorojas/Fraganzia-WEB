@@ -123,6 +123,9 @@ try {
   console.log(`prerender: foto de datos con ${datos.perfumes.length} perfumes`);
 } catch (err) {
   console.warn(`prerender: sin foto de datos (${err.message})`);
+  // En el despliegue (PRERENDER_ESTRICTO) es mejor frenar y dejar la versión
+  // anterior en línea que publicar un sitio sin datos pre-generados.
+  if (process.env.PRERENDER_ESTRICTO) process.exitCode = 1;
 }
 
 // Primero, shells para todo: si el pre-render falla, la web funciona igual.
@@ -294,6 +297,7 @@ try {
   await paginasPorPerfume(resultados['perfume.html'].root);
 } catch (err) {
   console.warn(`prerender: falló (${err.message}); se sirven shells sin pre-render`);
+  if (process.env.PRERENDER_ESTRICTO) process.exitCode = 1;
 } finally {
   await navegador.close();
   await new Promise((r) => servidor.httpServer.close(r));
