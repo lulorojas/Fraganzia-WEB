@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Minus, Plus, ChevronLeft, MessageCircle } from 'lucide-react';
@@ -44,6 +44,10 @@ function precioConPromo(precio, pct) {
 export default function PerfumeDetalle() {
   const { id } = useParams();
   const { data: perfume, isLoading } = usePerfume(id);
+  // El HTML pre-generado de la ficha es el esqueleto: al hidratar hay que
+  // pintar lo mismo y recién después el contenido (si no, React descarta el
+  // HTML y tira errores de hidratación). Con render normal ya es true.
+  const montado = useSyncExternalStore(() => () => {}, () => true, () => false);
   // Solo se lee lo que ya está en caché (si vino del catálogo): pedir los ~400 perfumes por una ficha costaría lecturas de más.
   const catalogo = useQueryClient().getQueryData(['perfumes', 'public']);
   const { dolarMedio } = useDolarBlue();
@@ -106,7 +110,7 @@ export default function PerfumeDetalle() {
       : { title: 'Perfume' }
   );
 
-  if (isLoading) return <DetalleSkeleton />;
+  if (isLoading || !montado) return <DetalleSkeleton />;
 
   if (!perfume) {
     return (

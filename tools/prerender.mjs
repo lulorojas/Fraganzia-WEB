@@ -119,7 +119,7 @@ function escribirShells(html) {
 
 try {
   datos = await tomarFoto();
-  conDatos = plantilla.replace('</head>', `    ${scriptDatos(datos)}\n  </head>`);
+  conDatos = plantilla.replace('</head>', () => `    ${scriptDatos(datos)}\n  </head>`);
   console.log(`prerender: foto de datos con ${datos.perfumes.length} perfumes`);
 } catch (err) {
   console.warn(`prerender: sin foto de datos (${err.message})`);
@@ -259,7 +259,21 @@ try {
     await new Promise((r) => setTimeout(r, 400));
 
     resultados[pagina.archivo] = await tab.evaluate(() => ({
-      root: document.getElementById('root').innerHTML,
+      root: (() => {
+        // React pinta "Afnan (17)" como varios nodos de texto, pero al serializar
+        // el HTML se funden en uno solo y la hidratación no coincide (errores
+        // #418/#423/#425). Entre dos textos seguidos se deja un comentario
+        // vacío, igual que hace el render de servidor de React: al hidratar lo
+        // ignora y los nodos vuelven a coincidir.
+        const raiz = document.getElementById('root');
+        const textos = [];
+        const caminante = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT);
+        while (caminante.nextNode()) textos.push(caminante.currentNode);
+        for (const t of textos) {
+          if (t.nextSibling?.nodeType === Node.TEXT_NODE) t.after(document.createComment(''));
+        }
+        return raiz.innerHTML;
+      })(),
       head: {
         title: document.title,
         description: document.querySelector('meta[name="description"]')?.content ?? '',
@@ -272,7 +286,7 @@ try {
 
   for (const { archivo, soloRoot } of PAGINAS) {
     const { root, head } = resultados[archivo];
-    let html = conDatos.replace('<div id="root"></div>', `<div id="root">${root}</div>`);
+    let html = conDatos.replace('<div id="root"></div>', () => `<div id="root">${root}</div>`);
     html = soloRoot ? shell(html) : aplicarHead(html, head);
     writeFileSync(`${DIST}/${archivo}`, html);
   }
