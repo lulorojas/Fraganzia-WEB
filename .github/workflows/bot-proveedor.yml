@@ -2,7 +2,7 @@ name: Bot de precios del proveedor
 
 on:
   schedule:
-    - cron: '0 12 * * *'
+    - cron: '23 12 * * *'  # minuto 23: a las en punto GitHub demora más los programados
   workflow_dispatch:
     inputs:
       dry_run:
