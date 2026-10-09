@@ -36,8 +36,14 @@ npm run dev                  # http://localhost:5173
 | `npm run deploy` | Build y publicación en Firebase Hosting |
 | `npm run deploy:rules` | Publica las reglas e índices de Firestore |
 | `npm run test:rules` | Prueba las reglas de Firestore en el emulador (requiere Java) |
+| `npm run test:bot` | Tests rápidos: bot de precios, cuentas de precios y decants |
+| `npm run test:e2e` | Pruebas de navegador sobre `dist/` (hace falta `npm run build` antes y Chrome): carga e hidratación de cada página, catálogo, carrito, decants, asistente y quien vuelve con carrito guardado. Bloquea las escrituras a Firestore |
 
-Cada push a `main` se publica automáticamente con GitHub Actions (solo hosting; las reglas se publican con `npm run deploy:rules`).
+Cada push a `main` corre los tests y las pruebas de navegador y, si pasan, se publica automáticamente con GitHub Actions (solo hosting; las reglas se publican con `npm run deploy:rules`).
+
+### Repos
+
+El sitio vive en este repo (`Fraganzia-WEB`). La carpeta de arriba (`Fraganzia/`) es otro repo, con el catálogo estático antiguo, y no versiona esta carpeta.
 
 ## Stack
 

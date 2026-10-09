@@ -12,7 +12,8 @@
     "test:rules": "npx --yes firebase-tools@latest emulators:exec --only firestore --project demo-fraganzia \"node tools/test-rules.mjs\"",
     "imagenes": "node tools/localizar-imagenes.mjs",
     "bot:proveedor": "node tools/bot-proveedor.mjs",
-    "test:bot": "node --test tools/test/*.test.mjs"
+    "test:bot": "node --test tools/test/*.test.mjs",
+    "test:e2e": "node --test tools/test/e2e/*.e2e.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

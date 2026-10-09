@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { incrementarFavorito } from '../services/estadisticasService';
+import { estaHidratando } from '../utils/hidratacion';
 
 const STORAGE_KEY = 'fraganzia_favoritos';
 
@@ -37,7 +38,15 @@ const FavoritosContext = createContext(null);
  * copia vieja.
  */
 export function FavoritosProvider({ children }) {
-  const [ids, setIds] = useState(leer);
+  // Al hidratar el HTML pre-generado se arranca vacío (igual que el servidor) y
+  // recién al montar se cargan los favoritos guardados; si no, React descarta
+  // el HTML y tira errores de hidratación a quien ya tiene favoritos.
+  const [hidratando] = useState(estaHidratando);
+  const [ids, setIds] = useState(() => (hidratando ? [] : leer()));
+
+  useEffect(() => {
+    if (hidratando) setIds(leer());
+  }, [hidratando]);
 
   // Cambios hechos desde otra pestaña.
   useEffect(() => {

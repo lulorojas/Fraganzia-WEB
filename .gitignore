@@ -17,3 +17,12 @@ tools/*.csv
 
 # Material interno (clasificación de perfumes para recomendación personal)
 privado/
+
+# Herramientas locales de los agentes de IA: salvo las skills del proyecto
+# (speckit-*), lo demás se instala en cada máquina y no se versiona.
+.agents/
+skills-lock.json
+.claude/skills/*
+!.claude/skills/speckit-*
+.claude/settings.local.json
+

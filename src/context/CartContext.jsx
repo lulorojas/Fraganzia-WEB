@@ -1,6 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { leerCarrito, guardarCarrito } from '../utils/cartStorage';
 import { incrementarAgregadoCarrito } from '../services/estadisticasService';
+import { estaHidratando } from '../utils/hidratacion';
 
 // Tope por producto: coincide con el schema del pedido y evita pedidos
 // absurdos por un click de más.
@@ -49,6 +50,8 @@ function cartReducer(state, action) {
       return { ...state, metodoPago: action.payload };
     case 'CLEAR_CART':
       return initialState;
+    case 'HYDRATE':
+      return action.payload;
     default:
       return state;
   }
@@ -57,16 +60,33 @@ function cartReducer(state, action) {
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
+  // Al hidratar el HTML pre-generado se arranca con el carrito vacío (igual que
+  // el servidor) y recién al montar se carga el guardado; si no, React descarta
+  // el HTML y tira errores de hidratación a quien ya tiene productos.
+  const [hidratando] = useState(estaHidratando);
   const [state, dispatch] = useReducer(cartReducer, initialState, (init) => {
+    if (hidratando) return init;
     const guardado = leerCarrito();
     return guardado ?? init;
   });
+  // El primer guardado (mismo commit que la carga) se saltea: sería el carrito vacío.
+  const saltarPrimerGuardado = useRef(hidratando);
+
+  useEffect(() => {
+    if (!hidratando) return;
+    const guardado = leerCarrito();
+    if (guardado) dispatch({ type: 'HYDRATE', payload: guardado });
+  }, [hidratando]);
 
   // Último producto agregado: lo usa el mini-carrito para abrirse. No va al
   // estado persistido (no tiene sentido reabrirlo al recargar la página).
   const [ultimoAgregado, setUltimoAgregado] = useState(null);
 
   useEffect(() => {
+    if (saltarPrimerGuardado.current) {
+      saltarPrimerGuardado.current = false;
+      return;
+    }
     guardarCarrito(state);
   }, [state]);
 

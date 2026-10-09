@@ -44,6 +44,13 @@ jobs:
           # no se publica: queda la versión anterior en línea.
           PRERENDER_ESTRICTO: '1'
 
+      - name: Pruebas de navegador (catálogo, carrito, decants y asistente)
+        # Se reintenta una vez: dependen de la red (Firestore) y no deben frenar
+        # un despliegue por un corte puntual.
+        run: npm run test:e2e || npm run test:e2e
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+
       - name: Deploy a Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:

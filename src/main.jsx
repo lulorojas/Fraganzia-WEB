@@ -4,6 +4,7 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 // agregaba dos conexiones extra y bloqueaba el primer render).
 import './assets/fonts/fonts.css';
 import App from './App';
+import { marcarHidratacion } from './utils/hidratacion';
 import './index.css';
 
 const root = document.getElementById('root');
@@ -16,6 +17,7 @@ const app = (
 // el #root ya tiene contenido, lo hidratamos en vez de tirarlo y volver a
 // pintar todo de cero con createRoot.
 if (root.hasChildNodes()) {
+  marcarHidratacion(true);
   hydrateRoot(root, app);
 } else {
   createRoot(root).render(app);
