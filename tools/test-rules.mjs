@@ -60,6 +60,17 @@ await t('búsqueda +50', bus('lattafa', increment(50), increment(0)), false);
 await t('término muy largo', bus('x'.repeat(200), increment(1), increment(0)), false);
 await t('término distinto al id', setDoc(doc(anon, 'busquedas', 'abc'), { termino: 'zzz', conteo: 1, sinResultados: 0, updatedAt: serverTimestamp() }), false);
 
+const emb = (id, campos, extra = {}) => setDoc(doc(anon, 'embudo', id), { fecha: id.slice(0, 10), fuente: id.slice(11), ...campos, updatedAt: serverTimestamp(), ...extra }, { merge: true });
+await t('embudo: sesión nueva', emb('2026-10-13_ig', { sesiones: increment(1) }), true);
+await t('embudo: otro paso en el mismo doc', emb('2026-10-13_ig', { ficha: increment(1) }), true);
+await t('embudo: +5', emb('2026-10-13_ig', { pedidos: increment(5) }), false);
+await t('embudo: campo inventado', emb('2026-10-13_ig', { regalos: increment(1) }), false);
+await t('embudo: id que no coincide', setDoc(doc(anon, 'embudo', 'cualquiera'), { fecha: '2026-10-13', fuente: 'ig', sesiones: increment(1), updatedAt: serverTimestamp() }), false);
+await t('embudo: fecha inválida', setDoc(doc(anon, 'embudo', 'hoy_ig'), { fecha: 'hoy', fuente: 'ig', sesiones: increment(1), updatedAt: serverTimestamp() }), false);
+await t('embudo: fuente muy larga', emb('2026-10-13_' + 'x'.repeat(60), { sesiones: increment(1) }), false);
+await t('embudo: leer anónimo', getDoc(doc(anon, 'embudo', '2026-10-13_ig')), false);
+await t('embudo: borrar anónimo', deleteDoc(doc(anon, 'embudo', '2026-10-13_ig')), false);
+
 await env.cleanup();
 console.log(fails ? `\n${fails} FALLARON` : '\nTODAS OK');
 process.exit(fails ? 1 : 0);

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useVisitas } from '../../hooks/useVisitas';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Spinner } from '../../components/ui/Spinner';
+import { EmbudoCompra } from '../../components/admin/EmbudoCompra';
 
 const fecha = (ts) => {
   const d = ts?.toDate ? ts.toDate() : null;
@@ -84,6 +85,8 @@ export default function AdminVisitas() {
         <Ranking titulo="Página de entrada" items={resumen.paginas} />
         <Ranking titulo="Dispositivo" items={resumen.dispositivos} />
       </div>
+
+      <EmbudoCompra />
 
       <GlassCard className="overflow-x-auto p-0">
         <table className="w-full text-left text-sm">

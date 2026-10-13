@@ -1,6 +1,6 @@
 import {
   collection, doc, getDocs, writeBatch, serverTimestamp,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
 import { fechaDeMovimiento, milisDeFecha } from '../utils/format';
 

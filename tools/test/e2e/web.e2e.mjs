@@ -68,7 +68,8 @@ async function abrir(ruta, { espera = 'domcontentloaded', conservar = false } = 
   await page.setRequestInterception(true);
   page.on('request', (req) => {
     const url = new URL(req.url());
-    if (/Firestore\/Write/.test(req.url())) req.abort();
+    // El SDK liviano escribe por REST (documents:commit); el completo, por el canal Write.
+    if (/Firestore\/Write|firestore\.googleapis\.com\/.*:commit/.test(req.url())) req.abort();
     else if (req.isNavigationRequest() && url.origin === base && SIN_PRERENDER.test(url.pathname)) {
       req.respond({ status: 200, contentType: 'text/html; charset=utf-8', body: readFileSync('dist/app.html') });
     } else req.continue();

@@ -1,8 +1,9 @@
 import {
   collection, doc, setDoc, getDocs, query, orderBy, limit, serverTimestamp,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
 import { yaRegistradoEnSesion } from '../utils/sesion';
+import { recordarFuente, registrarPaso } from './embudoService';
 
 const COLLECTION = 'visitas';
 const MAX_VISITAS = 500;
@@ -62,9 +63,12 @@ export function registrarVisita() {
     if (yaRegistradoEnSesion('visita')) return Promise.resolve();
 
     const id = crypto.randomUUID();
+    const fuente = detectarFuente();
+    recordarFuente(fuente);
+    registrarPaso('sesiones');
     return setDoc(doc(db, COLLECTION, id), {
       ruta: window.location.pathname.slice(0, 120),
-      fuente: detectarFuente(),
+      fuente,
       dispositivo: detectarDispositivo(ua),
       navegador: detectarNavegador(ua),
       so: detectarSO(ua),

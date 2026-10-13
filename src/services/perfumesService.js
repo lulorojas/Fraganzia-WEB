@@ -1,7 +1,7 @@
 import {
   collection, doc, getDoc, getDocs, query, where,
   addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
 import { normalizarTexto } from '../utils/texto';
 import { coincide } from '../utils/busqueda';

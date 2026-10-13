@@ -1,13 +1,18 @@
 import { useId, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { GENEROS, FAMILIAS_OLFATIVAS } from '../../constants';
 import { usePerfumes } from '../../hooks/usePerfumes';
 import { useDolarBlue } from '../../hooks/useDolarBlue';
-import { marcasDelCatalogo, sugerencias } from '../../utils/busqueda';
+import { marcasDelCatalogo, sugerencias, coincide } from '../../utils/busqueda';
 import { bandasDePrecio, ORDENES } from '../../utils/ordenCatalogo';
 import { formatARS } from '../../utils/format';
 import { ImagenProducto } from './ImagenProducto';
+
+// Líneas que más busca la gente. Solo se muestran las que tienen perfumes en el
+// catálogo (no hay atajos que no lleven a nada).
+const LINEAS_POPULARES = ['Hawas', 'Club de Nuit', 'Odyssey', 'Amber Oud', 'Khamrah', 'Yara', '9PM', 'Asad', 'Fakhar'];
+const MIN_POR_LINEA = 3;
 
 const SELECT =
   'flex-1 rounded-xl border border-border bg-bg px-3 py-2.5 text-text focus:border-violet focus:outline-none sm:flex-none';
@@ -162,6 +167,14 @@ export function Filtros({ filtros, onChange }) {
   const etiquetaBanda = ({ id, min, max }) =>
     id === 'bajo' ? `Hasta ${formatARS(max)}` : id === 'alto' ? `Más de ${formatARS(min)}` : `${formatARS(min)} a ${formatARS(max)}`;
 
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
+  const panelId = useId();
+  const lineas = useMemo(
+    () => LINEAS_POPULARES.filter((l) => (catalogo ?? []).filter((p) => coincide(p, l)).length >= MIN_POR_LINEA),
+    [catalogo]
+  );
+  const activos = ['marca', 'familiaOlfativa', 'precio', 'orden'].filter((c) => filtros[c]).length;
+
   function actualizar(campo, valor) {
     onChange({ ...filtros, [campo]: valor || undefined });
   }
@@ -201,6 +214,40 @@ export function Filtros({ filtros, onChange }) {
           );
         })}
       </div>
+      {lineas.length > 0 && (
+        <div className="-mx-4 flex w-[calc(100%+2rem)] items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:w-full sm:px-0 [scrollbar-width:none]" aria-label="Líneas populares" role="group">
+          <span className="shrink-0 font-body text-xs text-text-secondary">Populares:</span>
+          {lineas.map((l) => {
+            const activa = (filtros.busqueda ?? '').trim().toLowerCase() === l.toLowerCase();
+            return (
+              <button
+                key={l}
+                type="button"
+                aria-pressed={activa}
+                onClick={() => actualizar('busqueda', activa ? '' : l)}
+                className={`shrink-0 rounded-full border px-3 py-1.5 font-body text-xs transition-colors ${
+                  activa ? 'border-violet bg-violet/30 text-text' : 'border-border text-text-secondary hover:border-violet/60 hover:text-text'
+                }`}
+              >
+                {l}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {/* En celular los selectores se pliegan: antes ocupaban casi una pantalla entera
+          antes del primer perfume. */}
+      <button
+        type="button"
+        onClick={() => setFiltrosAbiertos((v) => !v)}
+        aria-expanded={filtrosAbiertos}
+        aria-controls={panelId}
+        className="flex items-center gap-2 rounded-xl border border-border bg-bg px-3 py-2.5 font-body text-sm text-text md:hidden"
+      >
+        <SlidersHorizontal size={16} aria-hidden="true" />
+        Más filtros{activos > 0 ? ` (${activos})` : ''}
+      </button>
+      <div id={panelId} className={`${filtrosAbiertos ? 'flex' : 'hidden'} w-full flex-wrap gap-3 md:flex md:w-auto`}>
       <select
         value={filtros.marca ?? ''}
         onChange={(e) => actualizar('marca', e.target.value)}
@@ -247,6 +294,7 @@ export function Filtros({ filtros, onChange }) {
           <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
+      </div>
     </div>
   );
 }

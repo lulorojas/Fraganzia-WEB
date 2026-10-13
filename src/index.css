@@ -196,6 +196,14 @@ body {
   mix-blend-mode: multiply;
 }
 
+/* Secciones largas bajo el primer pantallazo: el navegador no calcula estilos,
+   layout ni pintado hasta que se acercan a la vista (menos trabajo en la carga).
+   El tamaño estimado evita saltos en la barra de scroll. */
+.diferir-render {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+}
+
 /* Grano fino de película sobre una sección (hero): textura sin imágenes extra. */
 .grano::after {
   content: '';

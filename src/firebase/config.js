@@ -1,6 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { initializeAuth, indexedDBLocalPersistence, browserLocalPersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore/lite';
 import { activarAppCheck } from '@app-check';
 
 const firebaseConfig = {
@@ -12,7 +11,7 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 // App Check (reCAPTCHA v3): solo se activa si hay site key configurada. Con el
 // enforcement prendido en la consola, Firestore rechaza pedidos que no vengan
@@ -21,10 +20,4 @@ const app = initializeApp(firebaseConfig);
 // Se inicializa antes de getFirestore() para que ninguna lectura salga sin token.
 activarAppCheck(app);
 
-// initializeAuth en vez de getAuth: getAuth incluye el soporte de login con
-// popup/redirect, que descarga un iframe de Google (gapi) en cada visita.
-// Acá solo se usa email + contraseña, así que no hace falta.
-export const auth = initializeAuth(app, {
-  persistence: [indexedDBLocalPersistence, browserLocalPersistence],
-});
 export const db = getFirestore(app);

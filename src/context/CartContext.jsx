@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { leerCarrito, guardarCarrito } from '../utils/cartStorage';
 import { incrementarAgregadoCarrito } from '../services/estadisticasService';
+import { registrarPaso } from '../services/embudoService';
 import { estaHidratando } from '../utils/hidratacion';
 
 // Tope por producto: coincide con el schema del pedido y evita pedidos
@@ -113,6 +114,7 @@ export function CartProvider({ children }) {
       },
     });
     incrementarAgregadoCarrito(perfume.perfumeIdBase ?? perfume.id);
+    registrarPaso('carrito');
     setUltimoAgregado({ perfumeId: perfume.id, cantidad, momento: Date.now() });
   }, []);
 

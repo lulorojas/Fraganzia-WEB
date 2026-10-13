@@ -6,7 +6,7 @@
 // cambios de género, { id, nombre, de, a } (`de` es el género actual esperado y `a` el
 // nuevo). Sin --aplicar solo muestra qué cambiaría (no escribe nada). Con --aplicar:
 //   - guarda antes los valores previos en privado/respaldo-correcciones-<fecha>.json
-//   - solo toca `genero` e `imagenes`, y pone `updatedAt` para que la web lo lea
+//   - solo toca genero, imagenes, notas olfativas y descripcion, y pone `updatedAt` para que la web lo lea
 //     en la próxima lectura incremental.
 // Si el valor actual de Firestore ya no coincide con `de`, esa fila se saltea.
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -14,7 +14,7 @@ import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { credencial } from './lib/credencial.mjs';
 
-const CAMPOS_PERMITIDOS = ['genero', 'imagenes'];
+const CAMPOS_PERMITIDOS = ['genero', 'imagenes', 'notasSalida', 'notasCorazon', 'notasFondo', 'descripcion'];
 const GENEROS = ['Masculino', 'Femenino', 'Unisex', 'Kids'];
 
 const [archivo] = process.argv.slice(2).filter((a) => !a.startsWith('--'));

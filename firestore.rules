@@ -121,6 +121,29 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Embudo de compra por día y fuente (`2026-10-13_ig`): contadores que suben
+    // de a 1 desde el navegador, una vez por sesión y paso. Mismo trade-off que
+    // `estadisticas`: sin backend, la regla acota campos, id y cuánto puede subir
+    // cada contador. Lectura solo admin.
+    match /embudo/{embudoId} {
+      allow read: if isAdmin();
+      allow create, update: if request.resource.data.keys()
+          .hasOnly(['fecha', 'fuente', 'sesiones', 'catalogo', 'ficha', 'carrito', 'checkout', 'pedidos', 'updatedAt'])
+        && request.resource.data.fecha is string
+        && request.resource.data.fecha.matches('^20[0-9][0-9]-[01][0-9]-[0-3][0-9]$')
+        && request.resource.data.fuente is string
+        && request.resource.data.fuente.size() >= 1 && request.resource.data.fuente.size() <= 40
+        && embudoId == request.resource.data.fecha + '_' + request.resource.data.fuente
+        && contadorValido('sesiones')
+        && contadorValido('catalogo')
+        && contadorValido('ficha')
+        && contadorValido('carrito')
+        && contadorValido('checkout')
+        && contadorValido('pedidos')
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isAdmin();
+    }
+
     // Visitas anónimas (una por sesión). El navegador crea el documento con su
     // forma fija y tamaños acotados; no se puede editar. Lectura solo admin.
     match /visitas/{visitaId} {

@@ -1,19 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
 import { registrarBusqueda } from '../services/busquedasService';
+import { registrarPaso } from '../services/embudoService';
 import { Filtros } from '../components/perfumes/Filtros';
 import { PerfumeGrid } from '../components/perfumes/PerfumeGrid';
 import { PerfumeGridSkeleton } from '../components/perfumes/PerfumeCardSkeleton';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { abrirAsistente } from '../components/asistente/BotonAsistente';
 import { quisoDecir } from '../utils/busqueda';
+import { filtrarPerfumes } from '../services/perfumesService';
 import { bandasDePrecio, aplicarOrdenYPrecio } from '../utils/ordenCatalogo';
 
 export default function Catalogo() {
   const [filtros, setFiltros] = useState({});
+  useEffect(() => { registrarPaso('catalogo'); }, []);
   const { data: perfumes, isLoading, isError, refetch } = usePerfumes(filtros);
   const { data: catalogo } = usePerfumes();
 
@@ -33,9 +37,16 @@ export default function Catalogo() {
   const { agregar } = useCart();
 
   const bandas = useMemo(() => bandasDePrecio(catalogo, dolarMedio), [catalogo, dolarMedio]);
+  // Con una corrección clara ("odisse" → "odyssey") se muestran directamente los
+  // resultados corregidos, avisando, en vez de pedir un toque extra.
+  const perfumesCorregidos = useMemo(
+    () => (correccion ? filtrarPerfumes(catalogo, { ...filtros, busqueda: correccion }) : null),
+    [correccion, catalogo, filtros]
+  );
+  const usandoCorreccion = Boolean(perfumesCorregidos?.length);
   const lista = useMemo(
-    () => aplicarOrdenYPrecio(perfumes, filtros, dolarMedio, bandas),
-    [perfumes, filtros, dolarMedio, bandas]
+    () => aplicarOrdenYPrecio(usandoCorreccion ? perfumesCorregidos : perfumes, filtros, dolarMedio, bandas),
+    [usandoCorreccion, perfumesCorregidos, perfumes, filtros, dolarMedio, bandas]
   );
 
   const busqueda = filtros.busqueda ?? '';
@@ -72,6 +83,12 @@ export default function Catalogo() {
         </button>
       </div>
       <Filtros filtros={filtros} onChange={setFiltros} />
+      {usandoCorreccion && (
+        <p className="mt-4 font-body text-sm text-text-secondary" role="status">
+          Mostrando resultados para <span className="font-semibold text-lila">{correccion}</span>
+          {' '}(buscaste «{filtros.busqueda}»).
+        </p>
+      )}
       <div className="mt-6">
         {isLoading ? (
           <PerfumeGridSkeleton />
@@ -100,7 +117,12 @@ export default function Catalogo() {
                     ? `No encontramos perfumes para "${filtros.busqueda}".`
                     : 'No encontramos perfumes con esos filtros.'}
                 </p>
-                {correccion && (
+                {/decan/i.test(filtros.busqueda ?? '') && (
+                  <Link to="/decants" className="font-body text-text">
+                    Los decants (3, 5 y 10 ml) están en <span className="font-semibold text-lila underline">su propia sección</span>.
+                  </Link>
+                )}
+                {correccion && !usandoCorreccion && (
                   <button
                     type="button"
                     onClick={() => setFiltros({ busqueda: correccion })}

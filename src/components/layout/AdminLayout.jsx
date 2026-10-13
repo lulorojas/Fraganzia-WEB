@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase/config';
+import { auth } from '../../firebase/auth';
 
 const NAV_ITEMS = [
   { to: '/admin', label: 'Dashboard', end: true },

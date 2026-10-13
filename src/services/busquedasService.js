@@ -1,6 +1,6 @@
 import {
   collection, doc, getDocs, setDoc, increment, serverTimestamp,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
 import { yaRegistradoEnSesion } from '../utils/sesion';
 

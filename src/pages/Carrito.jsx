@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useDolarBlue } from '../hooks/useDolarBlue';
@@ -8,6 +8,7 @@ import { usePromocionesActivas } from '../hooks/usePromociones';
 import { useAuth } from '../context/AuthContext';
 import { obtenerPerfumePorId } from '../services/perfumesService';
 import { notificarNuevoPedido } from '../services/emailService';
+import { registrarPaso } from '../services/embudoService';
 import { CartItem } from '../components/cart/CartItem';
 import { SelectorPago } from '../components/cart/SelectorPago';
 import { ResumenCheckout } from '../components/cart/ResumenCheckout';
@@ -31,6 +32,15 @@ export default function Carrito() {
   const [clienteNombre, setClienteNombre] = useState(user?.displayName ?? '');
   const [errorNombre, setErrorNombre] = useState(null);
   const [avisoDisponibilidad, setAvisoDisponibilidad] = useState(null);
+
+  // La sesión puede restaurarse después de montar la página (Auth se carga bajo demanda).
+  useEffect(() => {
+    if (user?.displayName) setClienteNombre((n) => n || user.displayName);
+  }, [user]);
+
+  // Paso del embudo: llegó a revisar un pedido con productos (una vez por sesión).
+  const hayItems = state.items.length > 0;
+  useEffect(() => { if (hayItems) registrarPaso('checkout'); }, [hayItems]);
 
   if (state.items.length === 0) {
     return (
@@ -115,6 +125,7 @@ export default function Carrito() {
 
     crearPedidoMutation(pedido, {
       onSuccess: (pedidoId) => {
+        registrarPaso('pedidos');
         dispatch({ type: 'CLEAR_CART' });
         setClienteNombre('');
         notificarNuevoPedido(

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/config';
+import { auth } from '../firebase/auth';
 import { loginSchema } from '../schemas/loginSchema';
 import { Button } from '../components/ui/Button';
 import { GlassCard } from '../components/ui/GlassCard';

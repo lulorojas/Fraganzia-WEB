@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Minus, Plus, ChevronLeft, MessageCircle } from 'lucide-react';
 import { usePerfume } from '../hooks/usePerfume';
 import { incrementarVista } from '../services/estadisticasService';
+import { registrarPaso } from '../services/embudoService';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart, CANTIDAD_MAX } from '../context/CartContext';
 import { useConfig } from '../hooks/useConfig';
@@ -20,6 +21,7 @@ import { construirLinkWhatsApp } from '../utils/whatsapp';
 import { WHATSAPP_NUMERO } from '../constants';
 import { ImagenProducto } from '../components/perfumes/ImagenProducto';
 import { BotonFavorito } from '../components/perfumes/BotonFavorito';
+import { GarantiasCompra } from '../components/perfumes/GarantiasCompra';
 
 
 // Mismo layout que la página cargada, para que nada se mueva al llegar los datos.
@@ -61,6 +63,7 @@ export default function PerfumeDetalle() {
   // vuelve a disparar, recargar el mismo no.
   useEffect(() => {
     if (id) incrementarVista(id);
+    registrarPaso('ficha');
   }, [id]);
 
   const tieneCotizacion = Boolean(dolarMedio);
@@ -148,10 +151,10 @@ export default function PerfumeDetalle() {
                 width="600"
                 height="600"
                 prioridad
-                className="foto-producto aspect-square w-full object-contain p-8 sm:p-12"
+                className="foto-producto aspect-[5/4] w-full object-contain p-4 sm:aspect-square sm:p-12"
               />
             ) : (
-              <div className="flex aspect-square w-full items-center justify-center">
+              <div className="flex aspect-[5/4] w-full items-center justify-center sm:aspect-square">
                 <span className="select-none text-8xl text-violet opacity-10">✦</span>
               </div>
             )}
@@ -250,6 +253,8 @@ export default function PerfumeDetalle() {
               <BotonFavorito perfume={perfume} variante="borde" />
             </div>
           </div>
+
+          <GarantiasCompra />
 
           {perfume.descripcion && (
             <p className="font-body leading-relaxed text-text-secondary">{perfume.descripcion}</p>

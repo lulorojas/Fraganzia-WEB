@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, getDoc, doc, query, orderBy, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, getDoc, doc, query, orderBy, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
 import { pedidoSchema } from '../schemas/pedidoSchema';
 

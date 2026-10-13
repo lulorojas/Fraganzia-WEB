@@ -64,7 +64,9 @@ export default defineConfig(({ mode }) => {
           // framer-motion ya no va en un chunk propio: solo lo usan el modal de
           // login (lazy) y el admin, así Vite no lo precarga en la home.
           manualChunks: {
-            firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+            // Auth aparte: solo se descarga al entrar al panel o al login (ver AuthContext).
+            'firebase-auth': ['firebase/auth'],
+            firebase: ['firebase/app', 'firebase/firestore/lite'],
             vendor: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
           },
         },

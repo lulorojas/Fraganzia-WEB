@@ -8,6 +8,7 @@ import { HorizontalSlider } from '../components/perfumes/HorizontalSlider';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { LogoFraganzia } from '../components/ui/LogoFraganzia';
 import { abrirAsistente } from '../components/asistente/BotonAsistente';
+import { PreguntasFrecuentes } from '../components/PreguntasFrecuentes';
 
 export default function Home() {
   const { data: destacados, isLoading } = usePerfumes({ destacado: true });
@@ -22,7 +23,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen">
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="grano relative overflow-hidden px-4 sm:px-6 py-16 sm:py-24 lg:py-32">
+      <section className="grano relative overflow-hidden px-4 pb-12 pt-8 sm:px-6 sm:py-24 lg:py-32">
         {/* Resplandores de ambiente: gradientes radiales (ya difusos), sin
             filter: blur ni animación, que costaban mucho repintado. */}
         <div
@@ -37,8 +38,9 @@ export default function Home() {
         {/* Glass card container con más profundidad */}
         <div className="relative mx-auto max-w-4xl">
           <div className="relative overflow-hidden p-2 sm:p-6 md:p-10">
-            {/* Sin animación de entrada: el logo es el LCP y tiene que verse apenas se pinta. */}
-            <div className="mb-6 sm:mb-8 flex justify-center">
+            {/* En celular el logo ya está en el encabezado: repetirlo gastaba media pantalla.
+                Sin animación de entrada, para que se vea apenas se pinta. */}
+            <div className="mb-6 hidden justify-center sm:mb-8 sm:flex">
               <LogoFraganzia
                 priority
                 className="drop-shadow-2xl [--logo-scale:1.6] sm:[--logo-scale:2.6] md:[--logo-scale:3.2]"
@@ -124,7 +126,7 @@ export default function Home() {
       {promociones?.length > 0 && (
         <section aria-label="Promociones" className="mx-auto max-w-7xl px-4 pb-8 pt-4 sm:px-6">
           <div className={`grid gap-5 ${promociones.length > 1 ? 'md:grid-cols-2' : 'mx-auto max-w-5xl'}`}>
-            {promociones.map((promo) => (
+            {promociones.map((promo, i) => (
               <Link
                 key={promo.id}
                 to="/catalogo"
@@ -134,7 +136,10 @@ export default function Home() {
                   <img
                     src={promo.imagen}
                     alt={promo.titulo}
-                    loading="lazy"
+                    // La primera promoción suele ser lo primero grande que se ve en el
+                    // celular: se pide ya, con prioridad, en vez de esperar al scroll.
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={i === 0 ? 'high' : undefined}
                     decoding="async"
                     width="1200"
                     height="675"
@@ -164,7 +169,7 @@ export default function Home() {
       )}
 
       {/* ── Destacados Slider ────────────────────────────────── */}
-      <section className="px-6 py-16 max-w-7xl mx-auto">
+      <section className="diferir-render px-6 py-16 max-w-7xl mx-auto">
         <div className="mb-8 flex items-baseline justify-between">
           <h2 className="font-luxury text-2xl tracking-wide text-text sm:text-3xl">Destacados</h2>
           <Link to="/catalogo" className="font-body text-sm text-lila transition-base hover:text-text">
@@ -184,7 +189,7 @@ export default function Home() {
       </section>
 
       {nuevos?.length > 0 && (
-        <section className="px-6 pb-16 max-w-7xl mx-auto">
+        <section className="diferir-render px-6 pb-16 max-w-7xl mx-auto">
           <div className="mb-8 flex items-baseline justify-between">
             <h2 className="font-luxury text-2xl tracking-wide text-text sm:text-3xl">Nuevos ingresos</h2>
             <Link to="/catalogo" className="font-body text-sm text-lila transition-base hover:text-text">
@@ -194,6 +199,8 @@ export default function Home() {
           <HorizontalSlider perfumes={nuevos} dolarMedio={dolarMedio} onAgregar={agregar} promociones={promociones} etiqueta="Nuevos ingresos" />
         </section>
       )}
+
+      <PreguntasFrecuentes />
     </div>
   );
 }

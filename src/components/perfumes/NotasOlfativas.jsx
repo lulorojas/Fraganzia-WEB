@@ -51,7 +51,7 @@ export function NotasOlfativas({ notasSalida, notasCorazon, notasFondo, nombre }
           </ol>
         </>
       )}
-      {url && (
+      {url && !hayNotas && (
         <a
           href={url}
           target="_blank"

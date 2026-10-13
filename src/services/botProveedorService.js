@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, orderBy, query, limit } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, orderBy, query, limit } from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
 
 const COLLECTION = 'botProveedorLog';
