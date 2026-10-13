@@ -17,6 +17,7 @@ import {
   PerfumesMasVistos, MasGuardados, MasBuscados, BusquedasSinResultado, BajaConversion,
 } from '../../components/admin/panel/InteresClientes';
 import { useInteresClientes } from '../../hooks/useInteresClientes';
+import { ResumenBot } from '../../components/admin/ResumenBot';
 
 const VACIO = [];
 
@@ -41,6 +42,8 @@ export default function Dashboard() {
   return (
     <div>
       <h1 className="mb-6 font-display text-xl text-text sm:text-2xl">Panel de administración</h1>
+
+      <ResumenBot />
 
       <h2 className="mb-3 font-display text-lg text-text-secondary">Pedidos web</h2>
       {isLoading ? (

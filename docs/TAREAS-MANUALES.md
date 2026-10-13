@@ -47,6 +47,17 @@ Pero OneDrive guardó copias (versiones y papelera) mientras estuvo adentro, as�
 
 ---
 
+### [ ] Activar los avisos del bot por WhatsApp
+El bot de precios (`.github/workflows/bot-proveedor.yml`) corre solo dos veces por día. Si el catálogo del proveedor cambió, actualiza precios y da de alta los perfumes nuevos, y te avisa por WhatsApp **solo si están cargados los secrets `CALLMEBOT_PHONE` y `CALLMEBOT_APIKEY`**. Sin ellos no avisa (el panel admin lo muestra en rojo). Si el catálogo no cambió, no manda nada.
+
+1. Activá CallMeBot desde tu WhatsApp siguiendo las instrucciones oficiales de https://www.callmebot.com/blog/free-api-whatsapp-messages/ (se guarda su número de contacto, se le manda una frase fija y te responde con tu **apikey**; el número del bot cambia con el tiempo, usá el que figura ahí).
+2. En GitHub → repo `Fraganzia-WEB` → Settings → Secrets and variables → Actions → *New repository secret* (hace falta ser admin del repo; si el dueño es otra persona, que los cargue ella):
+   - `CALLMEBOT_PHONE`: tu número con código de país y sin signos, por ejemplo `5491122334455`.
+   - `CALLMEBOT_APIKEY`: la clave que te mandó CallMeBot.
+3. Probalo: Actions → *Bot de precios del proveedor* → *Run workflow* con "Solo simular" **desmarcado**. Si el catálogo no cambió te llega igual un mensaje "el bot corrió" (las corridas manuales siempre avisan).
+
+---
+
 ## 2. Seguridad: recomendado
 
 ### [ ] Restringir la API key por dominio

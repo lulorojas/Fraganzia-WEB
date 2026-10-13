@@ -1,27 +1,9 @@
 import { useState } from 'react';
-import { useBotProveedorLog, useEstadoBotProveedor } from '../../hooks/useBotProveedorLog';
+import { useBotProveedorLog } from '../../hooks/useBotProveedorLog';
+import { ResumenBot } from '../../components/admin/ResumenBot';
 import { Spinner } from '../../components/ui/Spinner';
 import { GlassCard } from '../../components/ui/GlassCard';
-import { formatFechaHora, milisDeFecha } from '../../utils/format';
-
-const HORAS_SIN_CHEQUEAR = 36; // el bot corre dos veces por día: más que esto es señal de que dejó de correr
-
-function EstadoBot({ estado }) {
-  const ultimo = milisDeFecha(estado?.ultimoChequeo ?? estado?.ultimaCorrida);
-  const horas = ultimo ? (Date.now() - ultimo) / 36e5 : Infinity;
-  const alDia = horas <= HORAS_SIN_CHEQUEAR;
-  return (
-    <GlassCard className="mb-4">
-      <p className={`font-body text-sm ${alDia ? 'text-text' : 'text-error'}`}>
-        {alDia ? 'El bot está al día' : 'El bot no chequeó hace más de un día y medio: revisá GitHub → Actions'}
-      </p>
-      <p className="mt-1 font-body text-xs text-text-secondary">
-        Último chequeo del catálogo: {ultimo ? formatFechaHora(estado.ultimoChequeo ?? estado.ultimaCorrida) : 'sin registro todavía'}
-        {estado?.ultimaCorrida && ` · Último cambio aplicado: ${formatFechaHora(estado.ultimaCorrida)}`}
-      </p>
-    </GlassCard>
-  );
-}
+import { formatFechaHora } from '../../utils/format';
 
 function Corrida({ corrida }) {
   const [abierta, setAbierta] = useState(false);
@@ -95,7 +77,6 @@ function Corrida({ corrida }) {
 
 export default function AdminBotProveedor() {
   const { data: corridas, isLoading } = useBotProveedorLog();
-  const { data: estado } = useEstadoBotProveedor();
 
   return (
     <div>
@@ -105,7 +86,7 @@ export default function AdminBotProveedor() {
         una corrida en la lista, pero igual registra el chequeo acá arriba.
       </p>
 
-      {estado !== undefined && <EstadoBot estado={estado} />}
+      <ResumenBot conLink={false} />
 
       {isLoading ? (
         <Spinner />

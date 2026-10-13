@@ -25,6 +25,9 @@ const valorDe = (flag) => args[args.indexOf(flag) + 1];
 const catalogoLocal = args.includes('--catalogo') ? JSON.parse(readFileSync(valorDe('--catalogo'), 'utf8')) : null;
 const dryRun = args.includes('--dry-run') || Boolean(catalogoLocal);
 
+// Si faltan los secrets de CallMeBot el bot no avisa por WhatsApp; el panel admin lo muestra.
+const whatsappConfigurado = () => Boolean(process.env.CALLMEBOT_PHONE && process.env.CALLMEBOT_APIKEY);
+
 // WhatsApp a través de CallMeBot (manda mensajes al propio número registrado).
 async function avisar(asunto, texto) {
   const { CALLMEBOT_PHONE, CALLMEBOT_APIKEY } = process.env;
@@ -64,7 +67,7 @@ async function main() {
     if (!dryRun && config.exists && config.data().hash === hash) {
       console.log('catálogo sin cambios');
       // Deja constancia de que el bot sí corrió (el panel admin muestra este momento).
-      await db.doc('config/botProveedor').set({ ultimoChequeo: FieldValue.serverTimestamp() }, { merge: true });
+      await db.doc('config/botProveedor').set({ ultimoChequeo: FieldValue.serverTimestamp(), whatsappConfigurado: whatsappConfigurado() }, { merge: true });
       // El cron diario se queda calladito para no spamear; un run manual siempre avisa algo.
       if (process.env.GITHUB_EVENT_NAME === 'workflow_dispatch') {
         await avisar('Fraganzia: el bot de precios corrió', 'El catálogo del proveedor no cambió desde la última corrida: no hay nada para aplicar.');
@@ -129,7 +132,7 @@ async function main() {
   // Los buffers de foto no van a Firestore (no son serializables ni hace falta guardarlos).
   const nuevosSinBuffer = resultado.nuevos.map(({ imagenBuffer, ...n }) => n);
   await db.doc(`botProveedorLog/${fecha}`).set({ hash, ...resultado, nuevos: nuevosSinBuffer, creadoEn: ahora });
-  await db.doc('config/botProveedor').set({ hash, ultimaCorrida: ahora, ultimoChequeo: ahora });
+  await db.doc('config/botProveedor').set({ hash, ultimaCorrida: ahora, ultimoChequeo: ahora, whatsappConfigurado: whatsappConfigurado() });
 
   if (resultado.cambios.length || resultado.nuevos.length) {
     await avisar(
