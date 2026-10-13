@@ -36,12 +36,14 @@ Panel admin → **Perfumes** → editar → campo **Imágenes**.
 
 Hoy la web muestra un placeholder en lugar de la foto. Después de cargar la foto nueva, el próximo deploy la descarga y la optimiza sola.
 
-### [ ] Sacar la credencial de admin de OneDrive
-`Fraganzia-WEB/tools/serviceAccount.json` es la llave de administrador de Firestore: da acceso total a la base. git la ignora, pero **OneDrive la sincroniza a la nube**.
+### [ ] Rotar la credencial de admin (ya está fuera de OneDrive)
+`serviceAccount.json` es la llave de administrador de Firestore: da acceso total a la base. Ya se movió a `C:credencialesraganzia-serviceAccount.json` (fuera de OneDrive; los scripts de `tools/` la buscan ahí, en `%USERPROFILE%.fraganziaserviceAccount.json` o en la variable `FIREBASE_SERVICE_ACCOUNT_FILE`, ver `tools/lib/credencial.mjs`).
 
-1. Movela a una carpeta que no se sincronice, por ejemplo `C:\credenciales\fraganzia-serviceAccount.json`.
-2. Los scripts de `tools/` que la usan (`export-current-catalog.mjs`, `cache-precios-ars.mjs`) la buscan al lado del script. Si los vas a usar, copiala ahí solo mientras los corrés y después borrala.
-3. Opcional, más seguro: en Firebase → Configuración del proyecto → **Cuentas de servicio**, generá una clave nueva y **revocá la vieja** desde Google Cloud → IAM → Cuentas de servicio → Claves.
+Pero OneDrive guardó copias (versiones y papelera) mientras estuvo adentro, así que lo que falta es **invalidar la llave vieja**:
+1. Firebase → Configuración del proyecto → **Cuentas de servicio** → *Generar nueva clave privada*, y guardala en `C:credencialesraganzia-serviceAccount.json` (reemplaza a la actual).
+2. Google Cloud → IAM → **Cuentas de servicio** → *Claves* → eliminá la clave vieja.
+3. Actualizá el secret de GitHub `FIREBASE_SERVICE_ACCOUNT_FRAGANZIA_E9B70` con el JSON nuevo (si no, el bot y el deploy dejan de funcionar).
+4. En OneDrive, vaciá la papelera y revisá el historial de versiones del archivo.
 
 ---
 
@@ -69,8 +71,8 @@ Firebase → Authentication → **Configuración**:
 - **Protección de enumeración de correo electrónico:** activada. Evita que alguien averigüe qué emails tienen cuenta.
 - **Creación de cuentas:** hoy cualquiera puede registrarse desde el ícono de usuario (cuentas de cliente). Si no se usan, se puede desactivar el registro. Las cuentas de cliente nunca tienen acceso al admin.
 
-### [ ] (Opcional) Activar App Check si aparecen pedidos falsos
-Las reglas ya validan los pedidos, pero no pueden distinguir un bot de una persona. Si ves pedidos basura en el admin, seguí [DEPLOY.md → App Check](DEPLOY.md#app-check-protección-contra-bots). Cuesta algunos puntos de PageSpeed en móvil.
+### [ ] Activar App Check (el código ya está listo)
+Las reglas ya validan los pedidos, pero no pueden distinguir un bot de una persona, y el catálogo se puede leer en bloque desde afuera. El código, el build y las pruebas ya están preparados; faltan solo los pasos de consola de [DEPLOY.md → App Check](DEPLOY.md#app-check-protección-contra-bots) (crear la clave reCAPTCHA, registrarla en Firebase, dos secrets de GitHub y pasar a "Aplicar"). Cuesta algunos puntos de PageSpeed en móvil.
 
 ---
 

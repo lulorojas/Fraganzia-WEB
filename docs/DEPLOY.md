@@ -123,10 +123,14 @@ Seguí [`EMAILJS_SETUP.md`](../EMAILJS_SETUP.md), en especial la sección de seg
 
 Hace que Firestore solo acepte pedidos que vengan de tu web, no de scripts.
 
-1. Firebase → **App Check** → registrar la app web con **reCAPTCHA v3** → te da una *site key*.
-2. Poné la key en `VITE_RECAPTCHA_SITE_KEY` (`.env.local` y secrets de GitHub) y deployá.
-3. En App Check → APIs → Cloud Firestore, dejalo en **Supervisar** unos días y revisá que las solicitudes verificadas sean casi el 100 %.
-4. Recién ahí, **Aplicar** (enforce).
+1. Crear una clave **reCAPTCHA v3** en https://www.google.com/recaptcha/admin con los dominios `fraganzia-e9b70.web.app`, `fraganzia-e9b70.firebaseapp.com` (y el dominio propio si hay). Te da una *site key* (pública) y una *secret key*.
+2. Firebase → **App Check** → registrar la app web con **reCAPTCHA v3** y pegar la *secret key*.
+3. Poné la *site key* en el secret de GitHub `VITE_RECAPTCHA_SITE_KEY` (y en `.env.local` si querés probarlo en local) y deployá.
+4. En App Check → APIs → Cloud Firestore, dejalo en **Supervisar** unos días y revisá que las solicitudes verificadas sean casi el 100 %.
+5. Antes de **Aplicar** (enforce), dos cosas que dependen de la credencial/token y no de reCAPTCHA:
+   - **Build:** el sitemap, el pre-render y las fotos leen Firestore en el build. Con enforcement, el REST sin token es rechazado, así que el build tiene que leer con la cuenta de servicio. En `.github/workflows/deploy.yml` descomentá la línea `FIREBASE_SERVICE_ACCOUNT` del paso de build (está comentada a propósito: hasta aplicar App Check el build no necesita la llave de administrador). `tools/lib/firestore-rest.mjs` la usa apenas esté disponible.
+   - **Pruebas de navegador:** el Chrome sin cabeza de las pruebas no pasa reCAPTCHA. En App Check → Apps → menú de la app → **Administrar tokens de depuración**, creá uno y guardalo como secret `E2E_APPCHECK_DEBUG_TOKEN`; `tools/test/e2e/web.e2e.mjs` lo usa solo si existe.
+6. Recién ahí, **Aplicar** (enforce). Con enforcement, los *preview channels* (`...--canal-xxxx.web.app`) no pasan reCAPTCHA y no van a poder leer Firestore.
 
 Costo: carga el script de reCAPTCHA en cada visita (~150 KB), lo que baja algunos puntos en PageSpeed móvil. Conviene activarlo solo si aparecen pedidos falsos.
 

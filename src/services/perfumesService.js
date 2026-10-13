@@ -75,9 +75,11 @@ export function filtrarPerfumes(perfumes, filtros = {}) {
   // La marca se compara sin mayúsculas ni tildes: en la base conviven
   // "Lattafa" y "LATTAFA". La búsqueda es por palabras sueltas (utils/busqueda).
   const marca = normalizarTexto(filtros.marca);
+  // El género admite varios a la vez (['Masculino', 'Unisex']) o uno solo.
+  const generos = [].concat(filtros.genero ?? []);
   return perfumes.filter(
     (p) =>
-      (!filtros.genero || p.genero === filtros.genero) &&
+      (!generos.length || generos.includes(p.genero)) &&
       (!marca || normalizarTexto(p.marca) === marca) &&
       (!filtros.familiaOlfativa || p.familiaOlfativa === filtros.familiaOlfativa) &&
       (!filtros.destacado || p.destacado === true) &&

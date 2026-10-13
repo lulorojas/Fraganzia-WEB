@@ -166,6 +166,13 @@ export function Filtros({ filtros, onChange }) {
     onChange({ ...filtros, [campo]: valor || undefined });
   }
 
+  // El género se puede combinar: tocar de nuevo un botón lo saca de la selección.
+  const generosElegidos = [].concat(filtros.genero ?? []);
+  function alternarGenero(g) {
+    const nuevos = generosElegidos.includes(g) ? generosElegidos.filter((x) => x !== g) : [...generosElegidos, g];
+    onChange({ ...filtros, genero: nuevos.length ? nuevos : undefined });
+  }
+
   return (
     <div className="flex flex-wrap gap-3" role="search">
       <Buscador
@@ -174,17 +181,26 @@ export function Filtros({ filtros, onChange }) {
         onBuscar={(v) => actualizar('busqueda', v)}
         onMarca={(marca) => onChange({ ...filtros, marca, busqueda: undefined })}
       />
-      <select
-        value={filtros.genero ?? ''}
-        onChange={(e) => actualizar('genero', e.target.value)}
-        aria-label="Filtrar por género"
-        className={SELECT}
-      >
-        <option value="">Género</option>
-        {GENEROS.map((g) => (
-          <option key={g} value={g}>{g}</option>
-        ))}
-      </select>
+      <div role="group" aria-label="Filtrar por género" className="flex flex-wrap items-center gap-2">
+        {GENEROS.map((g) => {
+          const activo = generosElegidos.includes(g);
+          return (
+            <button
+              key={g}
+              type="button"
+              aria-pressed={activo}
+              onClick={() => alternarGenero(g)}
+              className={`rounded-xl border px-3 py-2.5 font-body text-sm transition-colors focus:outline-none focus-visible:border-violet ${
+                activo
+                  ? 'border-violet bg-violet/30 text-text'
+                  : 'border-border bg-bg text-text-secondary hover:border-violet/60 hover:text-text'
+              }`}
+            >
+              {g}
+            </button>
+          );
+        })}
+      </div>
       <select
         value={filtros.marca ?? ''}
         onChange={(e) => actualizar('marca', e.target.value)}

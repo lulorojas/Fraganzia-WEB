@@ -38,6 +38,10 @@ jobs:
           VITE_EMAILJS_PUBLIC_KEY: ${{ secrets.VITE_EMAILJS_PUBLIC_KEY }}
           VITE_EMAILJS_ADMIN_EMAIL: ${{ secrets.VITE_EMAILJS_ADMIN_EMAIL }}
           VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
+          # Descomentar SOLO cuando se aplique App Check en Firestore: el build pasa a leer
+          # con firebase-admin (que no pasa por App Check). Mientras tanto no se le da la
+          # llave de administrador al build (menor privilegio). Ver docs/DEPLOY.md.
+          # FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FRAGANZIA_E9B70 }}
           # Chrome preinstalado en ubuntu-latest, para el pre-render.
           CHROME_PATH: /usr/bin/google-chrome
           # Si el pre-render falla (sin datos de Firestore), el build falla y
@@ -50,6 +54,8 @@ jobs:
         run: npm run test:e2e || npm run test:e2e
         env:
           CHROME_PATH: /usr/bin/google-chrome
+          # Opcional: token de depuración de App Check para que Chrome sin cabeza pase la verificación.
+          E2E_APPCHECK_DEBUG_TOKEN: ${{ secrets.E2E_APPCHECK_DEBUG_TOKEN }}
 
       - name: Deploy a Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

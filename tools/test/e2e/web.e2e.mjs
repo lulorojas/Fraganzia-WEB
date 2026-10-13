@@ -59,6 +59,10 @@ async function abrir(ruta, { espera = 'domcontentloaded', conservar = false } = 
       }
     });
   }
+  // Con App Check aplicado, Chrome sin cabeza no pasa reCAPTCHA: se usa un token de depuración.
+  if (process.env.E2E_APPCHECK_DEBUG_TOKEN) {
+    await page.evaluateOnNewDocument((token) => { self.FIREBASE_APPCHECK_DEBUG_TOKEN = token; }, process.env.E2E_APPCHECK_DEBUG_TOKEN);
+  }
   const errores = [];
   page.on('pageerror', (e) => errores.push(e.message));
   await page.setRequestInterception(true);
@@ -137,6 +141,47 @@ test('el catálogo muestra perfumes con precio y el buscador filtra', async () =
   );
   const filtrados = await page.$$eval('ul[aria-label="Perfumes"] li', (l) => l.length);
   assert.ok(filtrados > 0 && filtrados <= inicial, 'el buscador no devolvió resultados de Lattafa');
+  await page.close();
+});
+
+test('el filtro de género admite varias opciones a la vez', async () => {
+  const { page, errores } = await abrir('/catalogo');
+  await page.waitForSelector('ul[aria-label="Perfumes"] li', { timeout: 30000 });
+  // El catálogo se pagina de a 24: el total real está en "Mostrando 1–24 de N perfumes".
+  const cantidad = () =>
+    page.evaluate(() => {
+      const m = document.body.innerText.match(/ de (\d+) perfumes/);
+      return m ? Number(m[1]) : document.querySelectorAll('ul[aria-label="Perfumes"] li').length;
+    });
+  /** Espera (sondeando desde Node) a que la cantidad cumpla la condición y la devuelve. */
+  async function esperarCantidad(condicion) {
+    for (let i = 0; i < 50; i++) {
+      const n = await cantidad();
+      if (condicion(n)) return n;
+      await new Promise((r) => setTimeout(r, 200));
+    }
+    assert.fail(`la cantidad de perfumes no llegó a lo esperado (última: ${await cantidad()})`);
+  }
+  const tocarGenero = (nombre) =>
+    page.evaluate((n) => {
+      [...document.querySelectorAll('[aria-label="Filtrar por género"] button')].find((b) => b.textContent.trim() === n).click();
+    }, nombre);
+  const nombres = await page.$$eval('[aria-label="Filtrar por género"] button', (bs) => bs.map((b) => b.textContent.trim()));
+  assert.ok(nombres.includes('Masculino') && nombres.includes('Unisex'), `faltan botones de género: ${nombres}`);
+
+  const total = await cantidad();
+  await tocarGenero('Unisex');
+  const soloUnisex = await esperarCantidad((n) => n < total);
+
+  await tocarGenero('Masculino');
+  await esperarCantidad((n) => n > soloUnisex);
+  const activos = await page.$$eval('[aria-label="Filtrar por género"] button[aria-pressed="true"]', (bs) => bs.map((b) => b.textContent.trim()));
+  assert.deepEqual(activos.sort(), ['Masculino', 'Unisex']);
+
+  // Tocar de nuevo saca la opción y vuelve al resultado anterior.
+  await tocarGenero('Masculino');
+  await esperarCantidad((n) => n === soloUnisex);
+  assert.deepEqual(errores, [], `Errores al filtrar por género: ${errores.join(' | ')}`);
   await page.close();
 });
 

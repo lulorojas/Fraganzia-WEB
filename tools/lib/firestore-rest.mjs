@@ -1,7 +1,13 @@
-// Lectura de colecciones públicas de Firestore por REST, sin SDK ni
-// credenciales de servicio: solo la API key web (la misma que va en el bundle).
-// Lo usan los scripts de build (sitemap, pre-render).
+// Lectura de colecciones de Firestore para los scripts de build (sitemap,
+// pre-render, imágenes, flyers).
+//
+// Por defecto va por REST con la API key web (la misma que va en el bundle), sin
+// SDK ni credenciales. Pero con App Check "enforced" en Firestore, un pedido REST
+// sin token es rechazado: por eso, si hay credencial de servicio disponible
+// (ver credencial.mjs), se lee con firebase-admin,
+// que no pasa por App Check. Sin credencial se sigue usando REST.
 import { readFileSync, existsSync } from 'node:fs';
+import { credencialOpcional } from './credencial.mjs';
 
 export function leerEnv(nombre) {
   if (process.env[nombre]) return process.env[nombre];
@@ -13,6 +19,26 @@ export function leerEnv(nombre) {
     if (linea) return linea.slice(nombre.length + 1).trim().replace(/^["']|["']$/g, '');
   }
   return undefined;
+}
+
+let adminDb; // undefined = sin probar; null = no hay credencial
+async function admin() {
+  if (adminDb !== undefined) return adminDb;
+  const cred = credencialOpcional();
+  if (!cred) return (adminDb = null);
+  const { initializeApp, cert, getApps } = await import('firebase-admin/app');
+  const { getFirestore } = await import('firebase-admin/firestore');
+  // App con nombre propio: no choca con otros usos de firebase-admin en el mismo proceso.
+  const app = getApps().find((a) => a.name === 'build-lectura') ?? initializeApp({ credential: cert(cred) }, 'build-lectura');
+  return (adminDb = getFirestore(app));
+}
+
+// Misma forma que devuelve el REST: los timestamps como texto ISO.
+function aPlano(valor) {
+  if (valor && typeof valor.toDate === 'function') return valor.toDate().toISOString();
+  if (Array.isArray(valor)) return valor.map(aPlano);
+  if (valor && typeof valor === 'object') return Object.fromEntries(Object.entries(valor).map(([k, v]) => [k, aPlano(v)]));
+  return valor;
 }
 
 function decodificar(valor) {
@@ -61,6 +87,11 @@ async function fetchConReintento(url, intentos = 6) {
 
 /** Todos los documentos de una colección como objetos planos `{ id, ...campos }`. */
 export async function listarColeccion(coleccion, { campos } = {}) {
+  const db = await admin();
+  if (db) {
+    const consulta = campos ? db.collection(coleccion).select(...campos) : db.collection(coleccion);
+    return (await consulta.get()).docs.map((d) => ({ id: d.id, ...aPlano(d.data()) }));
+  }
   const { apiKey, base } = config();
   const mascara = campos ? campos.map((c) => `&mask.fieldPaths=${encodeURIComponent(c)}`).join('') : '';
   const docs = [];
@@ -80,6 +111,11 @@ export async function listarColeccion(coleccion, { campos } = {}) {
 
 /** Un documento o null si no existe. */
 export async function leerDocumento(ruta) {
+  const db = await admin();
+  if (db) {
+    const doc = await db.doc(ruta).get();
+    return doc.exists ? aPlano(doc.data()) : null;
+  }
   const { apiKey, base } = config();
   const res = await fetchConReintento(`${base}/${ruta}?key=${apiKey}`);
   if (res.status === 404) return null;

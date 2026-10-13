@@ -8,10 +8,10 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { credencial } from './lib/credencial.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const sa = JSON.parse(readFileSync(join(__dirname, 'serviceAccount.json'), 'utf8'));
-initializeApp({ credential: cert(sa) });
+initializeApp({ credential: cert(credencial()) });
 const db = getFirestore();
 
 // ── 1. Dólar blue actual ──────────────────────────────────────────────────

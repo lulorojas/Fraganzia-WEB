@@ -6,6 +6,7 @@ import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { credencial } from './lib/credencial.mjs';
 import {
   descargarPdf,
   hashPdf,
@@ -23,12 +24,6 @@ const args = process.argv.slice(2);
 const valorDe = (flag) => args[args.indexOf(flag) + 1];
 const catalogoLocal = args.includes('--catalogo') ? JSON.parse(readFileSync(valorDe('--catalogo'), 'utf8')) : null;
 const dryRun = args.includes('--dry-run') || Boolean(catalogoLocal);
-
-function credencial() {
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) return JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  if (existsSync('tools/serviceAccount.json')) return JSON.parse(readFileSync('tools/serviceAccount.json', 'utf8'));
-  throw new Error('falta FIREBASE_SERVICE_ACCOUNT o tools/serviceAccount.json');
-}
 
 // WhatsApp a través de CallMeBot (manda mensajes al propio número registrado).
 async function avisar(asunto, texto) {
@@ -68,6 +63,8 @@ async function main() {
     const config = await db.doc('config/botProveedor').get();
     if (!dryRun && config.exists && config.data().hash === hash) {
       console.log('catálogo sin cambios');
+      // Deja constancia de que el bot sí corrió (el panel admin muestra este momento).
+      await db.doc('config/botProveedor').set({ ultimoChequeo: FieldValue.serverTimestamp() }, { merge: true });
       // El cron diario se queda calladito para no spamear; un run manual siempre avisa algo.
       if (process.env.GITHUB_EVENT_NAME === 'workflow_dispatch') {
         await avisar('Fraganzia: el bot de precios corrió', 'El catálogo del proveedor no cambió desde la última corrida: no hay nada para aplicar.');
@@ -132,7 +129,7 @@ async function main() {
   // Los buffers de foto no van a Firestore (no son serializables ni hace falta guardarlos).
   const nuevosSinBuffer = resultado.nuevos.map(({ imagenBuffer, ...n }) => n);
   await db.doc(`botProveedorLog/${fecha}`).set({ hash, ...resultado, nuevos: nuevosSinBuffer, creadoEn: ahora });
-  await db.doc('config/botProveedor').set({ hash, ultimaCorrida: ahora });
+  await db.doc('config/botProveedor').set({ hash, ultimaCorrida: ahora, ultimoChequeo: ahora });
 
   if (resultado.cambios.length || resultado.nuevos.length) {
     await avisar(

@@ -1,0 +1,29 @@
+name: Limpiar visitas viejas
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'  # lunes de madrugada (minuto 17: a las en punto GitHub demora más)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Solo simular (no borra nada)'
+        type: boolean
+        default: true
+
+jobs:
+  limpiar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Borrar visitas de más de 90 días
+        run: node tools/limpiar-visitas.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '--dry-run' || '' }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FRAGANZIA_E9B70 }}

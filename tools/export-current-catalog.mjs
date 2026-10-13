@@ -3,6 +3,7 @@
 
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { credencial } from './lib/credencial.mjs';
 import { readFileSync, writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -11,9 +12,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let serviceAccount;
 try {
-  serviceAccount = JSON.parse(readFileSync(join(__dirname, 'serviceAccount.json'), 'utf8'));
-} catch {
-  console.error('❌ No se encontró scripts/serviceAccount.json');
+  serviceAccount = credencial();
+} catch (e) {
+  console.error(`❌ ${e.message}`);
   process.exit(1);
 }
 
