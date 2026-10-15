@@ -52,7 +52,8 @@ votos). Esta regla usa esa estadística y UN dato tuyo como ancla:
 
 ```
 Cálculo de sprays (reemplaza cualquier número de reseñas o tiendas):
-- Mi ancla: con [PERFUME] y su estela de la tabla uso [N] sprays y tengo la proyección que quiero.
+- Mi ancla: con Atlas y su estela de la tabla uso 8 sprays y tengo la proyección que quiero. (Cambiá el 8 si
+  te queda corto o largo: es el único número que mueve toda la columna.)
 - Para cada otro perfume: sprays = N × (11 − estela_del_perfume) / (11 − estela_del_ancla), redondeado y
   limitado entre 2 y 2×N. Si el perfume no tiene estela o tiene pocos votos, usá N y marcalo como estimado.
 - Dame el nivel "bestial" con ese número, y "base" y "fuerte" como 60 % y 80 % de él.
@@ -60,8 +61,9 @@ Cálculo de sprays (reemplaza cualquier número de reseñas o tiendas):
   decime que no llega a "bestial" y qué perfume de la tabla conviene usar en su lugar.
 ```
 
-Completá `[PERFUME]` y `[N]` con tu caso real (por ejemplo, "Atlas, 5 sprays"). Si más adelante cambia lo que
-te funciona, cambiás solo ese número y se recalcula toda la columna.
+El ancla viene en "Atlas, 8 sprays" (en la comunidad de perfumes árabes 6 a 10 sprays es habitual). Ajustalo
+a tu caso: subí o bajá de a 1 o 2 y fijate a qué distancia te sienten. Cuando dejás de ganar distancia, ese
+es tu número. Al cambiarlo se recalcula toda la columna.
 
 ## 3. Lo que falta y no sale de Parfumo
 
