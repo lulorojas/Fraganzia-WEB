@@ -54,20 +54,32 @@ function resumen(r) {
   ].filter(Boolean).join('\n');
 }
 
-async function main() {
-  const pdf = args.includes('--pdf') ? readFileSync(valorDe('--pdf')) : await descargarPdf();
-  const hash = hashPdf(pdf);
+let db;
 
-  let db;
-  let perfumes = catalogoLocal;
+/** Deja el error en Firestore para que el panel admin lo muestre (el WhatsApp puede no estar configurado). */
+async function registrarError(err) {
+  if (!db || dryRun) return;
+  await db.doc('config/botProveedor').set(
+    { ultimoError: String(err.message ?? err).slice(0, 500), ultimoErrorEn: FieldValue.serverTimestamp() },
+    { merge: true }
+  );
+}
+
+async function main() {
   if (!catalogoLocal) {
     initializeApp({ credential: cert(credencial()) });
     db = getFirestore();
+  }
+  const pdf = args.includes('--pdf') ? readFileSync(valorDe('--pdf')) : await descargarPdf();
+  const hash = hashPdf(pdf);
+
+  let perfumes = catalogoLocal;
+  if (!catalogoLocal) {
     const config = await db.doc('config/botProveedor').get();
     if (!dryRun && config.exists && config.data().hash === hash) {
       console.log('catálogo sin cambios');
       // Deja constancia de que el bot sí corrió (el panel admin muestra este momento).
-      await db.doc('config/botProveedor').set({ ultimoChequeo: FieldValue.serverTimestamp(), whatsappConfigurado: whatsappConfigurado() }, { merge: true });
+      await db.doc('config/botProveedor').set({ ultimoChequeo: FieldValue.serverTimestamp(), whatsappConfigurado: whatsappConfigurado(), ultimoError: FieldValue.delete(), ultimoErrorEn: FieldValue.delete() }, { merge: true });
       // El cron diario se queda calladito para no spamear; un run manual siempre avisa algo.
       if (process.env.GITHUB_EVENT_NAME === 'workflow_dispatch') {
         await avisar('Fraganzia: el bot de precios corrió', 'El catálogo del proveedor no cambió desde la última corrida: no hay nada para aplicar.');
@@ -144,6 +156,7 @@ async function main() {
 
 main().catch(async (err) => {
   console.error(err.message);
+  await registrarError(err).catch((e) => console.error('No se pudo registrar el error:', e.message));
   if (!String(err.message).startsWith('abortado')) {
     await avisar('Fraganzia: falló el bot de precios', err.stack ?? err.message).catch(() => {});
   }

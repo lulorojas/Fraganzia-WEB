@@ -74,3 +74,40 @@ test('asociarImagenes solo empareja por orden si la cantidad coincide exacto', (
   assert.equal(emparejadas[0].imagenBuffer, img1);
   assert.equal(emparejadas[1].imagenBuffer, img2);
 });
+
+// Lee un PDF real (mínimo) con pdfjs: así un cambio de versión de Node o de pdfjs que lo rompa
+// falla en los tests y no recién en la corrida diaria. `sinWithResolvers` simula Node 20.
+function pdfMinimo(lineas) {
+  const flujo = `BT /F1 12 Tf 14 TL 20 760 Td ${lineas.map((l) => `(${l}) Tj T*`).join(' ')} ET`;
+  const objs = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 600 800] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
+    `<< /Length ${flujo.length} >>\nstream\n${flujo}\nendstream`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+  ];
+  let pdf = '%PDF-1.4\n';
+  const pos = objs.map((o, i) => { const p = pdf.length; pdf += `${i + 1} 0 obj\n${o}\nendobj\n`; return p; });
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n${pos.map((p) => `${String(p).padStart(10, '0')} 00000 n \n`).join('')}`;
+  pdf += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+  return Buffer.from(pdf, 'latin1');
+}
+
+test('leerFilasDelPdf lee un PDF con pdfjs', async () => {
+  const { leerFilasDelPdf } = await import('../lib/catalogo-proveedor.mjs');
+  const filas = await leerFilasDelPdf(pdfMinimo(['FRAGANCIAS MASCULINAS', 'MODELO PRECIO', 'KHAMRAH 100ML', '15 USD']));
+  assert.deepEqual(filas.map((f) => [f.nombre, f.volumenML, f.precioUSD, f.genero]), [['KHAMRAH 100ML', 100, 15, 'Masculino']]);
+});
+
+test('el bot anda aunque Node no tenga Promise.withResolvers (Node 20)', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const codigo = `
+    delete Promise.withResolvers;
+    const { leerFilasDelPdf } = await import(${JSON.stringify(new URL('../lib/catalogo-proveedor.mjs', import.meta.url).href)});
+    const pdf = Buffer.from(${JSON.stringify(pdfMinimo(['FRAGANCIAS MASCULINAS', 'MODELO PRECIO', 'KHAMRAH 100ML', '15 USD']).toString('latin1'))}, 'latin1');
+    const f = await leerFilasDelPdf(pdf);
+    if (f.length !== 1) throw new Error('filas: ' + f.length);
+  `;
+  execFileSync(process.execPath, ['--input-type=module', '-e', codigo], { stdio: 'pipe' });
+});

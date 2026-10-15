@@ -13,7 +13,10 @@ export function ResumenBot({ conLink = true }) {
 
   const ultimoChequeo = estado?.ultimoChequeo ?? estado?.ultimaCorrida;
   const horas = ultimoChequeo ? (Date.now() - milisDeFecha(ultimoChequeo)) / 36e5 : Infinity;
-  const alDia = horas <= HORAS_SIN_CHEQUEAR;
+  // Si la última corrida falló (y no hubo otra buena después), el bot NO está al día aunque haya chequeado antes.
+  const errorEn = estado?.ultimoError ? milisDeFecha(estado.ultimoErrorEn) : 0;
+  const fallo = Boolean(estado?.ultimoError) && errorEn > (ultimoChequeo ? milisDeFecha(ultimoChequeo) : 0);
+  const alDia = horas <= HORAS_SIN_CHEQUEAR && !fallo;
   const ultima = corridas?.[0];
   const precios = ultima?.cambios?.length ?? 0;
   const nuevos = ultima?.nuevos?.length ?? 0;
@@ -29,8 +32,13 @@ export function ResumenBot({ conLink = true }) {
         )}
       </div>
       <p className={`mt-1 font-body text-sm ${alDia ? 'text-text' : 'text-error'}`}>
-        {alDia ? 'Está al día' : 'No chequeó el catálogo hace más de un día y medio: revisá GitHub → Actions'}
+        {alDia ? 'Está al día' : fallo ? 'La última corrida falló: revisá GitHub → Actions' : 'No chequeó el catálogo hace más de un día y medio: revisá GitHub → Actions'}
       </p>
+      {fallo && (
+        <p className="mt-1 font-body text-xs text-error">
+          Error ({formatFechaHora(estado.ultimoErrorEn)}): {estado.ultimoError}
+        </p>
+      )}
       <p className="mt-1 font-body text-xs text-text-secondary">
         Último chequeo: {ultimoChequeo ? formatFechaHora(ultimoChequeo) : 'sin registro todavía'}
       </p>

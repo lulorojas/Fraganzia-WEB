@@ -1,5 +1,6 @@
 // Lectura del catálogo mayorista de Franzebi Imports y cruce con los perfumes
 // de Firestore. Sin efectos secundarios: la escritura vive en bot-proveedor.mjs.
+import './polyfills.mjs';
 import { createHash } from 'node:crypto';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { normalizarTexto } from '../../src/utils/texto.js';
