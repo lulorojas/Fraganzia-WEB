@@ -296,8 +296,7 @@
   /** Trae las páginas que faltan (hasta `max` en total) y las inserta en la misma grilla. */
   async function cargarPaginas(max) {
     if (!pager || pager.cargando) return;
-    const pendientes = S.pagesToLoad(pager.current, pager.last, pager.loaded, max);
-    if (!pendientes.length) { pintar(); return; }
+    if (!S.pagesToLoad(pager.current, pager.last, pager.loaded, max).length) { pintar(); return; }
     const nativas = findCards();
     if (!nativas.length) return;
     const grilla = nativas[0].parentElement;
@@ -306,15 +305,23 @@
     const primera = nativas[0]; // las anteriores, antes de esta
     pager.cargando = true; pager.detener = false; pager.error = null;
     pintar();
-    for (const n of pendientes) {
-      if (pager.detener) break;
+    // Las páginas pendientes se recalculan en cada vuelta: el paginador de Parfumo muestra solo
+    // una ventana de números, así que la última página real puede aparecer recién al avanzar.
+    for (;;) {
+      const n = S.pagesToLoad(pager.current, pager.last, pager.loaded, max)[0];
+      if (n === undefined || pager.detener) break;
       try {
         const res = await fetch(S.pageUrl(pager.base, n), { credentials: 'include' });
         if (res.status === 429 || res.status === 403) throw new Error('Parfumo limitó los pedidos; probá de nuevo en unos minutos.');
         if (!res.ok) throw new Error(`Parfumo respondió ${res.status} en la página ${n}.`);
         const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
         const tarjetas = findCards(doc, claseGrilla).filter((el) => el.parentElement.className === claseGrilla);
-        if (!tarjetas.length) throw new Error(`No se encontraron perfumes en la página ${n}.`);
+        if (!tarjetas.length) {
+          // Pasó el final real del resultado: se corrige el total y se termina sin error.
+          if (n > 1) { pager.last = Math.max(pager.current, ...pager.loaded); break; }
+          throw new Error(`No se encontraron perfumes en la página ${n}.`);
+        }
+        pager.last = Math.max(pager.last, S.lastPage([...doc.querySelectorAll('a[href*="current_page="]')].map((a) => a.href)));
         const frag = document.createDocumentFragment();
         tarjetas.forEach((el) => { const nodo = document.importNode(el, true); nodo.dataset.pfPage = String(n); frag.appendChild(nodo); });
         if (n < pager.current) grilla.insertBefore(frag, primera);
