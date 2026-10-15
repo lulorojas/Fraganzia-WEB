@@ -1,18 +1,15 @@
-# Parfumo+ — filtros estadísticos
+# Parfumo+ — filtros
 
 Extensión de navegador (Chrome/Edge/Brave, Manifest V3) que agrega un panel de filtros
-a los listados de [parfumo.com](https://www.parfumo.com) y cambia el criterio de orden.
+a los listados de [parfumo.com](https://www.parfumo.com).
 
-## Qué cambia
+## Qué hace
 
-- **Orden por defecto: puntaje estadístico**, no valoración ni cantidad de votos.
-  Es la media bayesiana de la valoración (se encoge hacia la media del listado cuando hay
-  pocos votos) menos `z · σ / √(votos + m)`. Un 9.5 con 3 votos queda debajo de un 8.4 con
-  cientos, sin umbrales fijos. El deslizador "prudencia" (`z`) ajusta cuán conservador es.
-- **Valoración y votos pasan a ser filtros opcionales**, al final del panel (mín/máx), vacíos por defecto.
-  También se pueden elegir como orden si hace falta.
-- **Filtros extra**: debe incluir / excluir texto (notas, casa, acordes, lo que muestre la tarjeta),
-  año desde/hasta y puntaje estadístico mínimo. Cada tarjeta muestra su puntaje (Σ).
+- **No cambia el orden**: por defecto se mantiene el orden de Parfumo y solo se ocultan los que no cumplen los filtros.
+- **Valoración y votos** son filtros con mínimo y máximo (por ejemplo, votos mín. 100 y valoración mín. 7.5).
+- **Año** desde/hasta y **nombre o casa** (debe incluir / excluir, una o varias palabras separadas por coma).
+- Se puede elegir ordenar por valoración, votos o año, y volver al orden original de Parfumo.
+- **Avanzado, opcional**: puntaje estadístico (media bayesiana con cota de confianza) como orden o como mínimo. Solo muestra la insignia Σ si lo elegís.
 - Los ajustes se guardan y se reaplican al cargar más resultados.
 
 ## Instalar (modo desarrollador)

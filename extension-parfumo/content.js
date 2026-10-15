@@ -1,13 +1,13 @@
-/* Parfumo+ — panel de filtros y orden estadístico sobre los listados de Parfumo. */
+/* Parfumo+ — panel de filtros (valoración, votos, año, nombre) sobre los listados de Parfumo. */
 (function () {
   'use strict';
   const S = window.PFStats;
   const STORE_KEY = 'pfplus';
   const DEFAULTS = {
-    sort: 'score', z: 1.28,
+    // Por defecto no se reordena nada: solo se filtra. El puntaje estadístico es opt-in.
+    sort: 'original', z: 1.28,
     include: '', exclude: '', matchAll: false,
     yearMin: null, yearMax: null, scoreMin: null,
-    // Opcionales y al final: el criterio ya no es valoración/votos.
     ratingMin: null, ratingMax: null, votesMin: null, votesMax: null,
     collapsed: false,
   };
@@ -19,6 +19,7 @@
   let settings = { ...DEFAULTS };
   let cards = []; // { el, index, text, rating, votes, year, score }
   const known = new WeakMap();
+  let seq = 0;
   let applying = false;
 
   const storage = {
@@ -62,11 +63,11 @@
 
   function collect() {
     const els = findCards();
-    cards = els.map((el, i) => {
+    cards = els.map((el) => {
       let c = known.get(el);
-      if (!c) { c = { el, ...S.parseCardText(el.innerText || el.textContent) }; known.set(el, c); }
+      // El índice se fija la primera vez que se ve la tarjeta: es el orden original de Parfumo.
+      if (!c) { c = { el, index: seq++, ...S.parseCardText(el.innerText || el.textContent) }; known.set(el, c); }
       c.text = (el.textContent || '').replace(/\s+/g, ' ');
-      c.index = i;
       return c;
     });
     const ctx = S.buildContext(cards);
@@ -94,7 +95,9 @@
 
   function badge(c) {
     let b = c.el.querySelector(':scope > .pfplus-badge, .pfplus-badge');
-    if (c.score === null) { if (b) b.remove(); return; }
+    // La insignia Σ solo aparece si el usuario eligió ese orden o filtro.
+    const usaPuntaje = settings.sort === 'score' || settings.scoreMin !== null;
+    if (c.score === null || !usaPuntaje) { if (b) b.remove(); return; }
     if (!b) {
       b = document.createElement('div');
       b.className = 'pfplus-badge';
@@ -157,27 +160,28 @@
   <div id="pfplus-count-wrap"><span id="count"></span></div>
   <label class="pf-f"><span>Ordenar por</span>
    <select id="sort">
-    <option value="score">Puntaje estadístico (recomendado)</option>
-    <option value="year">Año</option>
+    <option value="original">Orden original de Parfumo</option>
     <option value="rating">Valoración</option>
     <option value="votes">Cantidad de votos</option>
-    <option value="original">Orden original de Parfumo</option>
+    <option value="year">Año</option>
+    <option value="score">Puntaje estadístico (avanzado)</option>
    </select></label>
-  <label class="pf-f"><span>Prudencia estadística (z): <b id="zv"></b></span>
-   <input id="z" type="range" min="0" max="2.5" step="0.05"></label>
-  <h4>Contenido</h4>
-  <label class="pf-f"><span>Debe incluir (coma = varias; notas, casa, acorde…)</span><textarea id="include" rows="2"></textarea></label>
-  <label class="pf-f" style="display:flex;gap:6px;align-items:center"><input id="matchAll" type="checkbox" style="width:auto"><span>Exigir todas</span></label>
-  <label class="pf-f"><span>Excluir</span><textarea id="exclude" rows="2"></textarea></label>
-  <h4>Año y puntaje</h4>
-  <div class="row"><label class="pf-f"><span>Año desde</span><input id="yearMin" type="number"></label>
-   <label class="pf-f"><span>Año hasta</span><input id="yearMax" type="number"></label></div>
-  <label class="pf-f"><span>Puntaje estadístico mínimo</span><input id="scoreMin" type="number" step="0.1"></label>
-  <h4 class="opt">Opcional: valoración y votos</h4>
+  <h4>Valoración y votos</h4>
   <div class="row"><label class="pf-f"><span>Valoración mín.</span><input id="ratingMin" type="number" step="0.1" min="0" max="10"></label>
    <label class="pf-f"><span>Valoración máx.</span><input id="ratingMax" type="number" step="0.1" min="0" max="10"></label></div>
   <div class="row"><label class="pf-f"><span>Votos mín.</span><input id="votesMin" type="number" min="0"></label>
    <label class="pf-f"><span>Votos máx.</span><input id="votesMax" type="number" min="0"></label></div>
+  <h4>Año</h4>
+  <div class="row"><label class="pf-f"><span>Año desde</span><input id="yearMin" type="number"></label>
+   <label class="pf-f"><span>Año hasta</span><input id="yearMax" type="number"></label></div>
+  <h4>Nombre o casa</h4>
+  <label class="pf-f"><span>Debe incluir (coma = varias)</span><textarea id="include" rows="2"></textarea></label>
+  <label class="pf-f" style="display:flex;gap:6px;align-items:center"><input id="matchAll" type="checkbox" style="width:auto"><span>Exigir todas</span></label>
+  <label class="pf-f"><span>Excluir</span><textarea id="exclude" rows="2"></textarea></label>
+  <h4 class="opt">Avanzado: puntaje estadístico</h4>
+  <label class="pf-f"><span>Puntaje mínimo (solo si lo usás)</span><input id="scoreMin" type="number" step="0.1"></label>
+  <label class="pf-f"><span>Prudencia (z): <b id="zv"></b></span>
+   <input id="z" type="range" min="0" max="2.5" step="0.05"></label>
   <button id="reset">Restablecer</button>
  </div>
 </div>`;
