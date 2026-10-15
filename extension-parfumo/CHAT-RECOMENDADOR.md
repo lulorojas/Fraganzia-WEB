@@ -44,6 +44,25 @@ Preferencia de proyección y sprays:
 - Si te paso números reales míos, reemplazan tus estimaciones y los usás como base.
 ```
 
+### Sprays con base en estadísticas (en vez de estimaciones sueltas)
+
+No existe ninguna estadística pública que relacione cantidad de sprays con metros de proyección: lo que hay
+son reseñas sueltas y fichas de tiendas. Lo que sí es estadístico es la **estela votada en Parfumo** (con sus
+votos). Esta regla usa esa estadística y UN dato tuyo como ancla:
+
+```
+Cálculo de sprays (reemplaza cualquier número de reseñas o tiendas):
+- Mi ancla: con [PERFUME] y su estela de la tabla uso [N] sprays y tengo la proyección que quiero.
+- Para cada otro perfume: sprays = N × (11 − estela_del_perfume) / (11 − estela_del_ancla), redondeado y
+  limitado entre 2 y 2×N. Si el perfume no tiene estela o tiene pocos votos, usá N y marcalo como estimado.
+- Dame el nivel "bestial" con ese número, y "base" y "fuerte" como 60 % y 80 % de él.
+- Una estela baja no se compensa con más sprays: si un perfume queda en el tope y su estela es menor a 6,
+  decime que no llega a "bestial" y qué perfume de la tabla conviene usar en su lugar.
+```
+
+Completá `[PERFUME]` y `[N]` con tu caso real (por ejemplo, "Atlas, 5 sprays"). Si más adelante cambia lo que
+te funciona, cambiás solo ese número y se recalcula toda la columna.
+
 ## 3. Lo que falta y no sale de Parfumo
 
 - **Tus sprays reales:** Parfumo no los guarda. Hoy son estimaciones del chat. Cuando los calibres con tu
