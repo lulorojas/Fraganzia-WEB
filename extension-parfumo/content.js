@@ -10,7 +10,7 @@
     yearMin: null, yearMax: null, scoreMin: null,
     ratingMin: null, ratingMax: null, votesMin: null, votesMax: null,
     // Traer las demás páginas del resultado para que los filtros valgan sobre todo.
-    autoPaginas: true, maxPaginas: 30,
+    autoPaginas: true, maxPaginas: 50,
     collapsed: false,
   };
   // Duración, estela, botella y precio/valor: mín/máx de valoración y mín de votos de cada una.

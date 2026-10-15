@@ -6,7 +6,7 @@ a los listados de [parfumo.com](https://www.parfumo.com).
 ## Qué hace
 
 - **No cambia el orden**: por defecto se mantiene el orden de Parfumo y solo se ocultan los perfumes que no cumplen los filtros.
-- **Filtra todo el resultado, no una página**: al abrir un listado trae las demás páginas (con `?current_page=N`), las junta en una sola lista y oculta el paginador cuando está completo. Tope por defecto: 30 páginas (3000 perfumes en vista de lista; hasta 1000 páginas si lo subís en el panel); se cambia en el panel, y "Cargar todas" trae el resto. Los filtros quedan guardados al cambiar de página.
+- **Filtra todo el resultado, no una página**: al abrir un listado trae las demás páginas (con `?current_page=N`), las junta en una sola lista y oculta el paginador cuando está completo. Tope por defecto: 50 páginas (5000 perfumes en vista de lista; hasta 1000 páginas si lo subís en el panel); se cambia en el panel, y "Cargar todas" trae el resto. Los filtros quedan guardados al cambiar de página.
 - **Filtros que se combinan entre sí** (todos a la vez):
   - Aroma: valoración mín/máx y votos mín/máx.
   - **Duración, estela, botella y precio/valor**: valoración mín/máx y votos mínimos de cada una.
