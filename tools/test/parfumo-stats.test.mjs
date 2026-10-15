@@ -10,6 +10,17 @@ test('parseCardText lee valoración, votos y año', () => {
   assert.equal(S.parseCardText('sin datos').rating, null);
 });
 
+test('parseCardText con tarjetas reales de Parfumo (grilla y lista)', () => {
+  // Grilla: el año va entre paréntesis y no son los votos.
+  assert.deepEqual(S.parseCardText('Khamrah (2022) 7.9 4791'), { rating: 7.9, votes: 4791, year: 2022 });
+  // Sin año.
+  assert.deepEqual(S.parseCardText('Oud for Glory 7.6 2712'), { rating: 7.6, votes: 2712, year: null });
+  // Lista: "288 Reviews" son reseñas, no votos.
+  assert.deepEqual(S.parseCardText('Khamrah 7.9 4791 (2022) 288 Reviews'), { rating: 7.9, votes: 4791, year: 2022 });
+  // Perfume con año en el nombre y votos con separador de miles.
+  assert.deepEqual(S.parseCardText('Ameer Al Oudh Intense Oud (2021) 7.7 1.259'), { rating: 7.7, votes: 1259, year: 2021 });
+});
+
 test('el puntaje penaliza pocos votos sin usar rating × votos', () => {
   const items = [
     { rating: 9.5, votes: 3 }, { rating: 8.4, votes: 900 }, { rating: 7.0, votes: 200 }, { rating: 8.0, votes: 100 },

@@ -15,21 +15,38 @@
     return Number.isFinite(n) ? n : null;
   };
 
-  /** Extrae valoración (0-10), votos y año del texto de una tarjeta. */
+  const ANIO = '19[0-9]{2}|20[0-4][0-9]';
+
+  /**
+   * Extrae valoración (0-10), votos y año del texto de una tarjeta.
+   * Formato real de Parfumo: "Khamrah (2022) 7.9 4791" (año entre paréntesis,
+   * después la valoración y los votos). La vista de lista suma "288 Reviews",
+   * que son reseñas escritas y no votos.
+   */
   function parseCardText(text) {
-    const t = String(text || '').replace(/\s+/g, ' ');
-    let votes = null;
-    const v = t.match(/([\d.,]+)\s*(?:ratings?|votes?|votos?|valoraciones|bewertungen|reseñas|reviews?)\b/i)
-      || t.match(/\(\s*([\d.,]+)\s*\)/);
-    if (v) votes = num(v[1]);
+    let t = String(text || '').replace(/\s+/g, ' ');
+    const y = t.match(new RegExp('\\(\\s*(' + ANIO + ')\\s*\\)')) || t.match(new RegExp('\\b(' + ANIO + ')\\b'));
+    const year = y ? parseInt(y[1], 10) : null;
+    // Sin el año ni las reseñas queda: nombre + valoración + votos.
+    t = t.replace(new RegExp('\\(\\s*(?:' + ANIO + ')\\s*\\)', 'g'), ' ')
+      .replace(/[\d.,]+\s*(?:reviews?|reseñas?|rezensionen)\b/gi, ' ')
+      .replace(/\s+/g, ' ');
     let rating = null;
-    const r = t.match(/(?:^|[^\d.,])(10(?:[.,]0+)?|\d[.,]\d{1,2})(?![\d])/);
+    let votes = null;
+    const r = t.match(/(?:^|[^\d.,])(10(?:[.,]0+)?|\d[.,]\d{1,2})(?![\d.,])/);
     if (r) {
       const n = num(r[1]);
-      if (n !== null && n >= 0 && n <= 10) rating = n;
+      if (n !== null && n >= 0 && n <= 10) {
+        rating = n;
+        const despues = t.slice(r.index + r[0].length).match(/^\s*(\d[\d.,]*)/);
+        if (despues) votes = num(despues[1]);
+      }
     }
-    const y = t.match(/\b(19[0-9]{2}|20[0-4][0-9])\b/);
-    return { rating, votes, year: y ? parseInt(y[1], 10) : null };
+    if (votes === null) {
+      const v = t.match(/([\d.,]+)\s*(?:ratings?|votes?|votos?|valoraciones|bewertungen)\b/i);
+      if (v) votes = num(v[1]);
+    }
+    return { rating, votes, year };
   }
 
   const mean = (a) => a.reduce((s, x) => s + x, 0) / (a.length || 1);

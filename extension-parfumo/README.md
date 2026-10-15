@@ -23,10 +23,14 @@ a los listados de [parfumo.com](https://www.parfumo.com) y cambia el criterio de
 
 ## Limitaciones
 
-- Parfumo no se pudo consultar al escribirla, así que las tarjetas se detectan por los enlaces
-  `/Perfumes/<Casa>/<Nombre>` y la valoración/votos/año se leen del texto de cada tarjeta.
-  Si Parfumo cambia el HTML, ajustar `findCards()` y `parseCardText()` (`lib/stats.js`).
+- Las tarjetas se detectan por los enlaces `/Perfumes/<Casa>/<Nombre>` y la valoración/votos/año
+  se leen del texto de cada tarjeta, que en Parfumo es `Nombre (año) valoración votos`. Se probó
+  el parser con 120 tarjetas reales (grilla y lista). Si Parfumo cambia el HTML, ajustar
+  `findCards()` y `parseCardText()` (`lib/stats.js`).
 - Solo ordena y filtra lo que ya está cargado en la página, no la búsqueda completa del servidor.
+  La grilla trae 20 perfumes por página y la **vista de lista (`v=list`) trae 100**: conviene usar esa.
+- Las tarjetas de Parfumo no muestran notas ni acordes, solo nombre, año, género, valoración y votos.
+  "Debe incluir / excluir" sirve para el nombre del perfume, no para las notas.
 
 ## Pruebas
 
