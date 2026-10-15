@@ -10,7 +10,7 @@
     yearMin: null, yearMax: null, scoreMin: null,
     ratingMin: null, ratingMax: null, votesMin: null, votesMax: null,
     // Traer las demás páginas del resultado para que los filtros valgan sobre todo.
-    autoPaginas: true, maxPaginas: 10,
+    autoPaginas: true, maxPaginas: 30,
     collapsed: false,
   };
   // Duración, estela, botella y precio/valor: mín/máx de valoración y mín de votos de cada una.
@@ -371,7 +371,7 @@
   <div id="pfplus-count-wrap"><span id="count"></span></div>
   <div id="paginas" style="display:none;gap:6px;border-bottom:1px dashed #cbd5e1;padding-bottom:8px">
    <label class="pf-f" style="display:flex;gap:6px;align-items:center"><input id="autoPaginas" type="checkbox" style="width:auto"><span>Traer todas las páginas del resultado</span></label>
-   <div class="row"><label class="pf-f"><span>Máx. páginas</span><input id="maxPaginas" type="number" min="1" max="200"></label>
+   <div class="row"><label class="pf-f"><span>Máx. páginas</span><input id="maxPaginas" type="number" min="1" max="1000"></label>
     <div style="display:flex;align-items:end"><button id="cargarTodo" style="width:100%">Cargar todas</button></div></div>
    <button id="detener" style="display:none">Detener carga</button>
   </div>
@@ -441,7 +441,7 @@
     $('autoPaginas').onchange = (e) => { settings.autoPaginas = e.target.checked; save(); if (e.target.checked) encolar(() => cargarPaginas(settings.maxPaginas)); };
     let tMax;
     $('maxPaginas').oninput = (e) => {
-      const n = Math.min(200, Math.max(1, parseInt(e.target.value, 10) || 1));
+      const n = Math.min(1000, Math.max(1, parseInt(e.target.value, 10) || 1));
       settings.maxPaginas = n; storage.set(settings);
       clearTimeout(tMax);
       tMax = setTimeout(() => { if (settings.autoPaginas) { parar = false; encolar(() => cargarPaginas(n)); } revisarMetricas(); }, 700);
