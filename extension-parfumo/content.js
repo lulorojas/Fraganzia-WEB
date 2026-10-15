@@ -10,7 +10,7 @@
     yearMin: null, yearMax: null, scoreMin: null,
     ratingMin: null, ratingMax: null, votesMin: null, votesMax: null,
     // Traer las demás páginas del resultado para que los filtros valgan sobre todo.
-    autoPaginas: true, maxPaginas: 50,
+    autoPaginas: true, maxPaginas: 50, ver: 2,
     collapsed: false,
   };
   // Duración, estela, botella y precio/valor: mín/máx de valoración y mín de votos de cada una.
@@ -473,7 +473,10 @@
   }
 
   async function init() {
-    settings = { ...DEFAULTS, ...(await storage.get()) };
+    const guardado = await storage.get();
+    // Versión 2: el tope de páginas subió; un valor viejo guardado (10 o 30) no debe pisar el nuevo.
+    if ((guardado.ver || 1) < 2) { delete guardado.maxPaginas; guardado.ver = 2; storage.set(guardado); }
+    settings = { ...DEFAULTS, ...guardado };
     pager = detectarPaginador();
     const primeras = findCards();
     nativa = (primeras.length && leerAv(primeras[0]).metrica) || 'scent';
