@@ -44,6 +44,48 @@ test('valoración y votos son filtros opcionales', () => {
   assert.ok(!S.passes(it, { scoreMin: 8 }));
 });
 
+test('paginación: última página, URL de otra página y páginas a traer', () => {
+  const base = 'https://www.parfumo.com/Perfumes/Lattafa?current_page=2&v=list&o=nr_desc';
+  assert.equal(S.pageOf(base), 2);
+  assert.equal(S.pageOf('https://www.parfumo.com/Perfumes/Lattafa'), null);
+  assert.equal(S.lastPage([base, S.pageUrl(base, 5), S.pageUrl(base, 1)]), 5);
+  assert.equal(S.lastPage([]), 1);
+  assert.equal(S.pageUrl(base, 4), 'https://www.parfumo.com/Perfumes/Lattafa?current_page=4&v=list&o=nr_desc');
+  assert.equal(S.pageUrl('https://www.parfumo.com/Perfumes/Lattafa', 3), 'https://www.parfumo.com/Perfumes/Lattafa?current_page=3');
+  // Estoy en la 3 de 6: traer todo salvo la 3.
+  assert.deepEqual(S.pagesToLoad(3, 6, [], 99), [1, 2, 4, 5, 6]);
+  // Tope de 4 páginas en total (la actual cuenta): trae 3 más.
+  assert.deepEqual(S.pagesToLoad(1, 23, [], 4), [2, 3, 4]);
+  // Ya cargadas no se repiten.
+  assert.deepEqual(S.pagesToLoad(1, 5, [2, 3], 99), [4, 5]);
+  assert.deepEqual(S.pagesToLoad(1, 1, [], 10), []);
+});
+
+test('filtros de duración y estela se combinan entre sí y con valoración y votos', () => {
+  const it = { text: 'khamrah', rating: 7.9, votes: 4791, year: 2022, m: { dur: { rating: 8.4, votes: 4545 }, sillage: { rating: 8.2, votes: 4523 } } };
+  assert.ok(S.passes(it, { durMin: 8, sillageMin: 8 }));
+  assert.ok(!S.passes(it, { durMin: 8, sillageMin: 8.5 }), 'falla la estela aunque pase la duración');
+  assert.ok(!S.passes(it, { durMin: 8.5, sillageMin: 8 }), 'falla la duración aunque pase la estela');
+  assert.ok(!S.passes(it, { durMin: 8, sillageMin: 8, ratingMin: 8 }), 'falla la valoración aunque pasen las otras');
+  assert.ok(S.passes(it, { durMin: 8, sillageMin: 8, ratingMin: 7.5, votesMin: 1000, yearMin: 2020 }));
+  assert.ok(!S.passes(it, { sillageVotesMin: 5000 }));
+  assert.ok(!S.passes(it, { bottleMin: 1 }), 'sin dato de esa métrica no pasa');
+  assert.ok(S.passes({ ...it, m: {} }, { ratingMin: 7 }), 'sin filtros de métricas extra no se exige el dato');
+  const a = [{ index: 0, m: { dur: { rating: 7 } } }, { index: 1, m: {} }, { index: 2, m: { dur: { rating: 9 } } }];
+  assert.deepEqual(S.sortItems(a, 'dur').map((x) => x.index), [2, 0, 1]);
+});
+
+test('métricas: clase de la tarjeta y URL de orden', () => {
+  assert.equal(S.metricaDeClase('av av_sillage'), 'sillage');
+  assert.equal(S.metricaDeClase('av av_pricing'), 'pricing');
+  assert.equal(S.metricaDeClase('av av_scent'), 'scent');
+  assert.equal(S.metricaDeClase('av'), null);
+  const u = 'https://www.parfumo.com/Perfumes/Lattafa?current_page=2&v=list&o=nr_desc&g_f=1';
+  assert.equal(S.urlConOrden(u, 's_desc'), 'https://www.parfumo.com/Perfumes/Lattafa?current_page=2&v=list&o=s_desc&g_f=1');
+  assert.equal(S.urlConOrden('https://www.parfumo.com/Perfumes/Lattafa', 'd_desc'), 'https://www.parfumo.com/Perfumes/Lattafa?o=d_desc');
+  assert.equal(S.METRICAS.dur.o, 'd_desc');
+});
+
 test('sortItems ordena por puntaje y deja nulos al final', () => {
   const a = [{ index: 0, score: 5 }, { index: 1, score: null }, { index: 2, score: 7 }];
   assert.deepEqual(S.sortItems(a, 'score').map((x) => x.index), [2, 0, 1]);

@@ -83,6 +83,32 @@
     return bayes - (o.z * o.sigma) / Math.sqrt(v + ctx.m);
   }
 
+  /**
+   * Cada tarjeta de Parfumo muestra UNA sola valoración: la de la métrica por la que está
+   * ordenado el listado (clase av_scent, av_dur…). `o` es el orden que pide esa métrica.
+   * Para combinar filtros hay que pedir el listado ordenado por cada una y unir por perfume.
+   */
+  const METRICAS = {
+    scent: { o: 'v_desc', nombre: 'valoración' },
+    dur: { o: 'd_desc', nombre: 'duración' },
+    sillage: { o: 's_desc', nombre: 'estela' },
+    bottle: { o: 'b_desc', nombre: 'botella' },
+    pricing: { o: 'p_desc', nombre: 'precio/valor' },
+  };
+  const METRICAS_EXTRA = ['dur', 'sillage', 'bottle', 'pricing'];
+
+  /** Métrica que muestra una tarjeta según la clase de su .av (av_dur → 'dur'), o null. */
+  function metricaDeClase(cls) {
+    const m = String(cls || '').match(/\bav_([a-z]+)/);
+    return m && METRICAS[m[1]] ? m[1] : null;
+  }
+
+  /** La misma URL de listado pero ordenada por `o` (y desde la primera página). */
+  function urlConOrden(href, o) {
+    const h = String(href);
+    return /[?&]o=[^&]*/.test(h) ? h.replace(/([?&]o=)[^&]*/, '$1' + o) : h + (h.includes('?') ? '&' : '?') + 'o=' + o;
+  }
+
   const splitWords = (s) => String(s || '').toLowerCase().split(/[,;\n]+/).map((x) => x.trim()).filter(Boolean);
 
   /** Aplica filtros. Valoración y votos son opcionales (null = sin límite). */
@@ -99,15 +125,28 @@
     if (f.ratingMax != null && (item.rating === null || item.rating > f.ratingMax)) return false;
     if (f.votesMin != null && (item.votes === null || item.votes < f.votesMin)) return false;
     if (f.votesMax != null && (item.votes === null || item.votes > f.votesMax)) return false;
+    // Duración, estela, botella y precio/valor: cada una con mín/máx de valoración y mín de votos.
+    // Todos los filtros activos se combinan (AND). Sin dato de esa métrica no pasa.
+    for (const k of METRICAS_EXTRA) {
+      const mn = f[k + 'Min'], mx = f[k + 'Max'], vm = f[k + 'VotesMin'];
+      if (mn == null && mx == null && vm == null) continue;
+      const d = item.m && item.m[k];
+      if (!d || d.rating == null) return false;
+      if (mn != null && d.rating < mn) return false;
+      if (mx != null && d.rating > mx) return false;
+      if (vm != null && (d.votes == null || d.votes < vm)) return false;
+    }
     return true;
   }
 
-  /** Orden: 'score' (default), 'rating', 'votes', 'year', 'original'. */
+  /** Orden: 'rating', 'votes', 'year', 'score', una métrica extra ('dur', 'sillage'…) u 'original'. */
   function sortItems(items, by) {
-    const key = { score: 'score', rating: 'rating', votes: 'votes', year: 'year' }[by];
+    const extra = METRICAS_EXTRA.includes(by);
+    const key = extra ? by : { score: 'score', rating: 'rating', votes: 'votes', year: 'year' }[by];
     if (!key) return [...items].sort((a, b) => a.index - b.index);
+    const val = (it) => (extra ? ((it.m && it.m[key] && it.m[key].rating) ?? null) : it[key]);
     return [...items].sort((a, b) => {
-      const x = a[key], y = b[key];
+      const x = val(a), y = val(b);
       if (x === null && y === null) return a.index - b.index;
       if (x === null) return 1;
       if (y === null) return -1;
@@ -115,5 +154,41 @@
     });
   }
 
-  return { parseCardText, buildContext, statScore, passes, sortItems, num };
+  // ---- Paginación: Parfumo pagina con ?current_page=N ----
+
+  /** Número de página de una URL (current_page) o null. */
+  function pageOf(href) {
+    const m = String(href || '').match(/[?&]current_page=(\d+)/);
+    return m ? parseInt(m[1], 10) : null;
+  }
+
+  /** Última página según los enlaces del paginador (el mayor current_page). */
+  function lastPage(hrefs) {
+    return Math.max(1, ...(hrefs || []).map(pageOf).filter((n) => n));
+  }
+
+  /** La misma URL del listado pero en la página n. */
+  function pageUrl(href, n) {
+    const h = String(href);
+    return /[?&]current_page=\d+/.test(h)
+      ? h.replace(/([?&]current_page=)\d+/, '$1' + n)
+      : h + (h.includes('?') ? '&' : '?') + 'current_page=' + n;
+  }
+
+  /**
+   * Páginas a traer, de la primera a la última, salteando la actual y las ya
+   * cargadas, hasta juntar `max` páginas en total (la actual cuenta).
+   */
+  function pagesToLoad(current, last, loaded, max) {
+    const out = [];
+    let have = 1 + loaded.length;
+    for (let n = 1; n <= last && have < max; n++) {
+      if (n === current || loaded.includes(n)) continue;
+      out.push(n);
+      have++;
+    }
+    return out;
+  }
+
+  return { parseCardText, buildContext, statScore, passes, sortItems, num, pageOf, lastPage, pageUrl, pagesToLoad, METRICAS, METRICAS_EXTRA, metricaDeClase, urlConOrden };
 });
