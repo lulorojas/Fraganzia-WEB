@@ -168,6 +168,22 @@
     });
   }
 
+  /**
+   * Tabla en Markdown con los perfumes y todas sus valoraciones, para pegarla en un chat.
+   * Cada ítem: { nombre, casa, year, rating, votes, m: { dur, sillage, bottle, pricing } }.
+   * Las celdas son "valoración (votos)" o "-" si no hay dato.
+   */
+  function tablaMarkdown(items) {
+    const celda = (d) => (d && d.rating != null ? d.rating.toFixed(1) + (d.votes != null ? ' (' + d.votes + ')' : '') : '-');
+    const txt = (s) => String(s == null || s === '' ? '-' : s).replace(/\|/g, '/').replace(/\s+/g, ' ').trim();
+    const filas = items.map((i) => {
+      const m = i.m || {};
+      return '| ' + [txt(i.nombre), txt(i.casa), txt(i.year), celda({ rating: i.rating, votes: i.votes }),
+        celda(m.dur), celda(m.sillage), celda(m.bottle), celda(m.pricing)].join(' | ') + ' |';
+    });
+    return ['| Perfume | Casa | Año | Aroma | Duración | Estela | Botella | Precio/valor |', '|---|---|---|---|---|---|---|---|', ...filas].join('\n');
+  }
+
   // ---- Paginación: Parfumo pagina con ?current_page=N ----
 
   /** Número de página de una URL (current_page) o null. */
@@ -204,5 +220,5 @@
     return out;
   }
 
-  return { parseCardText, buildContext, statScore, passes, sortItems, num, pageOf, lastPage, pageUrl, pagesToLoad, METRICAS, METRICAS_EXTRA, metricaDeClase, urlConOrden, urlBusquedaColeccion };
+  return { parseCardText, buildContext, statScore, passes, sortItems, num, pageOf, lastPage, pageUrl, pagesToLoad, METRICAS, METRICAS_EXTRA, metricaDeClase, urlConOrden, urlBusquedaColeccion, tablaMarkdown };
 });

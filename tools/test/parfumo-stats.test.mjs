@@ -104,3 +104,13 @@ test('buscador: orden con order= y enlace de búsqueda en la colección', () => 
   assert.equal(S.urlBusquedaColeccion('https://www.parfumo.com/s_perfumes_x.php?filter=oud'), null);
   assert.equal(S.urlBusquedaColeccion('https://www.parfumo.com/Perfumes/Lattafa'), null);
 });
+
+test('tablaMarkdown arma la tabla con todas las métricas y "-" donde no hay dato', () => {
+  const t = S.tablaMarkdown([
+    { nombre: 'Khamrah', casa: 'Lattafa', year: 2022, rating: 7.9, votes: 4791, m: { dur: { rating: 8.4, votes: 4545 }, sillage: { rating: 8.2, votes: 4523 } } },
+    { nombre: 'A | B', casa: 'X', year: null, rating: null, votes: null, m: {} },
+  ]).split('\n');
+  assert.equal(t[0], '| Perfume | Casa | Año | Aroma | Duración | Estela | Botella | Precio/valor |');
+  assert.equal(t[2], '| Khamrah | Lattafa | 2022 | 7.9 (4791) | 8.4 (4545) | 8.2 (4523) | - | - |');
+  assert.equal(t[3], '| A / B | X | - | - | - | - | - | - |');
+});

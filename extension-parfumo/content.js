@@ -386,6 +386,10 @@
  <header id="head"><span>Parfumo+ filtros</span><span id="tog">▾</span></header>
  <div class="body" id="body">
   <div id="pfplus-count-wrap"><span id="count"></span></div>
+  <div style="display:grid;gap:2px;border-bottom:1px dashed #cbd5e1;padding-bottom:8px">
+   <button id="copiar" title="Copia una tabla con aroma, duración, estela, botella y precio/valor de los perfumes que se ven">Copiar datos para el chat</button>
+   <p class="nota" id="copiarEstado">Copia una tabla de los perfumes que se ven, para pegarla en tu chat de Claude.</p>
+  </div>
   <div id="paginas" style="display:none;gap:6px;border-bottom:1px dashed #cbd5e1;padding-bottom:8px">
    <label class="pf-f" style="display:flex;gap:6px;align-items:center"><input id="autoPaginas" type="checkbox" style="width:auto"><span>Traer todas las páginas del resultado</span></label>
    <div class="row"><label class="pf-f"><span>Máx. páginas</span><input id="maxPaginas" type="number" min="1" max="1000"></label>
@@ -476,6 +480,32 @@
       if (!p) return;
       $('detener').style.display = p.cargando || Object.values(metricas).some((m) => m.cargando) ? '' : 'none';
       $('cargarTodo').disabled = p.cargando || p.loaded.length + 1 >= p.last;
+    };
+    $('copiar').onclick = async () => {
+      const btn = $('copiar'); const est = $('copiarEstado');
+      btn.disabled = true; est.textContent = 'Trayendo duración, estela y demás de cada perfume…';
+      try {
+        parar = false;
+        // Hacen falta todas las métricas, no solo las que se filtran: se piden las que falten.
+        for (const k of ['scent', ...S.METRICAS_EXTRA].filter((x) => x !== nativa)) await encolar(() => cargarMetrica(k));
+        apply();
+        const items = cards.filter((c) => c.el.style.display !== 'none').map((c) => {
+          const a = [...c.el.querySelectorAll('a[href]')].find((x) => PERFUME_HREF.test(x.getAttribute('href')) && x.textContent.trim());
+          const partes = decodeURIComponent(((a || c.el.querySelector('a[href]'))?.getAttribute('href') || '').split(/[?#]/)[0]).split('/').filter(Boolean);
+          return { nombre: a ? a.textContent.trim() : (partes[partes.length - 1] || '').replace(/_/g, ' '),
+            casa: (partes[partes.length - 2] || '').replace(/_/g, ' '), year: c.year, rating: c.rating, votes: c.votes, m: c.m };
+        });
+        if (!items.length) { est.textContent = 'No hay perfumes visibles para copiar.'; return; }
+        const filtrados = items.length < cards.length ? ` (filtrados: ${items.length} de ${cards.length})` : '';
+        const texto = `Parfumo+ · ${new Date().toISOString().slice(0, 10)} · ${items.length} perfumes${filtrados}\n`
+          + 'Valoraciones de 0 a 10, entre paréntesis los votos. "-" = sin datos.\n\n' + S.tablaMarkdown(items) + '\n';
+        try { await navigator.clipboard.writeText(texto); } catch {
+          const ta = document.createElement('textarea'); ta.value = texto; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+        }
+        est.textContent = `Copiados ${items.length} perfumes. Pegalos en el chat.`;
+      } catch (e) {
+        est.textContent = 'No se pudo copiar: ' + (e && e.message ? e.message : e);
+      } finally { btn.disabled = false; }
     };
     $('head').onclick = () => { settings.collapsed = !settings.collapsed; sync(); storage.set(settings); };
     $('reset').onclick = () => { settings = { ...DEFAULTS, collapsed: settings.collapsed }; sync(); save(); };
