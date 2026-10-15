@@ -103,10 +103,24 @@
     return m && METRICAS[m[1]] ? m[1] : null;
   }
 
-  /** La misma URL de listado pero ordenada por `o` (y desde la primera página). */
-  function urlConOrden(href, o) {
+  /**
+   * La misma URL de listado pero ordenada por `o`. Los listados usan `o=`; el buscador
+   * (s_perfumes_x.php) usa `order=`. Si la URL no trae ninguno se usa `param` (por defecto `o`).
+   */
+  function urlConOrden(href, o, param) {
     const h = String(href);
-    return /[?&]o=[^&]*/.test(h) ? h.replace(/([?&]o=)[^&]*/, '$1' + o) : h + (h.includes('?') ? '&' : '?') + 'o=' + o;
+    for (const p of ['o', 'order']) {
+      const re = new RegExp('([?&]' + p + '=)[^&]*');
+      if (re.test(h)) return h.replace(re, '$1' + o);
+    }
+    return h + (h.includes('?') ? '&' : '?') + (param || 'o') + '=' + o;
+  }
+
+  /** Enlace "buscar en mi colección" (lupa de la colección) → la misma búsqueda en vista de lista, o null. */
+  function urlBusquedaColeccion(href) {
+    const h = String(href || '');
+    if (!/s_perfumes_x\.php/.test(h) || !/[?&]wr_id=/.test(h)) return null;
+    return /[?&]v=/.test(h) ? h : h + '&v=list';
   }
 
   const splitWords = (s) => String(s || '').toLowerCase().split(/[,;\n]+/).map((x) => x.trim()).filter(Boolean);
@@ -190,5 +204,5 @@
     return out;
   }
 
-  return { parseCardText, buildContext, statScore, passes, sortItems, num, pageOf, lastPage, pageUrl, pagesToLoad, METRICAS, METRICAS_EXTRA, metricaDeClase, urlConOrden };
+  return { parseCardText, buildContext, statScore, passes, sortItems, num, pageOf, lastPage, pageUrl, pagesToLoad, METRICAS, METRICAS_EXTRA, metricaDeClase, urlConOrden, urlBusquedaColeccion };
 });

@@ -256,18 +256,28 @@
     const cuantas = pager ? Math.min(pager.last, Math.max(settings.maxPaginas, pager.loaded.length + 1)) : 1;
     if (st.paginas >= cuantas) return;
     const claseGrilla = visibles[0].parentElement.className;
-    const base = S.urlConOrden(pager ? pager.base : location.href, S.METRICAS[k].o);
+    const origen = pager ? pager.base : location.href;
+    // La URL puede no decir cómo se ordena: se prueba `o=` (listados) y, si no, `order=` (buscador).
+    const bases = [S.urlConOrden(origen, S.METRICAS[k].o, 'o')];
+    if (!/[?&](o|order)=/.test(origen)) bases.push(S.urlConOrden(origen, S.METRICAS[k].o, 'order'));
     st.objetivo = cuantas; st.cargando = true; st.error = null;
     pintar();
     for (let n = st.paginas + 1; n <= cuantas; n++) {
       if (parar) break;
       try {
-        const res = await fetch(S.pageUrl(base, n), { credentials: 'include' });
-        if (res.status === 429 || res.status === 403) throw new Error('Parfumo limitó los pedidos; probá de nuevo en unos minutos.');
-        if (!res.ok) throw new Error(`Parfumo respondió ${res.status}.`);
-        const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
-        const tarjetas = findCards(doc, claseGrilla).filter((el) => el.parentElement.className === claseGrilla);
-        if (!tarjetas.length) throw new Error(`sin resultados en la página ${n}.`);
+        let tarjetas = null;
+        // Comprueba que Parfumo devolvió el listado ordenado por esa métrica (si no, los datos serían de otra).
+        for (const b of st.base ? [st.base] : bases) {
+          const res = await fetch(S.pageUrl(b, n), { credentials: 'include' });
+          if (res.status === 429 || res.status === 403) throw new Error('Parfumo limitó los pedidos; probá de nuevo en unos minutos.');
+          if (!res.ok) throw new Error(`Parfumo respondió ${res.status}.`);
+          const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+          const t = findCards(doc, claseGrilla).filter((el) => el.parentElement.className === claseGrilla);
+          if (!t.length) throw new Error(`sin resultados en la página ${n}.`);
+          const m = leerAv(t[0]).metrica;
+          if (!m || m === k) { tarjetas = t; st.base = b; break; }
+        }
+        if (!tarjetas) throw new Error(`este listado no se puede ordenar por ${S.METRICAS[k].nombre}.`);
         tarjetas.forEach((el) => registrar(el, k));
         st.paginas = n;
       } catch (e) {
@@ -479,7 +489,39 @@
     sync();
   }
 
+  /**
+   * En la colección de cada usuario (/Users/<nombre>/Collection) las tarjetas son solo fotos, sin
+   * enlaces ni valoraciones, y se cargan después con AJAX. Para filtrar hay que usar la lupa de la
+   * colección: es una búsqueda de Parfumo limitada a esos perfumes, que sí es un listado común.
+   * Se agrega un aviso con ese enlace. Devuelve true si la página es una colección.
+   */
+  const esColeccion = () => /^\/Users\/[^/]+\/Collection/i.test(location.pathname);
+
+  function avisoColeccion() {
+    if (document.getElementById('pfplus-coleccion')) return;
+    const lupa = [...document.querySelectorAll('a[href*="s_perfumes_x.php"]')].map((a) => S.urlBusquedaColeccion(a.href)).find(Boolean);
+    const donde = document.getElementById('wr_content_wrapper') || document.getElementById('wr_content');
+    if (!lupa || !donde) return;
+    const box = document.createElement('div');
+    box.id = 'pfplus-coleccion';
+    box.style.cssText = 'margin:8px 0;padding:10px 12px;border:1px solid #c7d2fe;background:#eef2ff;border-radius:8px;font:14px/1.4 system-ui;color:#1f2937';
+    const a = document.createElement('a');
+    a.href = lupa;
+    a.textContent = 'Filtrar mi colección con Parfumo+ →';
+    a.style.cssText = 'font-weight:600;color:#4338ca';
+    box.append(a, ' (valoración, votos, duración, estela, año y más, sobre todos tus perfumes)');
+    donde.parentElement.insertBefore(box, donde);
+  }
+
   async function init() {
+    if (esColeccion()) {
+      // La colección carga su contenido después: se reintenta mientras la página cambia (hasta 15 s).
+      avisoColeccion();
+      const obs = new MutationObserver(avisoColeccion);
+      obs.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => obs.disconnect(), 15000);
+      return;
+    }
     const guardado = await storage.get();
     // Versión 2: el tope de páginas subió; un valor viejo guardado (10 o 30) no debe pisar el nuevo.
     if ((guardado.ver || 1) < 2) { delete guardado.maxPaginas; guardado.ver = 2; storage.set(guardado); }

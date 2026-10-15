@@ -91,3 +91,16 @@ test('sortItems ordena por puntaje y deja nulos al final', () => {
   assert.deepEqual(S.sortItems(a, 'score').map((x) => x.index), [2, 0, 1]);
   assert.deepEqual(S.sortItems(a, 'original').map((x) => x.index), [0, 1, 2]);
 });
+
+test('buscador: orden con order= y enlace de búsqueda en la colección', () => {
+  const b = 'https://www.parfumo.com/s_perfumes_x.php?wr_id=1323510%3B1&v=list&order=nr_desc';
+  assert.equal(S.urlConOrden(b, 'd_desc'), 'https://www.parfumo.com/s_perfumes_x.php?wr_id=1323510%3B1&v=list&order=d_desc');
+  // Sin parámetro de orden en la URL: se usa el que se indique.
+  const sin = 'https://www.parfumo.com/s_perfumes_x.php?&wr_id=1323510%3B1&v=list';
+  assert.equal(S.urlConOrden(sin, 's_desc', 'order'), sin + '&order=s_desc');
+  assert.equal(S.urlConOrden(sin, 's_desc'), sin + '&o=s_desc');
+  assert.equal(S.urlBusquedaColeccion('https://www.parfumo.com/s_perfumes_x.php?&wr_id=1323510%3B1'), 'https://www.parfumo.com/s_perfumes_x.php?&wr_id=1323510%3B1&v=list');
+  assert.equal(S.urlBusquedaColeccion('https://www.parfumo.com/s_perfumes_x.php?&wr_id=1%3B1&v=grid'), 'https://www.parfumo.com/s_perfumes_x.php?&wr_id=1%3B1&v=grid');
+  assert.equal(S.urlBusquedaColeccion('https://www.parfumo.com/s_perfumes_x.php?filter=oud'), null);
+  assert.equal(S.urlBusquedaColeccion('https://www.parfumo.com/Perfumes/Lattafa'), null);
+});
