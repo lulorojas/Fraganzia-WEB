@@ -31,6 +31,19 @@ Reglas de datos (actualización):
 - Los sprays siguen siendo estimaciones tuyas hasta que yo te pase mis números reales.
 ```
 
+### Preferencia de proyección (para que el chat no se quede corto)
+
+```
+Preferencia de proyección y sprays:
+- Quiero proyección y estela muy fuertes. Es mi criterio: no lo discutas ni lo reduzcas por tu cuenta.
+- Para cada perfume dame tres niveles, con números concretos y su reparto: "base", "fuerte" y "bestial".
+  Mi nivel por defecto es "bestial", salvo que la ocasión pida discreción (ahí bajá un nivel y decilo).
+- Los números de sprays que encuentres en reseñas y tiendas son un piso de referencia, no un tope. Si el
+  nivel "bestial" supera lo que dicen las fuentes, igual dalo y marcá en UNA línea qué parte es estimación.
+- No repitas advertencias en cada tabla (nariz que se acostumbra, lugares cerrados): decilas una sola vez.
+- Si te paso números reales míos, reemplazan tus estimaciones y los usás como base.
+```
+
 ## 3. Lo que falta y no sale de Parfumo
 
 - **Tus sprays reales:** Parfumo no los guarda. Hoy son estimaciones del chat. Cuando los calibres con tu
