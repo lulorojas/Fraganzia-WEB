@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Parfumo+ Filtros estadísticos",
+  "version": "1.0.0",
+  "description": "Amplía los filtros de Parfumo y ordena por puntaje estadístico en vez de valoración y cantidad de votos. Valoración y votos quedan como filtros opcionales.",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.parfumo.com/*", "https://www.parfumo.de/*"],
+      "js": ["lib/stats.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
