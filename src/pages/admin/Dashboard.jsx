@@ -83,6 +83,9 @@ export default function Dashboard() {
   const saldo = panel?.saldoNeto ?? 0;
   const aMano = Math.abs(saldo) < 0.5;
   const deudor = saldo > 0 ? 'benja' : 'luciano';
+  // Lo que el otro socio me debe (positivo) o lo que yo le debo (negativo).
+  const aMiFavor = socioActualId === 'luciano' ? saldo : -saldo;
+  const quedariaSaldando = mio.total + aMiFavor;
   const acreedor = saldo > 0 ? 'luciano' : 'benja';
   const ultimaTransf = (transferencias ?? VACIO)[0];
 
@@ -110,15 +113,30 @@ export default function Dashboard() {
       <div className="adm-row">
         <Card i={0} style={{ flex: '1 1 280px' }}>
           <CardTitle Icon={Wallet}>Mi saldo</CardTitle>
-          <span className="big"><Count value={mio.total} format={pesos} /></span>
+          <span className="big" style={{ fontSize: 28 }}><Count value={mio.total} format={pesos} /></span>
           <div style={{ display: 'flex', height: 6, gap: 3 }}>
             <span className="grow-x" style={{ width: `${pctEfectivo}%`, borderRadius: 3, background: 'linear-gradient(90deg,#9B59D0,#C084FC)', boxShadow: '0 0 12px rgba(192,132,252,.6)' }} />
             <span className="grow-x" style={{ flex: 1, borderRadius: 3, background: 'linear-gradient(90deg,#5b21b6,#7B2FBE)' }} />
           </div>
           <div className="grid grid-cols-2 gap-[10px]">
-            <div><span className="card-note flex items-center gap-[6px]"><span className="dot" style={{ background: '#C084FC', boxShadow: '0 0 8px #C084FC' }} />Efectivo</span><span className="num" style={{ fontSize: 17, fontWeight: 500 }}>{pesos(mio.efectivo)}</span></div>
-            <div><span className="card-note flex items-center gap-[6px]"><span className="dot" style={{ background: '#7B2FBE' }} />Mercado Pago</span><span className="num" style={{ fontSize: 17, fontWeight: 500 }}>{pesos(mio.mercadopago)}</span></div>
+            <div><span className="card-note flex items-center gap-[6px]"><span className="dot" style={{ background: '#C084FC', boxShadow: '0 0 8px #C084FC' }} />Efectivo</span><span className="num" style={{ fontSize: 15, fontWeight: 500 }}>{pesos(mio.efectivo)}</span></div>
+            <div><span className="card-note flex items-center gap-[6px]"><span className="dot" style={{ background: '#7B2FBE' }} />Mercado Pago</span><span className="num" style={{ fontSize: 15, fontWeight: 500 }}>{pesos(mio.mercadopago)}</span></div>
           </div>
+          <span className="line" />
+          {aMano ? (
+            <span className="card-note">Están a mano: no hay deuda para saldar.</span>
+          ) : (
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="card-note" style={{ lineHeight: 1.3 }}>
+                {aMiFavor > 0
+                  ? `Si ${nombreSocio(deudor)} te paga lo que te debe (${pesos(aMiFavor)})`
+                  : `Si le pagás a ${nombreSocio(acreedor)} lo que le debés (${pesos(-aMiFavor)})`}
+              </span>
+              <span className="num" style={{ fontSize: 17, fontWeight: 500, whiteSpace: 'nowrap', color: aMiFavor > 0 ? '#6EE7B7' : '#FCD34D' }}>
+                {pesos(quedariaSaldando)}
+              </span>
+            </div>
+          )}
         </Card>
 
         <HeroCard i={1} style={{ flex: '1.5 1 380px' }}>
