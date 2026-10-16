@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { listarMovimientos } from '../services/movimientosService';
-import { crearCambio, anularCambio } from '../services/cambiosMetodoService';
+import { listarCambiosPropios, crearCambio, anularCambio } from '../services/cambiosMetodoService';
 
-export function useCambiosMetodo() {
+// Requiere socioId: el pasaje de dinero es privado de cada socio (regla de Firestore).
+export function useCambiosMetodo(socioId) {
   return useQuery({
-    queryKey: ['cambiosMetodo'],
-    queryFn: () => listarMovimientos('cambiosMetodo'),
+    queryKey: ['cambiosMetodo', socioId],
+    queryFn: () => listarCambiosPropios(socioId),
+    enabled: Boolean(socioId),
     staleTime: 60 * 1000,
   });
 }

@@ -42,3 +42,10 @@ export const GASTO_CATEGORIAS = ['Envíos', 'Insumos', 'Marketing', 'Alquiler', 
 export const ESTADOS_VENTA_SOCIO = ['pendiente', 'cobrada'];
 
 export const TIPOS_MOVIMIENTO_PERSONAL = ['retiro', 'aporte'];
+
+// Decants: tamaños en ml y precio sugerido (editable al cargar la venta).
+export const DECANT_TAMANOS = [
+  { ml: 2, precio: 3600 },
+  { ml: 5, precio: 7800 },
+  { ml: 10, precio: 13200 },
+];

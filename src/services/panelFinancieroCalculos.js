@@ -1,5 +1,6 @@
 import { SOCIOS } from '../constants';
 import { usdAArs } from '../utils/precios';
+import { fechaRegistro } from '../utils/format';
 
 /**
  * Funciones puras de cálculo del panel financiero. Reciben los movimientos ya
@@ -15,6 +16,33 @@ import { usdAArs } from '../utils/precios';
  */
 
 const OTRO_SOCIO = { luciano: 'benja', benja: 'luciano' };
+
+/**
+ * Una venta lleva varios perfumes: `items: [{ perfumeId, perfumeNombre, cantidad,
+ * precioUnitario }]`. Las ventas cargadas antes de esto guardan un único perfume
+ * en los campos `perfumeId/cantidad/precioUnitario` de la venta: se leen como un
+ * item único, así los totales históricos no cambian.
+ */
+export function itemsDeVenta(venta = {}) {
+  if (Array.isArray(venta.items) && venta.items.length > 0) return venta.items;
+  if (venta.perfumeId) {
+    return [{
+      perfumeId: venta.perfumeId,
+      perfumeNombre: venta.perfumeNombre,
+      cantidad: venta.cantidad ?? 0,
+      precioUnitario: venta.precioUnitario ?? 0,
+    }];
+  }
+  return [];
+}
+
+export function totalDeVenta(venta = {}) {
+  return itemsDeVenta(venta).reduce((acc, i) => acc + (i.cantidad ?? 0) * (i.precioUnitario ?? 0), 0);
+}
+
+export function unidadesDeVenta(venta = {}) {
+  return itemsDeVenta(venta).reduce((acc, i) => acc + (i.cantidad ?? 0), 0);
+}
 
 /**
  * Una compra puede pagarla un socio solo o repartirse entre los dos. La forma
@@ -66,7 +94,7 @@ export function calcularTotalesPorSocio({
 
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
-    .forEach((v) => sumar(v.vendidoPor, v.metodoPago, v.cantidad * v.precioUnitario));
+    .forEach((v) => sumar(v.vendidoPor, v.metodoPago, totalDeVenta(v)));
 
   ventasDecants.forEach((v) => sumar(v.vendidoPor, v.metodoPago, v.cantidad * v.precioUnitario));
 
@@ -119,7 +147,7 @@ export function calcularSaldoNeto({
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
     .forEach((v) => {
-      saldo -= signo(v.vendidoPor) * ((v.cantidad * v.precioUnitario) / 2);
+      saldo -= signo(v.vendidoPor) * (totalDeVenta(v) / 2);
     });
 
   ventasDecants.forEach((v) => {
@@ -185,8 +213,10 @@ export function calcularStockPorProducto(compras = [], ventasSocios = [], ajuste
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
     .forEach((v) => {
-      if (stock[v.perfumeId] === undefined) return;
-      stock[v.perfumeId] -= v.cantidad;
+      itemsDeVenta(v).forEach((item) => {
+        if (stock[item.perfumeId] === undefined) return;
+        stock[item.perfumeId] -= item.cantidad ?? 0;
+      });
     });
   return Object.fromEntries(
     Object.entries(stock).map(([perfumeId, cantidad]) => [perfumeId, Math.max(0, cantidad)])
@@ -247,9 +277,9 @@ export function calcularPorCobrarStock(stockPorProducto = {}, perfumes = [], dol
   return { total, porSocio, porProducto, sinPrecio };
 }
 
-function mesDe(fecha) {
-  const d = fecha?.toDate ? fecha.toDate() : new Date(fecha);
-  if (Number.isNaN(d.getTime())) return null;
+export function mesDe(fecha) {
+  const d = fechaRegistro(fecha);
+  if (!d) return null;
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
@@ -339,32 +369,39 @@ export function asignarVentasACompras(compras = [], ventasSocios = [], ajustesSt
     .filter((v) => v.estado === 'cobrada')
     .sort(porFechaAsc)
     .forEach((v) => {
-      const precio = v.precioUnitario ?? 0;
-      let costo = 0;
-      let sinCostoEnVenta = 0;
+      // Cada perfume de la venta se atribuye por separado a su lote de compra.
+      itemsDeVenta(v).forEach((item) => {
+        const precio = item.precioUnitario ?? 0;
+        const cantidad = item.cantidad ?? 0;
+        let costo = 0;
+        let sinCostoEnVenta = 0;
 
-      const sobrante = consumir(v.perfumeId, v.cantidad ?? 0, (lote, toma) => {
-        if (lote.sinCosto) {
-          sinCostoEnVenta += toma;
-          return;
-        }
-        costo += toma * porCompra[lote.compraId].costoUnitario;
-        porCompra[lote.compraId].unidadesVendidas += toma;
-        porCompra[lote.compraId].ingresoAtribuido += toma * precio;
-      });
+        const sobrante = consumir(item.perfumeId, cantidad, (lote, toma) => {
+          if (lote.sinCosto) {
+            sinCostoEnVenta += toma;
+            return;
+          }
+          costo += toma * porCompra[lote.compraId].costoUnitario;
+          porCompra[lote.compraId].unidadesVendidas += toma;
+          porCompra[lote.compraId].ingresoAtribuido += toma * precio;
+        });
 
-      // Sobrante = vendido sin nada en stock que lo respalde; cuenta igual que
-      // lo cargado a mano: ingreso sin costo conocido.
-      const sinCostoTotal = sinCostoEnVenta + sobrante;
-      unidadesSinCosto += sinCostoTotal;
-      ingresoSinCosto += sinCostoTotal * precio;
+        // Sobrante = vendido sin nada en stock que lo respalde; cuenta igual que
+        // lo cargado a mano: ingreso sin costo conocido.
+        const sinCostoTotal = sinCostoEnVenta + sobrante;
+        unidadesSinCosto += sinCostoTotal;
+        ingresoSinCosto += sinCostoTotal * precio;
 
-      porVenta.push({
-        mes: mesDe(v.fecha),
-        ingreso: (v.cantidad ?? 0) * precio,
-        ingresoConCosto: ((v.cantidad ?? 0) - sinCostoTotal) * precio,
-        costo,
-        unidadesSinCosto: sinCostoTotal,
+        porVenta.push({
+          mes: mesDe(v.fecha),
+          vendidoPor: v.vendidoPor,
+          perfumeId: item.perfumeId,
+          unidades: cantidad,
+          ingreso: cantidad * precio,
+          ingresoConCosto: (cantidad - sinCostoTotal) * precio,
+          costo,
+          unidadesSinCosto: sinCostoTotal,
+        });
       });
     });
 
@@ -467,8 +504,12 @@ export function calcularRankingPerfumes(ventasSocios = []) {
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
     .forEach((v) => {
-      porPerfume[v.perfumeId] = porPerfume[v.perfumeId] || { perfumeId: v.perfumeId, perfumeNombre: v.perfumeNombre, cantidad: 0 };
-      porPerfume[v.perfumeId].cantidad += v.cantidad;
+      itemsDeVenta(v).forEach((item) => {
+        porPerfume[item.perfumeId] = porPerfume[item.perfumeId]
+          || { perfumeId: item.perfumeId, perfumeNombre: item.perfumeNombre, cantidad: 0, monto: 0 };
+        porPerfume[item.perfumeId].cantidad += item.cantidad ?? 0;
+        porPerfume[item.perfumeId].monto += (item.cantidad ?? 0) * (item.precioUnitario ?? 0);
+      });
     });
   return Object.values(porPerfume).sort((a, b) => b.cantidad - a.cantidad);
 }
@@ -488,7 +529,8 @@ export function calcularTamanosDecantPorPerfume(ventasDecants = [], perfumeId) {
 export function calcularEvolucionVentas(ventasSocios = [], ventasDecants = []) {
   const porMes = {};
   const acumular = (fecha, importe) => {
-    const d = fecha?.toDate ? fecha.toDate() : new Date(fecha);
+    const d = fechaRegistro(fecha);
+    if (!d) return;
     const clave = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     porMes[clave] = porMes[clave] || { mes: clave, ingreso: 0, cantidad: 0 };
     porMes[clave].ingreso += importe;
@@ -497,7 +539,7 @@ export function calcularEvolucionVentas(ventasSocios = [], ventasDecants = []) {
 
   ventasSocios
     .filter((v) => v.estado === 'cobrada')
-    .forEach((v) => acumular(v.fecha, v.cantidad * v.precioUnitario));
+    .forEach((v) => acumular(v.fecha, totalDeVenta(v)));
   ventasDecants.forEach((v) => acumular(v.fecha, v.cantidad * v.precioUnitario));
 
   return Object.values(porMes).sort((a, b) => a.mes.localeCompare(b.mes));
@@ -506,7 +548,7 @@ export function calcularEvolucionVentas(ventasSocios = [], ventasDecants = []) {
 export function calcularIngresoTotal(ventasSocios = [], ventasDecants = []) {
   const ingresoVentas = ventasSocios
     .filter((v) => v.estado === 'cobrada')
-    .reduce((acc, v) => acc + v.cantidad * v.precioUnitario, 0);
+    .reduce((acc, v) => acc + totalDeVenta(v), 0);
   const ingresoDecants = ventasDecants.reduce((acc, v) => acc + v.cantidad * v.precioUnitario, 0);
   return ingresoVentas + ingresoDecants;
 }
@@ -526,8 +568,9 @@ export function calcularActividadPorSocio({ ventasSocios = [], ventasDecants = [
     .filter((v) => v.estado === 'cobrada')
     .forEach((v) => {
       if (!actividad[v.vendidoPor]) return;
-      actividad[v.vendidoPor].perfumes += v.cantidad;
-      actividad[v.vendidoPor].total += v.cantidad;
+      const unidades = unidadesDeVenta(v);
+      actividad[v.vendidoPor].perfumes += unidades;
+      actividad[v.vendidoPor].total += unidades;
     });
 
   ventasDecants.forEach((v) => {

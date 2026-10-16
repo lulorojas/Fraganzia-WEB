@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { fechaSchema } from './fechaSchema';
 import { METODOS_PAGO_SOCIOS } from '../constants';
 
 const itemSchema = z.object({
@@ -27,7 +28,7 @@ export const compraSchema = z.object({
   items: z.array(itemSchema).min(1, 'Agregá al menos un perfume'),
   montoTotal: z.coerce.number().positive('El monto debe ser mayor a 0'),
   pagos: z.array(pagoSchema).min(1, 'Indicá quién pagó la compra'),
-  fecha: z.coerce.date(),
+  fecha: fechaSchema,
 }).superRefine((data, ctx) => {
   const suma = data.pagos.reduce((acc, p) => acc + (p.monto ?? 0), 0);
   if (Math.abs(suma - data.montoTotal) > 0.5) {

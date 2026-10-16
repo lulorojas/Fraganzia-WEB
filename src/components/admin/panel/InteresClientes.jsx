@@ -1,119 +1,63 @@
 import { Eye, Search, SearchX, MousePointerClick } from 'lucide-react';
-import { GlassCard } from '../../ui/GlassCard';
-
-function Titulo({ Icon, children, sub }) {
-  return (
-    <div className="mb-3">
-      <div className="flex items-center gap-2">
-        <div className="rounded-xl bg-lila/10 p-2">
-          <Icon className="h-5 w-5 text-lila" />
-        </div>
-        <h3 className="font-display text-lg text-text">{children}</h3>
-      </div>
-      {sub && <p className="mt-1 text-xs text-text-secondary">{sub}</p>}
-    </div>
-  );
-}
+import { Card, CardTitle, Empty } from '../ui/kit';
 
 function Lista({ items, vacio, render }) {
-  if (!items?.length) return <p className="text-sm text-text-secondary">{vacio}</p>;
+  if (!items?.length) return <Empty>{vacio}</Empty>;
   return (
-    <ol className="flex flex-col gap-2 text-sm">
+    <ol className="flex flex-col" style={{ margin: 0, padding: 0, listStyle: 'none' }}>
       {items.map((item, i) => (
-        <li key={item.perfumeId ?? item.id ?? i} className="flex items-center justify-between gap-3 border-b border-border py-1">
-          {render(item, i)}
-        </li>
+        <li key={item.perfumeId ?? item.id ?? i} className="list-row">{render(item, i)}</li>
       ))}
     </ol>
   );
 }
 
-export function PerfumesMasVistos({ perfumes }) {
+function Panel({ i, Icon, titulo, sub, children }) {
   return (
-    <GlassCard>
-      <Titulo Icon={Eye} sub="Lo que más miran en la web, aunque no lo compren">
-        Perfumes más vistos
-      </Titulo>
-      <Lista
-        items={perfumes}
-        vacio="Todavía sin datos. Se empiezan a acumular con las visitas de ahora en adelante."
-        render={(p, i) => (
-          <>
-            <span className="min-w-0 truncate text-text">
-              <span className="text-text-secondary">{i + 1}.</span> {p.nombre}
-            </span>
-            <span className="shrink-0 text-right text-text">
-              {p.vistas} <span className="text-xs text-text-secondary">vistas</span>
-            </span>
-          </>
-        )}
-      />
-    </GlassCard>
+    <Card i={i} style={{ gap: 8 }}>
+      <CardTitle Icon={Icon}>{titulo}</CardTitle>
+      <span className="card-note">{sub}</span>
+      {children}
+    </Card>
   );
 }
 
-export function MasBuscados({ terminos }) {
+const Fila = ({ n, children }) => (
+  <span className="ell" style={{ flex: 1 }}><span className="faint">{n}.</span> {children}</span>
+);
+
+export function PerfumesMasVistos({ perfumes, i = 0 }) {
   return (
-    <GlassCard>
-      <Titulo Icon={Search} sub="Lo que la gente escribe en el buscador del catálogo">
-        Más buscados
-      </Titulo>
-      <Lista
-        items={terminos}
-        vacio="Todavía sin búsquedas registradas."
-        render={(t, i) => (
-          <>
-            <span className="min-w-0 truncate text-text">
-              <span className="text-text-secondary">{i + 1}.</span> {t.termino}
-            </span>
-            <span className="shrink-0 text-text">
-              {t.conteo} <span className="text-xs text-text-secondary">veces</span>
-            </span>
-          </>
-        )}
-      />
-    </GlassCard>
+    <Panel i={i} Icon={Eye} titulo="Perfumes más vistos" sub="Lo que más miran en la web, aunque no lo compren">
+      <Lista items={perfumes} vacio="Todavía sin datos. Se acumulan con las visitas de ahora en adelante."
+        render={(p, n) => (<><Fila n={n + 1}>{p.nombre}</Fila><span className="num">{p.vistas} <span className="card-note">vistas</span></span></>)} />
+    </Panel>
   );
 }
 
-export function BusquedasSinResultado({ terminos }) {
+export function MasBuscados({ terminos, i = 0 }) {
   return (
-    <GlassCard>
-      <Titulo Icon={SearchX} sub="Lo buscaron y no encontraron nada: candidatos a sumar al catálogo">
-        Buscado y no encontrado
-      </Titulo>
-      <Lista
-        items={terminos}
-        vacio="Sin búsquedas fallidas: todo lo que buscaron lo tenías."
-        render={(t) => (
-          <>
-            <span className="min-w-0 truncate text-text">{t.termino}</span>
-            <span className="shrink-0 text-xs text-error">{t.sinResultados} sin resultado</span>
-          </>
-        )}
-      />
-    </GlassCard>
+    <Panel i={i} Icon={Search} titulo="Lo que más escriben en el buscador" sub="Términos más buscados en el catálogo">
+      <Lista items={terminos} vacio="Todavía sin búsquedas registradas."
+        render={(t, n) => (<><Fila n={n + 1}>{t.termino}</Fila><span className="num">{t.conteo} <span className="card-note">veces</span></span></>)} />
+    </Panel>
   );
 }
 
-export function BajaConversion({ perfumes }) {
+export function BusquedasSinResultado({ terminos, i = 0 }) {
   return (
-    <GlassCard>
-      <Titulo Icon={MousePointerClick} sub="Los miran pero no los agregan: revisá precio, fotos o descripción">
-        Mucha vista, poco carrito
-      </Titulo>
-      <Lista
-        items={perfumes}
-        vacio="Todavía sin suficientes vistas para comparar."
-        render={(p) => (
-          <>
-            <span className="min-w-0 truncate text-text">{p.nombre}</span>
-            <span className="shrink-0 text-xs text-text-secondary">
-              {p.vistas} vistas · {p.agregados} al carrito
-            </span>
-          </>
-        )}
-      />
-    </GlassCard>
+    <Panel i={i} Icon={SearchX} titulo="Buscan y no lo tenemos" sub="Lo buscaron y no encontraron nada: candidatos a sumar al catálogo">
+      <Lista items={terminos} vacio="Sin búsquedas fallidas: todo lo que buscaron lo tenías."
+        render={(t) => (<><span className="ell" style={{ flex: 1 }}>{t.termino}</span><span className="card-note" style={{ color: '#FCA5A5' }}>{t.sinResultados} sin resultado</span></>)} />
+    </Panel>
+  );
+}
+
+export function BajaConversion({ perfumes, i = 0 }) {
+  return (
+    <Panel i={i} Icon={MousePointerClick} titulo="Muchas visitas, pocos pedidos" sub="Los miran pero no los agregan: revisá precio, fotos o descripción">
+      <Lista items={perfumes} vacio="Todavía sin suficientes vistas para comparar."
+        render={(p) => (<><span className="ell" style={{ flex: 1 }}>{p.nombre}</span><span className="card-note">{p.agregados} de {p.vistas} vistas</span></>)} />
+    </Panel>
   );
 }

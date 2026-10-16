@@ -1,149 +1,122 @@
-import { useSocios } from '../../hooks/useSocios';
+import { Lock, Users, ArrowLeftRight, Plus, Ban } from 'lucide-react';
 import { useSocioActual } from '../../hooks/useSocioActual';
-import {
-  useMovimientosPersonales, useCrearMovimientoPersonal, useAnularMovimientoPersonal,
-} from '../../hooks/useMovimientosPersonales';
-import {
-  useTransferenciasSocios, useCrearTransferencia, useAnularTransferencia,
-} from '../../hooks/useTransferenciasSocios';
-import {
-  useCambiosMetodo, useCrearCambioMetodo, useAnularCambioMetodo,
-} from '../../hooks/useCambiosMetodo';
-import { MovimientoPersonalForm } from '../../components/admin/MovimientoPersonalForm';
-import { TransferenciaForm } from '../../components/admin/TransferenciaForm';
-import { CambioMetodoForm } from '../../components/admin/CambioMetodoForm';
-import { Button } from '../../components/ui/Button';
-import { Spinner } from '../../components/ui/Spinner';
-import { GlassCard } from '../../components/ui/GlassCard';
-import { formatARS, formatFecha, fechaDeMovimiento } from '../../utils/format';
+import { useMovimientosPersonales, useAnularMovimientoPersonal } from '../../hooks/useMovimientosPersonales';
+import { useTransferenciasSocios, useAnularTransferencia } from '../../hooks/useTransferenciasSocios';
+import { useCambiosMetodo, useAnularCambioMetodo } from '../../hooks/useCambiosMetodo';
+import { usePanelFinanciero } from '../../hooks/usePanelFinanciero';
+import { useAdminActions } from '../../context/AdminActionsContext';
+import { PasajeForm } from '../../components/admin/PasajeForm';
+import { SOCIOS } from '../../constants';
+import { formatFecha, diaMes, fechaDeMovimiento } from '../../utils/format';
+import { Card, CardTitle, Tag, Cargando, Empty } from '../../components/admin/ui/kit';
+import { pesos } from '../../components/admin/ui/formato';
+
+const nombreSocio = (id) => SOCIOS.find((s) => s.id === id)?.nombre ?? id;
+const nombreMetodo = (m) => (m === 'efectivo' ? 'Efectivo' : 'Mercado Pago');
+const dia = (m) => diaMes(fechaDeMovimiento(m));
 
 export default function AdminMovimientos() {
-  const { data: socios } = useSocios();
+  const { abrir, avisar } = useAdminActions();
   const socioActualId = useSocioActual();
-  const nombreSocio = (id) => socios?.find((s) => s.id === id)?.nombre ?? id;
+  const { data: panel } = usePanelFinanciero();
 
-  // Privado: solo trae los movimientos del socio logueado (regla de Firestore).
-  const { data: movimientos, isLoading: cargandoMovimientos } = useMovimientosPersonales(socioActualId);
-  const crearMovimiento = useCrearMovimientoPersonal();
+  // Privado: solo trae lo del socio logueado (regla de Firestore).
+  const { data: movimientos, isLoading } = useMovimientosPersonales(socioActualId);
+  const { data: transferencias } = useTransferenciasSocios();
+  const { data: cambios } = useCambiosMetodo(socioActualId);
   const anularMovimiento = useAnularMovimientoPersonal();
-
-  const { data: transferencias, isLoading: cargandoTransferencias } = useTransferenciasSocios();
-  const crearTransferencia = useCrearTransferencia();
   const anularTransferencia = useAnularTransferencia();
-
-  const { data: cambios, isLoading: cargandoCambios } = useCambiosMetodo();
-  const crearCambio = useCrearCambioMetodo();
   const anularCambio = useAnularCambioMetodo();
 
-  const nombreMetodo = (m) => (m === 'efectivo' ? 'Efectivo' : 'Mercado Pago');
+  const saldo = panel?.saldoNeto ?? 0;
+  const aMano = Math.abs(saldo) < 0.5;
 
-  async function handleCrearCambio(datos) {
-    await crearCambio.mutateAsync({ datos, socioId: socioActualId });
+  async function anular(mutacion, item, pregunta, aviso) {
+    if (!window.confirm(pregunta)) return;
+    await mutacion.mutateAsync({ id: item.id, valorAnterior: item, socioId: socioActualId });
+    avisar(aviso);
   }
 
-  async function handleAnularCambio(c) {
-    if (window.confirm('¿Anular este cambio de método?')) {
-      await anularCambio.mutateAsync({ id: c.id, valorAnterior: c, socioId: socioActualId });
-    }
-  }
-
-  async function handleCrearMovimiento(datos) {
-    await crearMovimiento.mutateAsync({ datos, socioId: socioActualId });
-  }
-
-  async function handleAnularMovimiento(m) {
-    if (window.confirm('¿Anular este movimiento personal?')) {
-      await anularMovimiento.mutateAsync({ id: m.id, valorAnterior: m, socioId: socioActualId });
-    }
-  }
-
-  async function handleCrearTransferencia(datos) {
-    await crearTransferencia.mutateAsync({ datos, socioId: socioActualId });
-  }
-
-  async function handleAnularTransferencia(t) {
-    if (window.confirm('¿Anular esta transferencia?')) {
-      await anularTransferencia.mutateAsync({ id: t.id, valorAnterior: t, socioId: socioActualId });
-    }
-  }
+  if (isLoading) return <Cargando />;
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <GlassCard>
-        <p className="mb-1 text-xs uppercase tracking-wide text-text-secondary">Privado — solo vos</p>
-        <MovimientoPersonalForm socioActualId={socioActualId} onSubmit={handleCrearMovimiento} cargando={crearMovimiento.isPending} />
-        <hr className="my-4 border-border" />
-        {cargandoMovimientos ? <Spinner /> : !movimientos?.length ? (
-          <p className="text-text-secondary">Todavía no cargaste movimientos personales.</p>
-        ) : (
-          <div className="flex flex-col gap-2 text-sm">
-            {movimientos.map((m) => (
-              <div key={m.id} className="flex items-center justify-between border-b border-border py-1">
-                <span className="text-text-secondary">
-                  {formatFecha(fechaDeMovimiento(m))} ·{' '}
-                  {m.tipo === 'aporte' ? 'Aporte' : 'Retiro'} · {formatARS(m.monto)}
-                </span>
-                <Button variant="ghost" className="text-xs px-2 py-1 text-error" onClick={() => handleAnularMovimiento(m)}>
-                  Anular
-                </Button>
-              </div>
-            ))}
+    <div className="adm-stack">
+      <div className="adm-row" style={{ alignItems: 'flex-start' }}>
+        <Card i={0} style={{ flex: '1 1 340px' }}>
+          <CardTitle Icon={Lock} right={<Tag tone="accent"><Lock />Privado</Tag>}>Mis movimientos</CardTitle>
+          <span className="card-note">Retiros y aportes tuyos. El otro socio no los ve.</span>
+          <div>
+            <button className="btn btn-secondary btn-sm" onClick={() => abrir('movimiento')}><Plus />Retiro o aporte</button>
           </div>
-        )}
-      </GlassCard>
+          {!movimientos?.length ? <Empty>Todavía no cargaste movimientos personales.</Empty> : (
+            <div className="flex flex-col">
+              {movimientos.map((m) => (
+                <div key={m.id} className="list-row">
+                  <Tag tone={m.tipo === 'aporte' ? 'ok' : 'warn'}>{m.tipo === 'aporte' ? 'Aporte' : 'Retiro'}</Tag>
+                  <div style={{ flex: 1 }}><div className="num" style={{ fontWeight: 500 }}>{pesos(m.monto)}</div><div className="card-note">{dia(m)} · {nombreMetodo(m.metodo)}</div></div>
+                  <button className="btn btn-ghost btn-icon btn-bad" title="Anular" aria-label="Anular movimiento" onClick={() => anular(anularMovimiento, m, '¿Anular este movimiento personal?', 'Movimiento anulado')}><Ban /></button>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
 
-      <GlassCard>
-        <p className="mb-1 text-xs uppercase tracking-wide text-text-secondary">Compartido — lo ven ambos socios</p>
-        <TransferenciaForm onSubmit={handleCrearTransferencia} cargando={crearTransferencia.isPending} />
-        <hr className="my-4 border-border" />
-        {cargandoTransferencias ? <Spinner /> : !transferencias?.length ? (
-          <p className="text-text-secondary">No hay transferencias registradas.</p>
-        ) : (
-          <div className="flex flex-col gap-2 text-sm">
-            {transferencias.map((t) => (
-              <div key={t.id} className="flex items-center justify-between border-b border-border py-1">
-                <span className="text-text-secondary">
-                  {nombreSocio(t.de)} → {nombreSocio(t.a)} · {formatARS(t.monto)}
-                </span>
-                <Button variant="ghost" className="text-xs px-2 py-1 text-error" onClick={() => handleAnularTransferencia(t)}>
-                  Anular
-                </Button>
-              </div>
-            ))}
+        <Card i={1} style={{ flex: '1 1 340px' }}>
+          <CardTitle Icon={Users} right={<Tag tone="neutral">Compartido</Tag>}>Transferencias entre socios</CardTitle>
+          <div style={{ padding: '12px 14px', borderRadius: 14, background: 'linear-gradient(135deg,rgba(123,47,190,.32),rgba(155,89,208,.08))', border: '1px solid rgba(192,132,252,.28)' }}>
+            {aMano ? <span className="num" style={{ fontSize: 18 }}>Están a mano</span> : (
+              <>
+                <span className="num" style={{ fontSize: 15 }}>{nombreSocio(saldo > 0 ? 'benja' : 'luciano')} <span style={{ color: '#C084FC' }}>le debe a</span> {nombreSocio(saldo > 0 ? 'luciano' : 'benja')}</span>
+                <div className="num" style={{ fontSize: 30, fontWeight: 300 }}>{pesos(Math.abs(saldo))}</div>
+              </>
+            )}
           </div>
-        )}
-      </GlassCard>
+          <div>
+            <button className="btn btn-primary btn-sm" onClick={() => abrir('transferencia')}><ArrowLeftRight />Registrar transferencia</button>
+          </div>
+          {!transferencias?.length ? <Empty>No hay transferencias registradas.</Empty> : (
+            <div className="flex flex-col">
+              {transferencias.map((t) => (
+                <div key={t.id} className="list-row">
+                  <div style={{ flex: 1 }}>
+                    <div>{nombreSocio(t.de)} → {nombreSocio(t.a)}</div>
+                    <div className="card-note">{dia(t)} · {nombreMetodo(t.metodo)}</div>
+                  </div>
+                  <span className="num" style={{ fontWeight: 500 }}>{pesos(t.monto)}</span>
+                  <button className="btn btn-ghost btn-icon btn-bad" title="Anular" aria-label="Anular transferencia" onClick={() => anular(anularTransferencia, t, '¿Anular esta transferencia?', 'Transferencia anulada')}><Ban /></button>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      </div>
 
-      <GlassCard className="lg:col-span-2">
-        <p className="mb-1 text-xs uppercase tracking-wide text-text-secondary">
-          Compartido — lo ven ambos socios
-        </p>
-        <CambioMetodoForm
-          socioActualId={socioActualId}
-          onSubmit={handleCrearCambio}
-          cargando={crearCambio.isPending}
-        />
-        <hr className="my-4 border-border" />
-        {cargandoCambios ? <Spinner /> : !cambios?.length ? (
-          <p className="text-text-secondary">No hay cambios de método registrados.</p>
-        ) : (
-          <div className="flex flex-col gap-2 text-sm">
-            {cambios.map((c) => (
-              <div key={c.id} className="flex items-center justify-between gap-2 border-b border-border py-1">
-                <span className="min-w-0 text-text-secondary">
-                  {formatFecha(fechaDeMovimiento(c))} · {nombreSocio(c.socioId)} ·{' '}
-                  {nombreMetodo(c.de)} → {nombreMetodo(c.a)} ·{' '}
-                  {formatARS(c.monto)}
-                  {(c.montoRecibido ?? c.monto) !== c.monto && ` (entraron ${formatARS(c.montoRecibido)})`}
-                </span>
-                <Button variant="ghost" className="shrink-0 px-2 py-1 text-xs text-error" onClick={() => handleAnularCambio(c)}>
-                  Anular
-                </Button>
+      <Card i={2}>
+        <CardTitle Icon={ArrowLeftRight} right={<Tag tone="accent"><Lock />Privado</Tag>}>Pasaje de dinero · efectivo ⇄ Mercado Pago</CardTitle>
+        <span className="card-note">Para cuando le pasás Mercado Pago a alguien y te devuelve efectivo, o al revés. La plata sigue siendo tuya: solo cambia de bolsillo.</span>
+        <div className="adm-row" style={{ alignItems: 'flex-start' }}>
+          <div style={{ flex: '1.2 1 340px', minWidth: 0 }}><PasajeForm onGuardado={avisar} /></div>
+          <div style={{ flex: '1 1 280px', minWidth: 0 }}>
+            <div className="label" style={{ marginBottom: 6 }}>Últimos pasajes</div>
+            {!cambios?.length ? <Empty>No hay pasajes registrados.</Empty> : (
+              <div className="flex flex-col">
+                {cambios.slice(0, 6).map((c) => (
+                  <div key={c.id} className="list-row">
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div>{nombreMetodo(c.de)} → {nombreMetodo(c.a)}</div>
+                      <div className="card-note">
+                        {dia(c)}{(c.montoRecibido ?? c.monto) !== c.monto && ` · entraron ${pesos(c.montoRecibido)}`}
+                      </div>
+                    </div>
+                    <span className="num" style={{ fontWeight: 500 }}>{pesos(c.monto)}</span>
+                    <button className="btn btn-ghost btn-icon btn-bad" title="Anular" aria-label="Anular pasaje" onClick={() => anular(anularCambio, c, '¿Anular este pasaje de dinero?', 'Pasaje anulado')}><Ban /></button>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
-      </GlassCard>
+        </div>
+      </Card>
     </div>
   );
 }

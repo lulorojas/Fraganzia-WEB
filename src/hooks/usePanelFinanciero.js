@@ -36,7 +36,7 @@ export function usePanelFinanciero() {
   const movimientosPersonales = useMovimientosPersonales(socioActualId);
   const transferenciasSocios = useTransferenciasSocios();
   const ajustesStock = useAjustesStock();
-  const cambiosMetodo = useCambiosMetodo();
+  const cambiosMetodo = useCambiosMetodo(socioActualId);
 
   // Ambas ya están cacheadas por otras pantallas (misma queryKey), así que no
   // agregan lecturas de Firestore: solo hacen falta para valorizar el stock a

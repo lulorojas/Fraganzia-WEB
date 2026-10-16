@@ -121,10 +121,13 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
-    // Cambio de efectivo a Mercado Pago o al revés, dentro del bolsillo de un
-    // mismo socio.
+    // Pasaje de efectivo a Mercado Pago o al revés, dentro del bolsillo de un
+    // mismo socio. Privado como los movimientos personales: cada socio solo ve y
+    // toca los suyos.
     match /cambiosMetodo/{id} {
-      allow read, write: if isAdmin();
+      allow read: if isAdmin() && resource.data.socioId == socioIdDe(request.auth.uid);
+      allow create: if isAdmin() && request.resource.data.socioId == socioIdDe(request.auth.uid);
+      allow update, delete: if isAdmin() && resource.data.socioId == socioIdDe(request.auth.uid);
     }
 
     // Auditoría de creación/edición/anulación de movimientos de este módulo.

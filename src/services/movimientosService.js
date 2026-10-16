@@ -83,13 +83,15 @@ export function anularMovimientoEnBatch(batch, coleccion, id, valorAnterior, soc
 
 /**
  * `socioPrivado` marca a quién pertenece una entrada que NO es compartida.
- * Las entradas de `movimientosPersonales` guardan el detalle del movimiento
+ * Las entradas de `movimientosPersonales` y `cambiosMetodo` guardan el detalle del movimiento
  * (monto, tipo) en valorAnterior/valorNuevo, así que sin esta marca el otro
  * socio podría leer por la auditoría lo que la regla de la colección le
  * oculta. `null` = compartida, la ven ambos.
  */
+const COLECCIONES_PRIVADAS = ['movimientosPersonales', 'cambiosMetodo'];
+
 function socioPrivadoDe(coleccion, valorAnterior, valorNuevo, modificadoPor) {
-  if (coleccion !== 'movimientosPersonales') return null;
+  if (!COLECCIONES_PRIVADAS.includes(coleccion)) return null;
   return valorNuevo?.socioId ?? valorAnterior?.socioId ?? modificadoPor;
 }
 

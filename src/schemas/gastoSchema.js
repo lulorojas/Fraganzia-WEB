@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { fechaSchema } from './fechaSchema';
 import { GASTO_CATEGORIAS, METODOS_PAGO_SOCIOS } from '../constants';
 
 export const gastoSchema = z.object({
@@ -7,5 +8,5 @@ export const gastoSchema = z.object({
   monto: z.coerce.number().positive('El monto debe ser mayor a 0'),
   pagadoPor: z.string().min(1, 'Elegí quién pagó'),
   metodoPago: z.enum(METODOS_PAGO_SOCIOS, { errorMap: () => ({ message: 'Elegí un método de pago válido' }) }),
-  fecha: z.coerce.date(),
+  fecha: fechaSchema,
 });

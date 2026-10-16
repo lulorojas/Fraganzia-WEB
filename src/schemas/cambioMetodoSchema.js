@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { fechaSchema } from './fechaSchema';
 import { METODOS_PAGO_SOCIOS } from '../constants';
 
 /**
@@ -16,7 +17,7 @@ export const cambioMetodoSchema = z.object({
   a: z.enum(METODOS_PAGO_SOCIOS, { errorMap: () => ({ message: 'Elegí un método válido' }) }),
   monto: z.coerce.number().positive('El monto debe ser mayor a 0'),
   montoRecibido: z.coerce.number().positive('El monto recibido debe ser mayor a 0'),
-  fecha: z.coerce.date(),
+  fecha: fechaSchema,
 }).refine((d) => d.de !== d.a, {
   message: 'El origen y el destino tienen que ser distintos',
   path: ['a'],

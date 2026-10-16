@@ -58,3 +58,13 @@ export function calcularTotal2x1(items, esEfectivo, dolarMedio) {
   }
   return Math.round(total / 1000) * 1000;
 }
+
+/**
+ * Precio de lista en pesos con el que realmente se vende (el que está guardado en
+ * el perfume), con la conversión del dólar solo como respaldo.
+ */
+export function precioListaARS(perfume, dolarMedio) {
+  if (perfume?.precioTransferencia > 0) return perfume.precioTransferencia;
+  if (perfume?.precioUSD > 0 && dolarMedio) return preciosPorMetodo(perfume.precioUSD, dolarMedio).precioTransferencia;
+  return 0;
+}

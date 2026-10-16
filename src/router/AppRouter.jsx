@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '../components/layout/ProtectedRoute';
-import { AdminLayout } from '../components/layout/AdminLayout';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Spinner } from '../components/ui/Spinner';
@@ -16,22 +15,18 @@ import Contacto from '../pages/Contacto';
 
 // Todo lo de /admin se carga en un chunk aparte: un visitante del catálogo
 // nunca debería descargar el código de finanzas/analytics/etc.
+const AdminLayout = lazy(() => import('../components/layout/AdminLayout').then((m) => ({ default: m.AdminLayout })));
 const Dashboard = lazy(() => import('../pages/admin/Dashboard'));
-const AdminPerfumes = lazy(() => import('../pages/admin/AdminPerfumes'));
 const AdminPedidos = lazy(() => import('../pages/admin/AdminPedidos'));
+const AdminPerfumes = lazy(() => import('../pages/admin/AdminPerfumes'));
+const AdminStock = lazy(() => import('../pages/admin/AdminStock'));
 const AdminPromociones = lazy(() => import('../pages/admin/AdminPromociones'));
-const AdminConfig = lazy(() => import('../pages/admin/AdminConfig'));
-const AdminUsuarios = lazy(() => import('../pages/admin/AdminUsuarios'));
-const AdminFinanzasLayout = lazy(() => import('../pages/admin/AdminFinanzasLayout'));
-const AdminFinanzasResumen = lazy(() => import('../pages/admin/AdminFinanzasResumen'));
 const AdminVentasSocios = lazy(() => import('../pages/admin/AdminVentasSocios'));
 const AdminCompras = lazy(() => import('../pages/admin/AdminCompras'));
-const AdminVentasDecants = lazy(() => import('../pages/admin/AdminVentasDecants'));
-const AdminGastos = lazy(() => import('../pages/admin/AdminGastos'));
-const AdminStock = lazy(() => import('../pages/admin/AdminStock'));
 const AdminMovimientos = lazy(() => import('../pages/admin/AdminMovimientos'));
-const AdminAuditoria = lazy(() => import('../pages/admin/AdminAuditoria'));
 const AdminAnalytics = lazy(() => import('../pages/admin/AdminAnalytics'));
+const AdminAuditoria = lazy(() => import('../pages/admin/AdminAuditoria'));
+const AdminConfig = lazy(() => import('../pages/admin/AdminConfig'));
 
 function AdminSuspense({ children }) {
   return (
@@ -80,22 +75,28 @@ export function AppRouter() {
           }
         >
           <Route index element={<AdminSuspense><Dashboard /></AdminSuspense>} />
-          <Route path="perfumes" element={<AdminSuspense><AdminPerfumes /></AdminSuspense>} />
           <Route path="pedidos" element={<AdminSuspense><AdminPedidos /></AdminSuspense>} />
+          <Route path="perfumes" element={<AdminSuspense><AdminPerfumes /></AdminSuspense>} />
+          <Route path="stock" element={<AdminSuspense><AdminStock /></AdminSuspense>} />
           <Route path="promociones" element={<AdminSuspense><AdminPromociones /></AdminSuspense>} />
-          <Route path="usuarios" element={<AdminSuspense><AdminUsuarios /></AdminSuspense>} />
+          <Route path="ventas" element={<AdminSuspense><AdminVentasSocios /></AdminSuspense>} />
+          <Route path="compras" element={<AdminSuspense><AdminCompras /></AdminSuspense>} />
+          <Route path="movimientos" element={<AdminSuspense><AdminMovimientos /></AdminSuspense>} />
+          <Route path="analytics" element={<AdminSuspense><AdminAnalytics /></AdminSuspense>} />
+          <Route path="auditoria" element={<AdminSuspense><AdminAuditoria /></AdminSuspense>} />
           <Route path="config" element={<AdminSuspense><AdminConfig /></AdminSuspense>} />
-          <Route path="finanzas" element={<AdminSuspense><AdminFinanzasLayout /></AdminSuspense>}>
-            <Route index element={<AdminSuspense><AdminFinanzasResumen /></AdminSuspense>} />
-            <Route path="ventas" element={<AdminSuspense><AdminVentasSocios /></AdminSuspense>} />
-            <Route path="decants" element={<AdminSuspense><AdminVentasDecants /></AdminSuspense>} />
-            <Route path="compras" element={<AdminSuspense><AdminCompras /></AdminSuspense>} />
-            <Route path="gastos" element={<AdminSuspense><AdminGastos /></AdminSuspense>} />
-            <Route path="stock" element={<AdminSuspense><AdminStock /></AdminSuspense>} />
-            <Route path="movimientos" element={<AdminSuspense><AdminMovimientos /></AdminSuspense>} />
-            <Route path="analytics" element={<AdminSuspense><AdminAnalytics /></AdminSuspense>} />
-            <Route path="auditoria" element={<AdminSuspense><AdminAuditoria /></AdminSuspense>} />
-          </Route>
+
+          {/* Rutas de la versión anterior del panel */}
+          <Route path="usuarios" element={<Navigate to="/admin/analytics" replace />} />
+          <Route path="finanzas" element={<Navigate to="/admin/ventas" replace />} />
+          <Route path="finanzas/ventas" element={<Navigate to="/admin/ventas" replace />} />
+          <Route path="finanzas/decants" element={<Navigate to="/admin/ventas" replace />} />
+          <Route path="finanzas/compras" element={<Navigate to="/admin/compras" replace />} />
+          <Route path="finanzas/gastos" element={<Navigate to="/admin/compras" replace />} />
+          <Route path="finanzas/stock" element={<Navigate to="/admin/stock" replace />} />
+          <Route path="finanzas/movimientos" element={<Navigate to="/admin/movimientos" replace />} />
+          <Route path="finanzas/analytics" element={<Navigate to="/admin/analytics" replace />} />
+          <Route path="finanzas/auditoria" element={<Navigate to="/admin/auditoria" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

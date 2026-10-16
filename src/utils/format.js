@@ -25,10 +25,35 @@ export function fechaDeMovimiento(movimiento) {
   return movimiento?.fecha ?? movimiento?.createdAt ?? null;
 }
 
-function aDate(valor) {
+function aDateCrudo(valor) {
   if (!valor) return null;
   const d = valor?.toDate ? valor.toDate() : new Date(valor);
   return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/**
+ * Las fechas cargadas como YYYY-MM-DD quedaban a las 00:00 UTC, que en Argentina
+ * es el día anterior a las 21:00. Una fecha clavada justo en la medianoche UTC se
+ * lee como el día que se quiso cargar (mediodía local); las demás se dejan igual.
+ * Los formularios nuevos ya guardan mediodía local (ver schemas/fechaSchema).
+ */
+export function fechaRegistro(valor) {
+  const d = aDateCrudo(valor);
+  if (!d) return null;
+  const esMedianocheUTC = d.getUTCHours() === 0 && d.getUTCMinutes() === 0
+    && d.getUTCSeconds() === 0 && d.getUTCMilliseconds() === 0;
+  return esMedianocheUTC
+    ? new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 12)
+    : d;
+}
+
+const aDate = fechaRegistro;
+
+// YYYY-MM-DD en hora local, para precargar un <input type="date">.
+export function fechaInput(valor = new Date()) {
+  const d = fechaRegistro(valor);
+  if (!d) return '';
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 // Acepta Timestamp de Firestore, Date o string ISO.
@@ -44,4 +69,11 @@ export function formatFechaHora(valor) {
 
 export function milisDeFecha(valor) {
   return aDate(valor)?.getTime() ?? 0;
+}
+
+// dd/mm, siempre de dos dígitos (formatFecha en es-AR no rellena los ceros).
+export function diaMes(valor) {
+  const d = fechaRegistro(valor);
+  if (!d) return '—';
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 }

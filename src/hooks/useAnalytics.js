@@ -4,16 +4,13 @@ import { useVentasDecants } from './useVentasDecants';
 import { useCompras } from './useCompras';
 import { useGastos } from './useGastos';
 import { useAjustesStock } from './useAjustesStock';
-import {
-  calcularRankingPerfumes, calcularEvolucionVentas, calcularIngresoTotal, calcularActividadPorSocio,
-  calcularEvolucionGanancia, calcularGananciaPorCompra,
-} from '../services/panelFinancieroCalculos';
+import { calcularGananciaPorCompra } from '../services/panelFinancieroCalculos';
 
 const VACIO = [];
 
 // Deriva de las mismas queries por colección que el resto del panel — comparte
-// caché en vez de releer Firestore. Suma compras y gastos porque la ganancia
-// real necesita el costo de lo vendido, no solo la facturación.
+// caché en vez de releer Firestore. Los cálculos por mes se hacen en la pantalla
+// (analyticsCalculos) porque dependen del mes que elija el usuario.
 export function useAnalytics() {
   const ventasSocios = useVentasSocios();
   const ventasDecants = useVentasDecants();
@@ -23,7 +20,6 @@ export function useAnalytics() {
 
   const queries = [ventasSocios, ventasDecants, compras, gastos, ajustesStock];
   const isLoading = queries.some((q) => q.isLoading);
-  const error = queries.find((q) => q.error)?.error ?? null;
 
   const data = useMemo(() => {
     const v = ventasSocios.data ?? VACIO;
@@ -31,19 +27,11 @@ export function useAnalytics() {
     const c = compras.data ?? VACIO;
     const g = gastos.data ?? VACIO;
     const aj = ajustesStock.data ?? VACIO;
-
     return {
-      rankingPerfumes: calcularRankingPerfumes(v),
-      evolucionVentas: calcularEvolucionVentas(v, vd),
-      ingresoTotal: calcularIngresoTotal(v, vd),
-      actividadPorSocio: calcularActividadPorSocio({ ventasSocios: v, ventasDecants: vd }),
-      ventasDecants: vd,
-      evolucionGanancia: calcularEvolucionGanancia({
-        ventasSocios: v, ventasDecants: vd, compras: c, gastos: g, ajustesStock: aj,
-      }),
-      ganancia: calcularGananciaPorCompra(c, v, aj),
+      movimientos: { ventasSocios: v, ventasDecants: vd, compras: c, gastos: g, ajustesStock: aj },
+      gananciaPorCompra: calcularGananciaPorCompra(c, v, aj),
     };
   }, [ventasSocios.data, ventasDecants.data, compras.data, gastos.data, ajustesStock.data]);
 
-  return { data, isLoading, error };
+  return { data, isLoading };
 }

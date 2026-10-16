@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { fechaSchema } from './fechaSchema';
 
 /**
  * `cantidad` va con signo: positiva suma stock, negativa lo descuenta. Se pide
@@ -15,5 +16,5 @@ export const ajusteStockSchema = z.object({
   cantidad: z.coerce.number().int('Tiene que ser un número entero')
     .refine((n) => n !== 0, 'La cantidad no puede ser 0'),
   motivo: z.string().min(1, 'Contá de dónde salió o por qué se descuenta'),
-  fecha: z.coerce.date(),
+  fecha: fechaSchema,
 });
