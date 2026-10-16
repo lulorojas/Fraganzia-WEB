@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Parfumo+ Filtros",
+  "version": "1.1.0",
+  "description": "Agrega filtros a los listados de Parfumo: valoración, votos, año y nombre. No cambia el orden salvo que lo elijas.",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.parfumo.com/*", "https://www.parfumo.de/*"],
+      "js": ["lib/stats.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

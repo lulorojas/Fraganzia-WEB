@@ -3,10 +3,11 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { signOut } from 'firebase/auth';
 import {
   Home, ShoppingBag, Sparkles, Package, Tag, TrendingUp, ShoppingCart, ArrowLeftRight, BarChart3,
-  History, Settings, Search, Plus, LogOut, Droplet, Receipt, MoreHorizontal, Wallet, Lock, X,
+  History, Settings, Eye, Bot, Search, Plus, LogOut, Droplet, Receipt, MoreHorizontal, Wallet, Lock, X,
 } from 'lucide-react';
-import { auth } from '../../firebase/config';
+import { auth } from '../../firebase/auth';
 import { usePedidosList } from '../../hooks/usePedidos';
+import { esNuevo } from '../../utils/estadosPedido';
 import { useDolarBlue } from '../../hooks/useDolarBlue';
 import { useSocioActual } from '../../hooks/useSocioActual';
 import { AdminActionsProvider, AdminModalHost, useAdminActions } from '../../context/AdminActionsContext';
@@ -31,10 +32,17 @@ const GRUPOS = [
       { to: '/admin/movimientos', label: 'Movimientos', Icon: ArrowLeftRight },
     ],
   },
-  { label: 'Análisis', items: [{ to: '/admin/analytics', label: 'Analytics', Icon: BarChart3 }] },
+  {
+    label: 'Análisis',
+    items: [
+      { to: '/admin/analytics', label: 'Analytics', Icon: BarChart3 },
+      { to: '/admin/visitas', label: 'Visitas', Icon: Eye },
+    ],
+  },
   {
     label: 'Sistema',
     items: [
+      { to: '/admin/bot-proveedor', label: 'Bot de precios', Icon: Bot },
       { to: '/admin/auditoria', label: 'Auditoría', Icon: History },
       { to: '/admin/config', label: 'Configuración', Icon: Settings },
     ],
@@ -53,6 +61,8 @@ const META = {
   '/admin/compras': { crumb: 'Finanzas', title: 'Compras y gastos', sub: 'Lo que entra de mercadería y lo que sale de la caja.' },
   '/admin/movimientos': { crumb: 'Finanzas', title: 'Movimientos', sub: 'Tus retiros, los pagos entre socios y el pasaje de dinero.' },
   '/admin/analytics': { crumb: 'Análisis', title: 'Analytics', sub: 'Cuánto ganamos, qué se vende y quién compra.' },
+  '/admin/visitas': { crumb: 'Análisis', title: 'Visitas', sub: 'Quién entra a la tienda, desde dónde y cuánto avanza hasta pedir.' },
+  '/admin/bot-proveedor': { crumb: 'Sistema', title: 'Bot de precios', sub: 'Lo que el bot leyó del catálogo del proveedor.' },
   '/admin/auditoria': { crumb: 'Sistema', title: 'Auditoría', sub: 'Quién cargó, editó o anuló cada movimiento.' },
   '/admin/config': { crumb: 'Sistema', title: 'Configuración', sub: 'Dólar y número de WhatsApp.' },
 };
@@ -90,7 +100,7 @@ function Shell() {
   const { data: pedidos } = usePedidosList();
   const { dolarMedio } = useDolarBlue();
   const socioActualId = useSocioActual();
-  const enProceso = (pedidos ?? []).filter((p) => p.estado === 'en_proceso').length;
+  const enProceso = (pedidos ?? []).filter(esNuevo).length;
 
   const meta = META[pathname.replace(/\/$/, '')] ?? META['/admin'];
   const nombreSocio = socioActualId === 'benja' ? 'Benja' : 'Luciano';

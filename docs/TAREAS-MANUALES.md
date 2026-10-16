@@ -1,0 +1,178 @@
+# Tareas manuales y guía de lectura
+
+Este documento junta **todo lo que hay que hacer a mano**: lo que no se puede automatizar desde el código porque pasa en consolas externas (Firebase, Google Cloud, EmailJS, GitHub), en el panel admin o en la PC de cada socio. También indica **qué leer, y en qué orden**, para entender el proyecto.
+
+Marcá cada casilla a medida que lo hacés: `[ ]` → `[x]`.
+
+---
+
+## 1. Urgente: hacelo esta semana
+
+### [ ] Avisarle a tu socio (lulorojas) que actualice su copia del repo
+El 30/09 se movieron fuera del repo la carpeta `scripts/` (1.314 archivos), los PDFs de proveedores, las capturas y los `.bat`.
+
+- **Qué pasa cuando hace `git pull`:** esos archivos **se borran de su carpeta**, porque git los saca de la copia local.
+- **Si necesita alguno:** el archivo completo está en la PC de Benja, en `Desktop/Fraganzia/Fraganzia-archivo/`, sincronizado por OneDrive. Compartile esa carpeta si la necesita.
+- **Pasos para él:**
+  1. Si tiene cambios sin commitear, primero `git stash`.
+  2. Correr `git pull origin main`.
+  3. Correr `npm install` (cambiaron las dependencias).
+  4. Revisar el [README](../README.md): el deploy ahora es `npm run deploy` y los `.bat` ya no existen.
+
+### [ ] Contarle a tu socio cómo funcionan ahora los pedidos
+- **Nuevo flujo del cliente:** al confirmar, el cliente ve su página de seguimiento y manda el pedido por WhatsApp. El mensaje trae un número corto (#ABC123) y el link.
+- **Admin → Pedidos:** el estado se cambia con el selector de cada fila (Recibido → En preparación → Enviado → Entregado / Cancelado), y **el cliente lo ve en su link**. El botón **Link** copia el link de seguimiento para mandárselo a quien lo pida.
+- **Arreglos:** la columna Fecha de Pedidos y el gráfico "Evolución de pedidos" del dashboard estaban siempre vacíos (leían un campo con otro nombre). Ya muestran datos.
+- **Ojo:** las métricas de pedidos del dashboard (facturado, ticket promedio) **cuentan también los cancelados**. Si prefieren excluirlos, avisame.
+
+### [ ] Cargar fotos que faltan o están rotas
+Panel admin → **Perfumes** → editar → campo **Imágenes**.
+
+| Perfume | Problema |
+|---|---|
+| Al Wataniah Al Layl 100ml | La foto original (en shopify) ya no existe |
+| Lattafa Liam Blue Shine 100ml | La foto original (en parfumo.com) ya no existe |
+| Lattafa Yara Rosa 100ml | No tiene foto cargada |
+
+Hoy la web muestra un placeholder en lugar de la foto. Después de cargar la foto nueva, el próximo deploy la descarga y la optimiza sola.
+
+### [ ] Rotar la credencial de admin (ya está fuera de OneDrive)
+`serviceAccount.json` es la llave de administrador de Firestore: da acceso total a la base. Ya se movió a `C:credencialesraganzia-serviceAccount.json` (fuera de OneDrive; los scripts de `tools/` la buscan ahí, en `%USERPROFILE%.fraganziaserviceAccount.json` o en la variable `FIREBASE_SERVICE_ACCOUNT_FILE`, ver `tools/lib/credencial.mjs`).
+
+Pero OneDrive guardó copias (versiones y papelera) mientras estuvo adentro, así que lo que falta es **invalidar la llave vieja**:
+1. Firebase → Configuración del proyecto → **Cuentas de servicio** → *Generar nueva clave privada*, y guardala en `C:credencialesraganzia-serviceAccount.json` (reemplaza a la actual).
+2. Google Cloud → IAM → **Cuentas de servicio** → *Claves* → eliminá la clave vieja.
+3. Actualizá el secret de GitHub `FIREBASE_SERVICE_ACCOUNT_FRAGANZIA_E9B70` con el JSON nuevo (si no, el bot y el deploy dejan de funcionar).
+4. En OneDrive, vaciá la papelera y revisá el historial de versiones del archivo.
+
+---
+
+### [ ] Activar los avisos del bot por WhatsApp
+El bot de precios (`.github/workflows/bot-proveedor.yml`) corre solo dos veces por día. Si el catálogo del proveedor cambió, actualiza precios y da de alta los perfumes nuevos, y te avisa por WhatsApp **solo si están cargados los secrets `CALLMEBOT_PHONE` y `CALLMEBOT_APIKEY`**. Sin ellos no avisa (el panel admin lo muestra en rojo). Si el catálogo no cambió, no manda nada.
+
+1. Activá CallMeBot desde tu WhatsApp siguiendo las instrucciones oficiales de https://www.callmebot.com/blog/free-api-whatsapp-messages/ (se guarda su número de contacto, se le manda una frase fija y te responde con tu **apikey**; el número del bot cambia con el tiempo, usá el que figura ahí).
+2. En GitHub → repo `Fraganzia-WEB` → Settings → Secrets and variables → Actions → *New repository secret* (hace falta ser admin del repo; si el dueño es otra persona, que los cargue ella):
+   - `CALLMEBOT_PHONE`: tu número con código de país y sin signos, por ejemplo `5491122334455`.
+   - `CALLMEBOT_APIKEY`: la clave que te mandó CallMeBot.
+3. Probalo: Actions → *Bot de precios del proveedor* → *Run workflow* con "Solo simular" **desmarcado**. Si el catálogo no cambió te llega igual un mensaje "el bot corrió" (las corridas manuales siempre avisan).
+
+---
+
+## 2. Seguridad: recomendado
+
+### [ ] Restringir la API key por dominio
+Google Cloud Console → proyecto `fraganzia-e9b70` → **APIs y servicios → Credenciales** → la clave tipo *Browser key*.
+
+En **Restricciones de aplicaciones**, elegí **Sitios web** y agregá:
+
+```
+https://fraganzia-e9b70.web.app/*
+https://fraganzia-e9b70.firebaseapp.com/*
+https://fraganzia-e9b70--*.web.app/*
+http://localhost:5173/*
+http://localhost:4173/*
+```
+
+La tercera línea cubre los canales de vista previa.
+
+⚠️ El build (sitemap, pre-render y fotos) lee Firestore por REST con esta misma key **desde GitHub Actions**, sin dominio. Si después de restringirla el build dice `sin foto de datos` o `sin perfumes`, la web sigue funcionando pero sin pre-render. Solución: crear una **segunda key** solo para el build, restringida por API (Cloud Firestore API), cargarla como secret `VITE_FIREBASE_API_KEY_BUILD` y avisame para usarla en los scripts.
+
+### [ ] Revisar la configuración de Firebase Authentication
+Firebase → Authentication → **Configuración**:
+- **Protección de enumeración de correo electrónico:** activada. Evita que alguien averigüe qué emails tienen cuenta.
+- **Creación de cuentas:** hoy cualquiera puede registrarse desde el ícono de usuario (cuentas de cliente). Si no se usan, se puede desactivar el registro. Las cuentas de cliente nunca tienen acceso al admin.
+
+### [ ] Activar App Check (el código ya está listo)
+Las reglas ya validan los pedidos, pero no pueden distinguir un bot de una persona, y el catálogo se puede leer en bloque desde afuera. El código, el build y las pruebas ya están preparados; faltan solo los pasos de consola de [DEPLOY.md → App Check](DEPLOY.md#app-check-protección-contra-bots) (crear la clave reCAPTCHA, registrarla en Firebase, dos secrets de GitHub y pasar a "Aplicar"). Cuesta algunos puntos de PageSpeed en móvil.
+
+---
+
+## 3. Emails (si querés recibir avisos por email)
+
+Hoy **no se envía ningún email**: la configuración tenía una clave de ejemplo. Los avisos de pedido llegan igual por WhatsApp.
+
+### [ ] Configurar EmailJS o descartarlo
+Seguí [EMAILJS_SETUP.md](../EMAILJS_SETUP.md), en especial la sección **Seguridad**:
+1. En las plantillas de avisos al admin, poné tu email **fijo** en "To Email". No uses `{{to_email}}`.
+2. En EmailJS → Account → Security, restringí los dominios a `fraganzia-e9b70.web.app`.
+3. Cargá las claves en `.env.local` y como **secrets de GitHub**: `VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_PUBLIC_KEY`, `VITE_EMAILJS_ADMIN_EMAIL`. Ver [DEPLOY.md → paso 10](DEPLOY.md#10-deploy-automático-con-github-actions).
+
+---
+
+## 4. Catálogo y contenido (panel admin)
+
+### [ ] Cargar notas olfativas
+Ningún perfume tiene notas cargadas, así que la **pirámide olfativa** de la ficha de producto no aparece.
+
+Panel admin → Perfumes → editar → *Notas de salida / corazón / fondo* (separadas por coma). Conviene empezar por los **destacados** y los **más vistos** (Dashboard → "Perfumes más vistos").
+
+### [ ] Completar descripciones faltantes
+79 de los 405 perfumes publicados no tienen descripción. Además de mostrarse en la ficha, la descripción mejora el SEO y las recomendaciones del asistente, que busca palabras como "vainilla" u "oud".
+
+### [ ] (Opcional) Unificar marcas escritas en mayúsculas
+89 perfumes tienen la marca en mayúsculas ("LATTAFA", "MAISON ALHAMBRA", "ARMAF"…), cargados por importaciones viejas.
+
+- **La web ya los trata como la misma marca**: el filtro, el buscador y la lista de marcas los unifican.
+- **Corrección automática:** al **editar y guardar** cualquiera de esos perfumes desde el admin, la marca queda guardada en la forma correcta ("Lattafa").
+- Antes había un bug: editar uno de esos perfumes **le cambiaba la marca a "Afnan" sin avisar**. Ya está corregido. Si alguno de los 89 se editó antes del 30/09, revisá que su marca sea la correcta.
+
+### [ ] (Opcional) Limpiar estadísticas de prueba
+Durante las pruebas del 30/09 se sumaron unas 15 vistas falsas a **Lattafa Atlas Canyon 55ml** y algunas a la home. Si te molesta en el dashboard: Firebase → Firestore → `estadisticas` → documento `00WxVBQoLMLZgqU6lX7R` → bajá `vistas` en ~15.
+
+---
+
+## 5. SEO y medición
+
+### [ ] Dar de alta el sitio en Google Search Console
+1. [search.google.com/search-console](https://search.google.com/search-console) → agregar propiedad → **Prefijo de URL** → `https://fraganzia-e9b70.web.app/`.
+2. Verificá con la opción **Etiqueta HTML** y pasame el código: lo agrego en `index.html`.
+3. En **Sitemaps**, enviá `sitemap.xml`.
+
+Así Google indexa los ~400 perfumes y podés ver qué buscan los que llegan a la web.
+
+### [ ] Medir en PageSpeed Insights (producción)
+[pagespeed.web.dev](https://pagespeed.web.dev) con `/`, `/catalogo` y algún `/perfume/...`.
+
+En las pruebas locales dio: móvil 81-92, escritorio 94-98, y accesibilidad, buenas prácticas y SEO en 100. PageSpeed varía ±5 puntos entre corridas.
+
+### [ ] (Opcional) Dominio propio
+Si compran por ejemplo `fraganzia.com.ar`, seguí [DEPLOY.md → paso 12](DEPLOY.md#12-dominio-propio-opcional) y avisame: hay que cambiar la URL en 4 archivos.
+
+---
+
+## 6. Mantenimiento del repo (opcional, coordinarlo entre los dos)
+
+### [ ] Actualizar el repo "padre" (`Fraganzia/`)
+La carpeta `Desktop/Fraganzia/Fraganzia` es otro repo (`lulorojas/Fraganzia`) que contiene a `Fraganzia-WEB` como *gitlink*, un puntero a un commit viejo. Además tiene `SKILL.md` (plantilla vacía de `npx skills init`) y las skills instaladas en `.agents/`, sin commitear. Decidan si ese repo se sigue usando. Si no, no hace falta tocar nada.
+
+### [ ] Achicar el historial de git (318 MB)
+Los archivos archivados siguen en el historial, así que clonar el repo baja 318 MB. Se puede limpiar con `git filter-repo`, pero **reescribe el historial**: los dos tienen que volver a clonar y hay que hacer force push. Solo vale la pena si molesta.
+
+### [ ] (Opcional) Actualizar dependencias grandes
+React Router 6 → 7 tiene un aviso de seguridad que **no afecta** a esta web (no hay redirecciones con URLs del usuario). Firebase 10 → 12 suma mejoras. Las dos actualizaciones requieren probar el admin a fondo: mejor hacerlas en una rama y con vista previa.
+
+---
+
+## 📚 Qué leer para entender el proyecto
+
+En este orden:
+
+| # | Documento | Para qué | Tiempo |
+|---|---|---|---|
+| 1 | [README.md](../README.md) | Qué es, cómo levantarlo y los comandos | 2 min |
+| 2 | [docs/ESTRUCTURA.md](ESTRUCTURA.md) | Carpetas, cómo viajan los datos, colecciones de Firestore y "¿dónde toco si quiero…?" | 10 min |
+| 3 | [docs/TECNOLOGIAS.md](TECNOLOGIAS.md) | Qué se usa, para qué y por qué (React, Firebase, pre-render…) | 10 min |
+| 4 | [docs/DEPLOY.md](DEPLOY.md) | Cómo se publica: desde cero, automático con GitHub y problemas comunes | 10 min |
+| 5 | [DESIGN_SYSTEM.md](../DESIGN_SYSTEM.md) | Colores, tipografías, niveles de vidrio y componentes, antes de tocar algo visual | 15 min |
+| 6 | [`firestore.rules`](../firestore.rules) | Quién puede leer y escribir cada cosa (está comentado), antes de tocar la base | 10 min |
+| 7 | [EMAILJS_SETUP.md](../EMAILJS_SETUP.md) | Solo si vas a configurar los emails | 5 min |
+| 8 | [`specs/`](../specs) | Especificaciones originales de cada módulo (catálogo, panel financiero): el *por qué* de cada decisión de negocio | a demanda |
+| 9 | Este documento | Lo que queda pendiente a mano | — |
+
+**Para entender el código**, seguí el camino de un dato:
+
+1. **Rutas:** `src/router/AppRouter.jsx`, todas las páginas que existen.
+2. **Página:** `src/pages/Catalogo.jsx`, cómo una página pide datos y los muestra.
+3. **Hook:** `src/hooks/usePerfumes.js`, la caché con React Query.
+4. **Servicio:** `src/services/perfumesService.js`, la lectura de Firestore.
+5. **Build:** `tools/prerender.mjs`, cómo se arma el HTML para que cargue rápido.

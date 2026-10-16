@@ -38,7 +38,7 @@ export default function AdminPromociones() {
               <div>
                 <div style={{ fontFamily: 'Outfit', fontSize: 17 }}>{p.titulo}</div>
                 {p.descripcion && <p className="dim" style={{ margin: '4px 0 0' }}>{p.descripcion}</p>}
-                {p.tipo === 'descuento' && p.descuentoPorcentaje > 0 && <p className="card-note" style={{ margin: '6px 0 0' }}>{p.descuentoPorcentaje}% de descuento</p>}
+                {p.tipo === 'descuento' && p.descuentoPorcentaje > 0 && <p className="card-note" style={{ margin: '6px 0 0' }}>{p.descuentoPorcentaje}% de descuento · {p.perfumeIds?.length ? `${p.perfumeIds.length} ${p.perfumeIds.length === 1 ? 'perfume' : 'perfumes'}` : 'todo el catálogo'}</p>}
               </div>
               <div className="flex items-center gap-2" style={{ marginTop: 'auto' }}>
                 <Switch on={Boolean(p.activa)} onChange={() => editar({ id: p.id, datos: { activa: !p.activa } })} label={`Activar ${p.titulo}`} />

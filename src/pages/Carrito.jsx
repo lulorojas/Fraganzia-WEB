@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useDolarBlue } from '../hooks/useDolarBlue';
@@ -8,17 +8,19 @@ import { usePromocionesActivas } from '../hooks/usePromociones';
 import { useAuth } from '../context/AuthContext';
 import { obtenerPerfumePorId } from '../services/perfumesService';
 import { notificarNuevoPedido } from '../services/emailService';
+import { registrarPaso } from '../services/embudoService';
 import { CartItem } from '../components/cart/CartItem';
 import { SelectorPago } from '../components/cart/SelectorPago';
 import { ResumenCheckout } from '../components/cart/ResumenCheckout';
 import { Button } from '../components/ui/Button';
 import { GlassCard } from '../components/ui/GlassCard';
-import { preciosPorMetodo, calcularTotal2x1 } from '../utils/precios';
+import { preciosPorMetodo, calcularCarritoConPromos } from '../utils/precios';
 import { formatARS } from '../utils/format';
-import { construirLinkWhatsApp } from '../utils/whatsapp';
-import { WHATSAPP_NUMERO } from '../constants';
+import { guardarPedidoLocal } from '../utils/misPedidos';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export default function Carrito() {
+  useDocumentMeta({ title: 'Tu carrito', path: '/carrito' });
   const { state, dispatch } = useCart();
   const { dolarMedio } = useDolarBlue();
   const { data: config } = useConfig();
@@ -27,20 +29,18 @@ export default function Carrito() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Promo 2x1 activa
-  const promo2x1Activa = promociones?.find((p) => p.tipo === '2x1');
-  const totalUnidades = state.items.reduce((sum, i) => sum + i.cantidad, 0);
-  const tienePromo2x1 = Boolean(promo2x1Activa) && totalUnidades >= 2;
-
-  // Mejor descuento entre todas las promociones activas (tipo descuento)
-  const mejorPromo = promociones
-    ?.filter((p) => p.tipo !== '2x1' && (p.descuentoPorcentaje ?? 0) > 0)
-    ?.reduce((best, p) => (!best || p.descuentoPorcentaje > best.descuentoPorcentaje ? p : best), null);
-  const promoDescuentoPct = mejorPromo?.descuentoPorcentaje ?? 0;
-
   const [clienteNombre, setClienteNombre] = useState(user?.displayName ?? '');
   const [errorNombre, setErrorNombre] = useState(null);
   const [avisoDisponibilidad, setAvisoDisponibilidad] = useState(null);
+
+  // La sesión puede restaurarse después de montar la página (Auth se carga bajo demanda).
+  useEffect(() => {
+    if (user?.displayName) setClienteNombre((n) => n || user.displayName);
+  }, [user]);
+
+  // Paso del embudo: llegó a revisar un pedido con productos (una vez por sesión).
+  const hayItems = state.items.length > 0;
+  useEffect(() => { if (hayItems) registrarPaso('checkout'); }, [hayItems]);
 
   if (state.items.length === 0) {
     return (
@@ -78,10 +78,12 @@ export default function Carrito() {
     }
 
     // FR-030: verificar disponibilidad vigente antes de confirmar.
+    // Los decants tienen un perfumeId compuesto (ver Decants.jsx): se valida
+    // contra perfumeIdBase, el id real del perfume en Firestore.
     const resultados = await Promise.all(
       state.items.map(async (item) => ({
         item,
-        perfumeActual: await obtenerPerfumePorId(item.perfumeId),
+        perfumeActual: await obtenerPerfumePorId(item.perfumeIdBase ?? item.perfumeId),
       }))
     );
     const noDisponibles = resultados.filter(
@@ -106,21 +108,9 @@ export default function Carrito() {
     }
 
     const esEfectivo = state.metodoPago === 'Efectivo';
-    const itemsConPrecio = state.items.map((item) => {
-      const { precioTransferencia, precioEfectivo } = preciosPorMetodo(item.precioUSD, dolarMedio);
-      return {
-        ...item,
-        precioARS: esEfectivo ? precioEfectivo : precioTransferencia,
-      };
-    });
-    const subtotalARS = itemsConPrecio.reduce(
-      (acc, item) => acc + item.precioARS * item.cantidad,
-      0
+    const { itemsConPrecio, subtotalARS, totalARS, descuentoARS } = calcularCarritoConPromos(
+      state.items, promociones, esEfectivo, dolarMedio
     );
-    const totalARS = tienePromo2x1
-      ? calcularTotal2x1(itemsConPrecio)
-      : Math.round((subtotalARS * (1 - promoDescuentoPct / 100)) / 1000) * 1000;
-    const descuentoARS = subtotalARS - totalARS;
 
     const pedido = {
       items: itemsConPrecio,
@@ -133,25 +123,9 @@ export default function Carrito() {
       estado: 'confirmado',
     };
 
-    // Generar mensaje de notificación para el admin
-    const mensajeAdmin = [
-      '🔔 NUEVO PEDIDO - Fraganzia',
-      '',
-      `👤 Cliente: ${pedido.clienteNombre}`,
-      '',
-      '🛍️ Productos:',
-      ...itemsConPrecio.map(it => `  • ${it.cantidad}x ${it.marca} ${it.nombre} - ${formatARS(it.precioARS)}`),
-      '',
-      `💳 Método: ${pedido.metodoPago}`,
-      `💰 Total: ${formatARS(totalARS)}`,
-      '',
-      `ID: ${Date.now()}`,
-    ].join('\n');
-
-    const linkNotificacion = construirLinkWhatsApp(WHATSAPP_NUMERO, mensajeAdmin);
-
     crearPedidoMutation(pedido, {
       onSuccess: (pedidoId) => {
+        registrarPaso('pedidos');
         dispatch({ type: 'CLEAR_CART' });
         setClienteNombre('');
         notificarNuevoPedido(
@@ -161,11 +135,19 @@ export default function Carrito() {
           formatARS(totalARS)
         ).catch(() => {});
         
-        // Abrir WhatsApp para notificar al admin
-        window.location.href = linkNotificacion;
+        // Al seguimiento del pedido: ahí está el botón para mandarlo por
+        // WhatsApp (con el link de seguimiento incluido) y queda guardado en
+        // "Mis pedidos". Se pasan los datos para mostrarlo sin esperar a Firestore.
+        guardarPedidoLocal(pedidoId);
+        navigate(`/pedido/${pedidoId}?nuevo=1`, { state: { pedido } });
       },
       onError: (error) => {
-        setAvisoDisponibilidad(`Error: ${error.message || 'Hubo un error al procesar tu pedido'}`);
+        // Los errores de zod traen el detalle técnico en `issues`; al cliente
+        // solo le mostramos el primer mensaje legible.
+        const detalle = error.issues?.[0]?.message;
+        setAvisoDisponibilidad(
+          detalle ?? 'Hubo un error al procesar tu pedido. Probá de nuevo o escribinos por WhatsApp.'
+        );
       }
     });
   }
@@ -174,12 +156,11 @@ export default function Carrito() {
     <div className="mx-auto max-w-2xl px-4 py-10">
       {/* Header */}
       <div className="mb-8">
-        <p className="tracking-luxury mb-2 font-body text-xs uppercase text-lila">Tu pedido</p>
-        <h1 className="font-display text-3xl text-text">Tu carrito</h1>
+        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Tu carrito</h1>
       </div>
 
       {/* Productos */}
-      <div className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-3" aria-label="Productos en el carrito">
         {state.items.map((item) => (
           <CartItem
             key={item.perfumeId}
@@ -189,7 +170,7 @@ export default function Carrito() {
             onQuitar={handleQuitar}
           />
         ))}
-      </div>
+      </ul>
 
       {/* Checkout */}
       <GlassCard className="mt-6 flex flex-col gap-5 p-6">
@@ -198,10 +179,7 @@ export default function Carrito() {
           metodoPago={state.metodoPago}
           dolarMedio={dolarMedio}
           whatsappNumero={config?.whatsappNumero}
-          promoDescuentoPct={promoDescuentoPct}
-          promoNombre={mejorPromo?.titulo}
-          promo2x1={tienePromo2x1}
-          promo2x1Nombre={promo2x1Activa?.titulo}
+          promociones={promociones}
         />
 
         <SelectorPago value={state.metodoPago} onChange={handleMetodoPago} />
@@ -217,14 +195,16 @@ export default function Carrito() {
             value={clienteNombre}
             onChange={(e) => setClienteNombre(e.target.value)}
             placeholder="Ingresá tu nombre"
-            className="rounded-xl border border-border bg-white/[0.03] px-4 py-3 font-body text-sm text-text placeholder:text-text-secondary/50 focus:border-violet focus:outline-none transition-colors"
+            maxLength={100}
+            autoComplete="name"
+            className="rounded-xl border border-border bg-white/[0.03] px-4 py-3 font-body text-sm text-text placeholder:text-text-secondary focus:border-violet focus:outline-none transition-colors"
             required
           />
           {errorNombre && <p className="mt-1 text-xs text-error">{errorNombre}</p>}
         </div>
 
         {avisoDisponibilidad && (
-          <p className="text-sm text-error">{avisoDisponibilidad}</p>
+          <p className="text-sm text-error" role="alert">{avisoDisponibilidad}</p>
         )}
 
         <Button

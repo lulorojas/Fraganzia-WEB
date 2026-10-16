@@ -1,0 +1,34 @@
+/* Fuentes recortadas al español (ver tools/subset-fonts.py). Servidas desde el
+   propio sitio con hash en el nombre: se cachean por un año. */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('./outfit.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('./manrope.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('./cinzel.woff2') format('woff2');
+}
+
+/* Solo contiene las letras de "FRAGANZIA" (logo). */
+@font-face {
+  font-family: 'Playfair Logo';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./playfair-logo.woff2') format('woff2');
+}

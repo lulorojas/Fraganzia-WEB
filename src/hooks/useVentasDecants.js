@@ -14,7 +14,6 @@ function useInvalidarVentasDecants() {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: ['ventasDecants'] });
-    qc.invalidateQueries({ queryKey: ['panelFinanciero'] });
   };
 }
 

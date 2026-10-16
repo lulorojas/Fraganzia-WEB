@@ -1,4 +1,4 @@
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
 
 const COLLECTION = 'socios';

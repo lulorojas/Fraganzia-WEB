@@ -18,7 +18,6 @@ function useInvalidarMovimientosPersonales() {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: ['movimientosPersonales'] });
-    qc.invalidateQueries({ queryKey: ['panelFinanciero'] });
   };
 }
 

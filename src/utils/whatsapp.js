@@ -32,3 +32,24 @@ export function generarLinkWhatsApp({ clienteNombre, items, metodoPago, total, n
   ];
   return construirLinkWhatsApp(numero, lineas.join('\n'));
 }
+
+/**
+ * Mensaje que el cliente nos manda por WhatsApp al terminar la compra, con el
+ * número de pedido y el link de seguimiento para que ambos lo tengan a mano.
+ */
+export function mensajeNuevoPedido(pedido, id, urlSeguimiento) {
+  return [
+    '🔔 NUEVO PEDIDO - Fraganzia',
+    `Pedido ${String(id).slice(0, 6).toUpperCase()}`,
+    '',
+    `👤 Cliente: ${pedido.clienteNombre}`,
+    '',
+    '🛍️ Productos:',
+    ...pedido.items.map((it) => `  • ${it.cantidad}x ${it.marca} ${it.nombre} - ${formatARS(it.precioARS)}`),
+    '',
+    `💳 Método: ${pedido.metodoPago}`,
+    `💰 Total: ${formatARS(pedido.totalARS)}`,
+    '',
+    `📦 Seguimiento: ${urlSeguimiento}`,
+  ].join('\n');
+}

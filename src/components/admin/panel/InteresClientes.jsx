@@ -1,4 +1,4 @@
-import { Eye, Search, SearchX, MousePointerClick } from 'lucide-react';
+import { Eye, Search, SearchX, MousePointerClick, Heart } from 'lucide-react';
 import { Card, CardTitle, Empty } from '../ui/kit';
 
 function Lista({ items, vacio, render }) {
@@ -31,6 +31,15 @@ export function PerfumesMasVistos({ perfumes, i = 0 }) {
     <Panel i={i} Icon={Eye} titulo="Perfumes más vistos" sub="Lo que más miran en la web, aunque no lo compren">
       <Lista items={perfumes} vacio="Todavía sin datos. Se acumulan con las visitas de ahora en adelante."
         render={(p, n) => (<><Fila n={n + 1}>{p.nombre}</Fila><span className="num">{p.vistas} <span className="card-note">vistas</span></span></>)} />
+    </Panel>
+  );
+}
+
+export function MasGuardados({ perfumes, i = 0 }) {
+  return (
+    <Panel i={i} Icon={Heart} titulo="Más guardados en favoritos" sub="Los que la gente guarda con el corazón para decidir después">
+      <Lista items={perfumes} vacio="Todavía nadie guardó favoritos. Se cuenta una vez por perfume por visita."
+        render={(p, n) => (<><Fila n={n + 1}>{p.nombre}</Fila><span className="num">{p.favoritos} <span className="card-note">veces</span></span></>)} />
     </Panel>
   );
 }

@@ -1,27 +1,46 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { FavoritosProvider } from './context/FavoritosContext';
 import { ToastProvider } from './context/ToastContext';
 import { AppRouter } from './router/AppRouter';
 import { ShaderBackground } from './components/ui/ShaderBackground';
-// Fondo animado 100% CSS (sin WebGL/canvas): evita bloqueo de main-thread
-// continuo que disparaba el Total Blocking Time en Lighthouse.
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { sembrarDatosIniciales } from './utils/datosIniciales';
 
-const queryClient = new QueryClient();
+// Defaults pensados para un catálogo que cambia poco: no volver a leer de
+// Firestore cada vez que el usuario vuelve a la pestaña, y mantener en memoria
+// lo ya cargado mientras navega. Cada hook puede pisar estos valores.
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+      gcTime: 30 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
+sembrarDatosIniciales(queryClient);
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <CartProvider>
-          <ToastProvider>
-            <ShaderBackground opacity={0.5} />
-            <div className="relative z-10">
-              <AppRouter />
-            </div>
-          </ToastProvider>
-        </CartProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <CartProvider>
+            <FavoritosProvider>
+              <ToastProvider>
+                <ShaderBackground />
+                <div className="relative z-10">
+                  <AppRouter />
+                </div>
+              </ToastProvider>
+            </FavoritosProvider>
+          </CartProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

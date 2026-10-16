@@ -11,6 +11,8 @@ import { useGastos } from '../../hooks/useGastos';
 import { useAjustesStock } from '../../hooks/useAjustesStock';
 import { useTransferenciasSocios } from '../../hooks/useTransferenciasSocios';
 import { useAdminActions } from '../../context/AdminActionsContext';
+import { ResumenBot } from '../../components/admin/ResumenBot';
+import { esNuevo } from '../../utils/estadosPedido';
 import {
   calcularVentasPorDia, calcularResumenMensual, calcularPendientesDeCobro, claveDeMes, mesesRecientes,
   nombreDeDia, nombreDeMes, variacionPct,
@@ -69,7 +71,7 @@ export default function Dashboard() {
   }, [ventasSocios, ventasDecants, compras, gastos, ajustes, hoy]);
 
   const pendientes = useMemo(() => calcularPendientesDeCobro(ventasSocios ?? VACIO), [ventasSocios]);
-  const enProceso = (pedidos ?? VACIO).filter((p) => p.estado === 'en_proceso');
+  const enProceso = (pedidos ?? VACIO).filter(esNuevo);
 
   if (isLoading) return <Cargando />;
 
@@ -99,8 +101,8 @@ export default function Dashboard() {
   const mesNombre = nombreDeMes(hoy.getMonth());
 
   async function confirmar(p) {
-    await actualizarEstado({ id: p.id, estado: 'confirmado' });
-    avisar('Pedido confirmado');
+    await actualizarEstado({ id: p.id, estado: 'preparando' });
+    avisar('Pedido en preparación');
   }
 
   return (
@@ -182,10 +184,10 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <span className="num" style={{ fontWeight: 500 }}>{pesos(p.totalARS)}</span>
-                <button className="btn btn-ok btn-icon" disabled={actualizando} onClick={() => confirmar(p)} title="Confirmar" aria-label="Confirmar pedido"><Check /></button>
+                <button className="btn btn-ok btn-icon" disabled={actualizando} onClick={() => confirmar(p)} title="Pago confirmado: pasar a preparación" aria-label="Pasar a preparación"><Check /></button>
               </div>
             ))}
-            {enProceso.length === 0 && <span className="dim" style={{ padding: '10px 0' }}>No hay pedidos en proceso.</span>}
+            {enProceso.length === 0 && <span className="dim" style={{ padding: '10px 0' }}>No hay pedidos por atender.</span>}
           </div>
           <Link to="/admin/pedidos" className="btn btn-ghost" style={{ alignSelf: 'flex-start' }}>Ver todos los pedidos <ArrowRight /></Link>
         </Card>
@@ -245,6 +247,8 @@ export default function Dashboard() {
           {pl(mes.actual.perfumes.unidades, 'perfume', 'perfumes')} ({pesos(mes.actual.perfumes.monto)}) y {pl(mes.actual.decants.unidades, 'decant', 'decants')} ({pesos(mes.actual.decants.monto)}) del 1 al {hoy.getDate()} de {mesNombre}
         </span>
       </Card>
+
+      <ResumenBot />
     </div>
   );
 }

@@ -1,70 +1,44 @@
-import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { useMemo } from 'react';
+import { usePedidosList } from './usePedidos';
 
+/**
+ * Clientes derivados de los pedidos (email único). Reutiliza la query de
+ * pedidos del admin (misma caché que la pantalla de Pedidos), en vez de volver
+ * a leer toda la colección cada vez que se abre esta pantalla.
+ */
 export function useUsuarios() {
-  const [usuarios, setUsuarios] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: pedidos, isLoading, error } = usePedidosList();
 
-  useEffect(() => {
-    async function fetchUsuarios() {
-      try {
-        setIsLoading(true);
-        
-        // Obtener pedidos para extraer emails únicos
-        const pedidosRef = collection(db, 'pedidos');
-        const pedidosQuery = query(pedidosRef, orderBy('creadoEn', 'desc'));
-        const pedidosSnap = await getDocs(pedidosQuery);
-        
-        // Extraer usuarios únicos por email
-        const usuariosMap = new Map();
-        
-        pedidosSnap.docs.forEach(doc => {
-          const pedido = doc.data();
-          if (!pedido.clienteEmail || !pedido.creadoEn) return; // Skip si falta data
-          
-          if (!usuariosMap.has(pedido.clienteEmail)) {
-            usuariosMap.set(pedido.clienteEmail, {
-              email: pedido.clienteEmail,
-              nombre: pedido.clienteNombre || 'Sin nombre',
-              primerPedido: pedido.creadoEn,
-              totalPedidos: 1,
-              totalGastado: pedido.totalARS || 0,
-            });
-          } else {
-            const usuario = usuariosMap.get(pedido.clienteEmail);
-            usuario.totalPedidos += 1;
-            usuario.totalGastado += pedido.totalARS || 0;
-            // Mantener la fecha más antigua
-            const pedidoSeconds = pedido.creadoEn.seconds || 0;
-            const usuarioSeconds = usuario.primerPedido.seconds || 0;
-            if (pedidoSeconds < usuarioSeconds) {
-              usuario.primerPedido = pedido.creadoEn;
-            }
-          }
+  const usuarios = useMemo(() => {
+    const usuariosMap = new Map();
+
+    for (const pedido of pedidos ?? []) {
+      if (!pedido.clienteEmail || !pedido.creadoEn) continue; // Skip si falta data
+
+      const usuario = usuariosMap.get(pedido.clienteEmail);
+      if (!usuario) {
+        usuariosMap.set(pedido.clienteEmail, {
+          email: pedido.clienteEmail,
+          nombre: pedido.clienteNombre || 'Sin nombre',
+          primerPedido: pedido.creadoEn,
+          totalPedidos: 1,
+          totalGastado: pedido.totalARS || 0,
         });
-        
-        // Convertir a array y ordenar por fecha de registro (más recientes primero)
-        const usuariosArray = Array.from(usuariosMap.values())
-          .sort((a, b) => {
-            const aSeconds = a.primerPedido?.seconds || 0;
-            const bSeconds = b.primerPedido?.seconds || 0;
-            return bSeconds - aSeconds;
-          });
-        
-        setUsuarios(usuariosArray);
-        setError(null);
-      } catch (err) {
-        console.error('Error al obtener usuarios:', err);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+      } else {
+        usuario.totalPedidos += 1;
+        usuario.totalGastado += pedido.totalARS || 0;
+        // Mantener la fecha más antigua
+        if ((pedido.creadoEn.seconds || 0) < (usuario.primerPedido.seconds || 0)) {
+          usuario.primerPedido = pedido.creadoEn;
+        }
       }
     }
 
-    fetchUsuarios();
-  }, []);
+    // Ordenar por fecha de registro (más recientes primero)
+    return [...usuariosMap.values()].sort(
+      (a, b) => (b.primerPedido?.seconds || 0) - (a.primerPedido?.seconds || 0)
+    );
+  }, [pedidos]);
 
-  return { usuarios, isLoading, error };
+  return { usuarios, isLoading, error: error?.message ?? null };
 }

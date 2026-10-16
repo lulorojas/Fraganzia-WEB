@@ -5,33 +5,42 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "node tools/localizar-imagenes.mjs && vite build && node tools/generate-sitemap.mjs && node tools/prerender.mjs",
+    "preview": "vite preview",
+    "deploy": "npm run build && npx --yes firebase-tools@latest deploy --only hosting --project fraganzia-e9b70",
+    "deploy:rules": "npx --yes firebase-tools@latest deploy --only firestore:rules,firestore:indexes --project fraganzia-e9b70",
+    "test:rules": "npx --yes firebase-tools@latest emulators:exec --only firestore --project demo-fraganzia \"node tools/test-rules.mjs\"",
+    "imagenes": "node tools/localizar-imagenes.mjs",
+    "bot:proveedor": "node tools/bot-proveedor.mjs",
+    "test:bot": "node --test tools/test/*.test.mjs",
+    "test:e2e": "node --test tools/test/e2e/*.e2e.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@hookform/resolvers": "^3.9.0",
     "@tanstack/react-query": "^5.56.0",
-    "firebase": "^10.13.0",
-    "framer-motion": "^11.5.0",
+    "firebase": "^13.0.0",
     "lucide-react": "^0.445.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
-    "react-router-dom": "^6.26.0",
+    "react-router-dom": "^7.18.4",
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.0",
-    "canvas": "^3.2.3",
     "firebase-admin": "^14.1.0",
-    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^6.4.299",
     "postcss": "^8.4.0",
     "puppeteer-core": "^25.5.0",
     "sharp": "^0.35.4",
     "tailwindcss": "^3.4.0",
     "terser": "^5.51.2",
     "vite": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

@@ -10,7 +10,7 @@ import {
 import { SOCIOS } from '../../constants';
 import { formatFecha, diaMes } from '../../utils/format';
 import {
-  PerfumesMasVistos, MasBuscados, BusquedasSinResultado, BajaConversion,
+  PerfumesMasVistos, MasGuardados, MasBuscados, BusquedasSinResultado, BajaConversion,
 } from '../../components/admin/panel/InteresClientes';
 import { Card, CardTitle, Count, Kpi, Seg, Tag, Avatar, Cargando, Empty } from '../../components/admin/ui/kit';
 import { corto, pesos, pl } from '../../components/admin/ui/formato';
@@ -299,9 +299,10 @@ export default function AdminAnalytics() {
       <Titulo sub="Se registra desde el sitio público: los números se acumulan con el tráfico.">¿Qué miran y buscan en la tienda?</Titulo>
       <div className="grid-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
         <PerfumesMasVistos i={0} perfumes={interes?.masVistos} />
-        <MasBuscados i={1} terminos={interes?.masBuscados} />
-        <BusquedasSinResultado i={2} terminos={interes?.sinResultado} />
-        <BajaConversion i={3} perfumes={interes?.bajaConversion} />
+        <MasGuardados i={1} perfumes={interes?.masFavoritos} />
+        <MasBuscados i={2} terminos={interes?.masBuscados} />
+        <BusquedasSinResultado i={3} terminos={interes?.sinResultado} />
+        <BajaConversion i={4} perfumes={interes?.bajaConversion} />
       </div>
     </div>
   );

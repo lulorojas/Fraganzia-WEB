@@ -64,77 +64,19 @@ Interfaz basada en **glassmorphism** (morfismo de vidrio) que crea:
 - Efecto de "vidrio esmerilado" con blur
 - Transparencias sutiles que permiten ver el fondo
 
-### Variantes de Glass
+### Niveles de Glass (3)
 
-#### 1. Glass Subtle (Sutil)
-```css
-.glass-subtle {
-  background: rgba(255, 255, 255, 0.015);
-  backdrop-filter: blur(12px) saturate(150%);
-  border: 1px solid rgba(147, 51, 234, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-}
-```
-**Uso**: Fondos secundarios, elementos de UI menos prominentes
+| Clase | Dónde | Por qué |
+|---|---|---|
+| `.glass` | Superficies secundarias: chips, tablas y tarjetas del admin | Fondo casi transparente, blur 16px |
+| `.glass-strong` | El protagonista de la página (card del hero) | Más opaco y con borde violeta marcado |
+| `.glass-frosted` | Lo que flota sobre el contenido: navbar, modales, menús, asistente, mini-carrito | Fondo 85% opaco: el texto se lee sobre cualquier cosa |
 
-#### 2. Glass (Base)
-```css
-.glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(147, 51, 234, 0.18);
-  border-radius: 16px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.37),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-```
-**Uso**: Cards de productos, formularios, contenedores principales
+`.glass-subtle` y `.glass-medium` quedan como **alias de `.glass`** por compatibilidad. En código nuevo, usá `.glass`.
 
-#### 3. Glass Medium (Medio)
-```css
-.glass-medium {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px) saturate(190%);
-  border: 1px solid rgba(147, 51, 234, 0.2);
-  border-radius: 16px;
-  box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-```
-**Uso**: Modales, paneles destacados, elementos interactivos importantes
+**Cards que se repiten mucho** (catálogo, slider, recomendaciones): usar `.card-surface` (+ `.card-hover`). Tiene el mismo look pero **sin `backdrop-filter`**, que en celulares obliga a re-difuminar el fondo en cada frame de scroll.
 
-#### 4. Glass Strong (Fuerte)
-```css
-.glass-strong {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid rgba(147, 51, 234, 0.3);
-  border-radius: 20px;
-  box-shadow: 
-    0 16px 48px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 0 1px rgba(139, 51, 208, 0.1);
-}
-```
-**Uso**: Headers, hero sections, CTAs principales
-
-#### 5. Glass Frosted (Helado)
-```css
-.glass-frosted {
-  background: rgba(16, 13, 32, 0.75);
-  backdrop-filter: blur(32px) saturate(200%) brightness(1.1);
-  border: 1px solid rgba(192, 132, 252, 0.25);
-  border-radius: 20px;
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 0 0 1px rgba(192, 132, 252, 0.15);
-}
-```
-**Uso**: Overlays, dropdowns, tooltips, elementos flotantes
+Las clases viven en `src/index.css` dentro de `@layer components`, así una utilidad de Tailwind en el mismo elemento (`rounded-none`, `border-0`, `p-*`) las puede pisar.
 
 ### Efectos Interactivos
 
@@ -175,6 +117,8 @@ Interfaz basada en **glassmorphism** (morfismo de vidrio) que crea:
 
 ### Familias tipográficas
 
+> Las fuentes se sirven desde el sitio, recortadas a los caracteres del español: ver `src/assets/fonts/` y `tools/subset-fonts.py`. El logo usa **Playfair Display 700** (solo las letras de FRAGANZIA).
+
 #### 1. Outfit (Display/Headings)
 ```css
 font-family: 'Outfit', sans-serif;
@@ -194,9 +138,9 @@ font-family: 'Manrope', sans-serif;
 #### 3. Cinzel (Luxury/Display)
 ```css
 font-family: 'Cinzel', serif;
-font-style: italic;
-letter-spacing: 0.25em;
+letter-spacing: 0.025em; /* tracking-wide; hasta 0.25em en etiquetas chicas */
 ```
+- **Sin itálica**: Cinzel no tiene cursiva, y `italic` hace que el navegador la incline artificialmente y se vea deformada.
 - **Uso**: Taglines, subtítulos especiales, elementos decorativos
 - **Características**: Serif elegante, inspirada en inscripciones romanas
 - **Efecto**: Agrega sensación de lujo y tradición

@@ -1,21 +1,40 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '../components/layout/ProtectedRoute';
+import { useAuth } from '../context/AuthContext';
+import { registrarVisita } from '../services/visitasService';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Spinner } from '../components/ui/Spinner';
+import { BotonAsistente } from '../components/asistente/BotonAsistente';
+import { MiniCarrito } from '../components/cart/MiniCarrito';
 
+// Las páginas públicas pre-renderizadas van en el bundle principal (son chicas). Así, al arrancar, React renderiza la página de una, igual al HTML
+// pre-renderizado (tools/prerender.mjs), sin pasar por un spinner de carga.
 import Home from '../pages/Home';
 import Catalogo from '../pages/Catalogo';
 import PerfumeDetalle from '../pages/PerfumeDetalle';
-import Carrito from '../pages/Carrito';
-import Login from '../pages/Login';
 import SobreNosotros from '../pages/SobreNosotros';
 import Contacto from '../pages/Contacto';
+import NotFound from '../pages/NotFound';
+
+// El carrito no se pre-renderiza (depende de lo que cada visitante guardó) y
+// arrastra la validación del pedido (zod) y EmailJS: va en su propio chunk.
+const Carrito = lazy(() => import('../pages/Carrito'));
+// Decants: catálogo chico y secundario, no necesita pre-render.
+const Decants = lazy(() => import('../pages/Decants'));
+// Favoritos depende de lo guardado en cada navegador: tampoco se pre-renderiza.
+const Favoritos = lazy(() => import('../pages/Favoritos'));
+// Seguimiento de pedidos: privado (link con id), sin pre-render ni indexado.
+const Pedido = lazy(() => import('../pages/Pedido'));
+const MisPedidos = lazy(() => import('../pages/MisPedidos'));
+const Login = lazy(() => import('../pages/Login'));
 
 // Todo lo de /admin se carga en un chunk aparte: un visitante del catálogo
 // nunca debería descargar el código de finanzas/analytics/etc.
-const AdminLayout = lazy(() => import('../components/layout/AdminLayout').then((m) => ({ default: m.AdminLayout })));
+const AdminLayout = lazy(() =>
+  import('../components/layout/AdminLayout').then((m) => ({ default: m.AdminLayout }))
+);
 const Dashboard = lazy(() => import('../pages/admin/Dashboard'));
 const AdminPedidos = lazy(() => import('../pages/admin/AdminPedidos'));
 const AdminPerfumes = lazy(() => import('../pages/admin/AdminPerfumes'));
@@ -25,25 +44,37 @@ const AdminVentasSocios = lazy(() => import('../pages/admin/AdminVentasSocios'))
 const AdminCompras = lazy(() => import('../pages/admin/AdminCompras'));
 const AdminMovimientos = lazy(() => import('../pages/admin/AdminMovimientos'));
 const AdminAnalytics = lazy(() => import('../pages/admin/AdminAnalytics'));
+const AdminVisitas = lazy(() => import('../pages/admin/AdminVisitas'));
+const AdminBotProveedor = lazy(() => import('../pages/admin/AdminBotProveedor'));
 const AdminAuditoria = lazy(() => import('../pages/admin/AdminAuditoria'));
 const AdminConfig = lazy(() => import('../pages/admin/AdminConfig'));
 
-function AdminSuspense({ children }) {
+function PageSuspense({ children }) {
   return (
-    <Suspense fallback={<div className="flex justify-center p-12"><Spinner /></div>}>
+    <Suspense fallback={<div className="flex min-h-[50vh] justify-center p-12"><Spinner /></div>}>
       {children}
     </Suspense>
   );
 }
 
+// Envuelve cada ruta en su propio Suspense para que, al cargar una sección,
+// el layout que la contiene (sidebar, pestañas de finanzas) siga visible.
+const s = (el) => <PageSuspense>{el}</PageSuspense>;
+
 function PublicLayout() {
+  const { isAdmin, loading } = useAuth();
+  useEffect(() => { if (!loading && !isAdmin) registrarVisita(); }, [isAdmin, loading]);
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="flex-1">
+      {/* Alto mínimo = pantalla completa: mientras carga una página el footer
+          queda fuera de vista, y no "salta" cuando llega el contenido (CLS). */}
+      <main id="main" className="min-h-screen flex-1">
         <Outlet />
       </main>
       <Footer />
+      <BotonAsistente />
+      <MiniCarrito />
     </div>
   );
 }
@@ -55,36 +86,34 @@ export function AppRouter() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/catalogo" element={<Catalogo />} />
+          <Route path="/decants" element={s(<Decants />)} />
           <Route path="/perfume/:id" element={<PerfumeDetalle />} />
-          <Route path="/carrito" element={<Carrito />} />
+          <Route path="/carrito" element={s(<Carrito />)} />
+          <Route path="/favoritos" element={s(<Favoritos />)} />
+          <Route path="/pedido/:id" element={s(<Pedido />)} />
+          <Route path="/mis-pedidos" element={s(<MisPedidos />)} />
           <Route path="/sobre-nosotros" element={<SobreNosotros />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
 
         {/* Login solo para admin */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={s(<Login />)} />
 
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminSuspense>
-                <AdminLayout />
-              </AdminSuspense>
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<AdminSuspense><Dashboard /></AdminSuspense>} />
-          <Route path="pedidos" element={<AdminSuspense><AdminPedidos /></AdminSuspense>} />
-          <Route path="perfumes" element={<AdminSuspense><AdminPerfumes /></AdminSuspense>} />
-          <Route path="stock" element={<AdminSuspense><AdminStock /></AdminSuspense>} />
-          <Route path="promociones" element={<AdminSuspense><AdminPromociones /></AdminSuspense>} />
-          <Route path="ventas" element={<AdminSuspense><AdminVentasSocios /></AdminSuspense>} />
-          <Route path="compras" element={<AdminSuspense><AdminCompras /></AdminSuspense>} />
-          <Route path="movimientos" element={<AdminSuspense><AdminMovimientos /></AdminSuspense>} />
-          <Route path="analytics" element={<AdminSuspense><AdminAnalytics /></AdminSuspense>} />
-          <Route path="auditoria" element={<AdminSuspense><AdminAuditoria /></AdminSuspense>} />
-          <Route path="config" element={<AdminSuspense><AdminConfig /></AdminSuspense>} />
+        <Route path="/admin" element={<ProtectedRoute>{s(<AdminLayout />)}</ProtectedRoute>}>
+          <Route index element={s(<Dashboard />)} />
+          <Route path="pedidos" element={s(<AdminPedidos />)} />
+          <Route path="perfumes" element={s(<AdminPerfumes />)} />
+          <Route path="stock" element={s(<AdminStock />)} />
+          <Route path="promociones" element={s(<AdminPromociones />)} />
+          <Route path="ventas" element={s(<AdminVentasSocios />)} />
+          <Route path="compras" element={s(<AdminCompras />)} />
+          <Route path="movimientos" element={s(<AdminMovimientos />)} />
+          <Route path="analytics" element={s(<AdminAnalytics />)} />
+          <Route path="visitas" element={s(<AdminVisitas />)} />
+          <Route path="bot-proveedor" element={s(<AdminBotProveedor />)} />
+          <Route path="auditoria" element={s(<AdminAuditoria />)} />
+          <Route path="config" element={s(<AdminConfig />)} />
 
           {/* Rutas de la versión anterior del panel */}
           <Route path="usuarios" element={<Navigate to="/admin/analytics" replace />} />

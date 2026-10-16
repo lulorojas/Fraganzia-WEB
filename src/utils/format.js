@@ -14,6 +14,14 @@ export function formatUSD(valor) {
 }
 
 /**
+ * "Marca Nombre" para textos accesibles y títulos, sin repetir la marca cuando
+ * el nombre ya la incluye (en el catálogo suele venir "LATTAFA KHAMRAH 100ML").
+ */
+export function nombreCompleto({ marca = '', nombre = '' }) {
+  return nombre.toLowerCase().includes(marca.toLowerCase()) ? nombre : `${marca} ${nombre}`.trim();
+}
+
+/**
  * Cada movimiento guarda dos fechas distintas: `fecha` es cuándo pasó la
  * operación (la elige el socio y puede ser anterior a hoy, para cargar algo
  * atrasado) y `createdAt` es cuándo se cargó en el sistema.

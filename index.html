@@ -1,41 +1,70 @@
 <!doctype html>
-<html lang="es">
+<html lang="es-AR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Fraganzia - Venta de perfumes árabes de las mejores marcas. Envíos al AMBA." />
-    <title>Fraganzia</title>
-    <link rel="icon" type="image/png" href="/logo-fraganzia-crop.png" />
-    <link rel="apple-touch-icon" href="/logo-fraganzia-crop.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fuentes cargadas de forma no-bloqueante: preload + swap a stylesheet
-         una vez que llegan (ver /fonts-async.js), con <noscript> como
-         fallback. Evita que las 2 requests a fonts.googleapis.com bloqueen
-         el primer render. -->
+    <title>Fraganzia | Perfumes árabes originales en Argentina</title>
+    <meta
+      name="description"
+      content="Perfumes árabes originales de Lattafa, Armaf, Al Haramain y más. Precios en pesos actualizados, pago por transferencia o efectivo y envíos en AMBA."
+    />
+    <link rel="canonical" href="https://fraganzia-e9b70.web.app/" />
+    <meta name="theme-color" content="#06040D" />
+    <meta name="color-scheme" content="dark" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png" />
+    <link rel="apple-touch-icon" href="/icon-180.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Open Graph / redes sociales -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Fraganzia" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:title" content="Fraganzia | Perfumes árabes originales en Argentina" />
+    <meta
+      property="og:description"
+      content="Perfumes árabes originales con precios en pesos actualizados y envíos en AMBA."
+    />
+    <meta property="og:url" content="https://fraganzia-e9b70.web.app/" />
+    <meta property="og:image" content="https://fraganzia-e9b70.web.app/icon-512.png" />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- Conexiones que la app abre apenas arranca: adelantarlas ahorra un
+         round-trip en mobile. -->
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://dolarapi.com" crossorigin />
+    <!-- El logo es el elemento más grande de la home (LCP). -->
     <link
       rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Manrope:wght@400;500;600&family=Cinzel:wght@400;500;600&display=swap"
+      as="image"
+      href="/logo-192.webp"
+      imagesrcset="/logo-96.webp 96w, /logo-192.webp 192w, /logo-256.webp 256w"
+      imagesizes="(min-width: 768px) 115px, (min-width: 640px) 94px, 58px"
+      fetchpriority="high"
     />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    />
-    <script src="/fonts-async.js"></script>
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Manrope:wght@400;500;600&family=Cinzel:wght@400;500;600&display=swap"
-        rel="stylesheet"
-      />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-        rel="stylesheet"
-      />
-    </noscript>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Store",
+        "name": "Fraganzia",
+        "url": "https://fraganzia-e9b70.web.app/",
+        "logo": "https://fraganzia-e9b70.web.app/icon-512.png",
+        "image": "https://fraganzia-e9b70.web.app/icon-512.png",
+        "description": "Tienda de perfumes árabes originales con envíos en AMBA.",
+        "areaServed": "AR",
+        "currenciesAccepted": "ARS",
+        "paymentAccepted": "Transferencia bancaria, Efectivo",
+        "sameAs": ["https://www.instagram.com/fraganzia.ar/"]
+      }
+    </script>
   </head>
   <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-violet focus:px-4 focus:py-2 focus:text-text"
+      >Saltar al contenido</a
+    >
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

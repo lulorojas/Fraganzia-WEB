@@ -5,8 +5,7 @@ export function useCrearPedido() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: crearPedido,
-    onSuccess: (pedidoId) => {
-      console.log('✅ usePedidos - onSuccess ejecutado, ID:', pedidoId);
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pedidos'] });
     },
   });
@@ -30,7 +29,10 @@ export function usePedidoDetalle(id) {
 
 function useInvalidarPedidos() {
   const qc = useQueryClient();
-  return () => qc.invalidateQueries({ queryKey: ['pedidos'] });
+  return () => {
+    qc.invalidateQueries({ queryKey: ['pedidos'] });
+    qc.invalidateQueries({ queryKey: ['pedido'] });
+  };
 }
 
 export function useActualizarEstadoPedido() {

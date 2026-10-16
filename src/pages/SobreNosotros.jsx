@@ -1,5 +1,6 @@
 import { Sparkles, Heart, ShieldCheck } from 'lucide-react';
 import { GlassCard } from '../components/ui/GlassCard';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const VALORES = [
   {
@@ -23,6 +24,7 @@ const VALORES = [
 ];
 
 export default function SobreNosotros() {
+  useDocumentMeta({ title: 'Sobre nosotros', description: 'Fraganzia es una tienda especializada en perfumería árabe y de autor, con envíos al AMBA y atención personalizada por WhatsApp.', path: '/sobre-nosotros' });
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       {/* Hero */}

@@ -10,7 +10,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <LogoFraganzia />
-            <p className="mt-3 font-luxury text-sm italic text-text-secondary">
+            <p className="mt-3 font-luxury text-sm tracking-wide text-text-secondary">
               Venta de perfumes árabes
             </p>
             <a
@@ -26,18 +26,20 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <p className="tracking-luxury mb-3 text-xs uppercase text-lila">Navegación</p>
+            <p className="mb-3 font-luxury text-sm tracking-wide text-text">Navegación</p>
             <ul className="space-y-2 font-body text-sm text-text-secondary">
               <li><Link to="/catalogo" className="transition-base hover:text-text">Catálogo</Link></li>
               <li><Link to="/sobre-nosotros" className="transition-base hover:text-text">Nosotros</Link></li>
               <li><Link to="/contacto" className="transition-base hover:text-text">Contacto</Link></li>
               <li><Link to="/carrito" className="transition-base hover:text-text">Carrito</Link></li>
+              <li><Link to="/favoritos" className="transition-base hover:text-text">Favoritos</Link></li>
+              <li><Link to="/mis-pedidos" className="transition-base hover:text-text">Seguí tu pedido</Link></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <p className="tracking-luxury mb-3 text-xs uppercase text-lila">Contacto</p>
+            <p className="mb-3 font-luxury text-sm tracking-wide text-text">Contacto</p>
             <p className="font-body text-sm text-text-secondary">Pedidos al MD vía Instagram</p>
             <p className="mt-1 font-body text-sm text-text-secondary">o por WhatsApp</p>
             <p className="mt-2 font-body text-xs text-lila">Envíos solo al AMBA</p>
@@ -45,12 +47,12 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-center">
-          <p className="font-body text-xs text-text-secondary/50">
+          <p className="font-body text-xs text-text-secondary">
             © {new Date().getFullYear()} Fraganzia. Todos los derechos reservados.
           </p>
           <Link 
             to="/login" 
-            className="mt-2 inline-block font-body text-[10px] text-text-secondary/30 hover:text-text-secondary/60 transition-colors"
+            className="mt-2 inline-block font-body text-xs text-text-secondary hover:text-text transition-colors"
           >
             Admin
           </Link>

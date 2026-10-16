@@ -1,0 +1,14 @@
+{
+  "name": "Fraganzia — Perfumes árabes",
+  "short_name": "Fraganzia",
+  "description": "Perfumes árabes originales con envíos en AMBA.",
+  "lang": "es-AR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06040D",
+  "theme_color": "#06040D",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

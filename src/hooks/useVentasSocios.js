@@ -14,7 +14,6 @@ function useInvalidarVentasSocios() {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: ['ventasSocios'] });
-    qc.invalidateQueries({ queryKey: ['panelFinanciero'] });
   };
 }
 

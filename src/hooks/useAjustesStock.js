@@ -14,7 +14,6 @@ function useInvalidarAjustes() {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: ['ajustesStock'] });
-    qc.invalidateQueries({ queryKey: ['panelFinanciero'] });
   };
 }
 

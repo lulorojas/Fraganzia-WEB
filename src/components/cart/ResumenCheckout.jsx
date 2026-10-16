@@ -1,9 +1,9 @@
-import { preciosPorMetodo, calcularTotal2x1 } from '../../utils/precios';
+import { calcularCarritoConPromos } from '../../utils/precios';
 import { formatARS } from '../../utils/format';
 import { construirLinkWhatsApp } from '../../utils/whatsapp';
 import { WHATSAPP_NUMERO } from '../../constants';
 
-export function ResumenCheckout({ items, metodoPago, dolarMedio, whatsappNumero, promoDescuentoPct = 0, promoNombre, promo2x1 = false, promo2x1Nombre }) {
+export function ResumenCheckout({ items, metodoPago, dolarMedio, whatsappNumero, promociones }) {
   const tieneCotizacion = Boolean(dolarMedio);
 
   if (!tieneCotizacion) {
@@ -26,36 +26,16 @@ export function ResumenCheckout({ items, metodoPago, dolarMedio, whatsappNumero,
   }
 
   const esEfectivo = metodoPago === 'Efectivo';
-
-  const subtotalARS = items.reduce((acc, item) => {
-    const { precioTransferencia, precioEfectivo } = preciosPorMetodo(item.precioUSD, dolarMedio);
-    const precio = esEfectivo ? precioEfectivo : precioTransferencia;
-    return acc + precio * item.cantidad;
-  }, 0);
-
-  // Descuento de promoción activa
-  let totalARS, descuentoPromoARS;
-  if (promo2x1) {
-    totalARS = calcularTotal2x1(items, esEfectivo, dolarMedio);
-    descuentoPromoARS = subtotalARS - totalARS;
-  } else {
-    totalARS = Math.round((subtotalARS * (1 - promoDescuentoPct / 100)) / 1000) * 1000;
-    descuentoPromoARS = subtotalARS - totalARS;
-  }
+  const { subtotalARS, totalARS, lineas } = calcularCarritoConPromos(items, promociones, esEfectivo, dolarMedio);
 
   return (
     <div className="font-luxury text-text flex flex-col gap-1.5">
       <p className="font-body text-sm text-text-secondary">Subtotal: {formatARS(subtotalARS)}</p>
-      {promo2x1 && (
-        <p className="font-body text-sm text-lila">
-          Promo 2×1{promo2x1Nombre ? ` "${promo2x1Nombre}"` : ''}: -{formatARS(descuentoPromoARS)}
+      {lineas.map((l) => (
+        <p key={l.nombre} className="font-body text-sm text-lila">
+          {l.tipo === '2x1' ? `Promo 2×1 "${l.nombre}"` : `Promo "${l.nombre}" -${l.pct}%`}: -{formatARS(l.monto)}
         </p>
-      )}
-      {!promo2x1 && promoDescuentoPct > 0 && (
-        <p className="font-body text-sm text-lila">
-          Promo {promoNombre ? `"${promoNombre}"` : ''} -{promoDescuentoPct}%: -{formatARS(descuentoPromoARS)}
-        </p>
-      )}
+      ))}
       <div className="mt-1 border-t border-border pt-3">
         <p className="text-2xl font-bold tracking-tight">Total: <span className="text-lila">{formatARS(totalARS)}</span></p>
       </div>

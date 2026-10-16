@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore/lite';
+import { activarAppCheck } from '@app-check';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,7 +11,13 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);
+// App Check (reCAPTCHA v3): solo se activa si hay site key configurada. Con el
+// enforcement prendido en la consola, Firestore rechaza pedidos que no vengan
+// de esta web (bots, scripts). Costo: carga el script de reCAPTCHA en cada
+// visita, lo que resta algo de puntaje en PageSpeed. Ver README.
+// Se inicializa antes de getFirestore() para que ninguna lectura salga sin token.
+activarAppCheck(app);
+
 export const db = getFirestore(app);

@@ -2,15 +2,21 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { Sparkles, Tag as TagIcon, ArrowLeftRight } from 'lucide-react';
+import { Sparkles, Tag as TagIcon, ArrowLeftRight, Search, X } from 'lucide-react';
 import { perfumeSchema } from '../../../schemas/perfumeSchema';
 import { crearPerfume, editarPerfume } from '../../../services/perfumesService';
 import { notificarNuevoPerfume, notificarNuevaPromocion } from '../../../services/emailService';
 import { useCrearPromocion, useEditarPromocion } from '../../../hooks/usePromociones';
+import { usePerfumesAdmin } from '../../../hooks/usePerfumesAdmin';
+import { normalizarTexto } from '../../../utils/texto';
 import { GENEROS, FAMILIAS_OLFATIVAS, MARCAS } from '../../../constants';
-import { Field } from '../ui/kit';
+import { Field, Seg, Thumb } from '../ui/kit';
 import { ModalShell } from './shared';
 import { PasajeForm } from '../PasajeForm';
+
+// En la base hay marcas cargadas en mayúsculas ("LATTAFA") por importaciones viejas: se llevan
+// a la forma de la lista para que el <select> las muestre y no se cambien en silencio al guardar.
+const marcaDeLista = (marca) => MARCAS.find((m) => normalizarTexto(m) === normalizarTexto(marca)) ?? marca;
 
 const arr = (v, sep = ', ') => (!v ? '' : Array.isArray(v) ? v.join(sep) : String(v));
 
@@ -24,13 +30,14 @@ export function PerfumeModal({ editando, onClose, onGuardado }) {
     defaultValues: editando
       ? {
         ...editando,
+        marca: marcaDeLista(editando.marca),
         notasSalida: arr(editando.notasSalida), notasCorazon: arr(editando.notasCorazon),
         notasFondo: arr(editando.notasFondo), imagenes: arr(editando.imagenes, '\n'),
       }
       : {
         nombre: '', marca: MARCAS[0], genero: GENEROS[0], familiaOlfativa: FAMILIAS_OLFATIVAS[0], descripcion: '',
         notasSalida: '', notasCorazon: '', notasFondo: '', precioUSD: '', volumenML: 100, imagenes: '',
-        destacado: false, disponible: true, activo: true,
+        destacado: false, decant: false, disponible: true, activo: true,
       },
   });
 
@@ -61,7 +68,10 @@ export function PerfumeModal({ editando, onClose, onGuardado }) {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Nombre" error={errors.nombre?.message}><input className="input" placeholder="Ej. Khamrah Qahwa" {...register('nombre')} /></Field>
           <Field label="Marca" error={errors.marca?.message}>
-            <select className="select" {...register('marca')}>{MARCAS.map((m) => <option key={m}>{m}</option>)}</select>
+            <select className="select" {...register('marca')}>
+              {editando?.marca && !MARCAS.includes(marcaDeLista(editando.marca)) && <option>{editando.marca}</option>}
+              {MARCAS.map((m) => <option key={m}>{m}</option>)}
+            </select>
           </Field>
           <Field label="Género" error={errors.genero?.message}>
             <select className="select" {...register('genero')}>{GENEROS.map((g) => <option key={g}>{g}</option>)}</select>
@@ -79,6 +89,7 @@ export function PerfumeModal({ editando, onClose, onGuardado }) {
         <Field label="Imágenes (una URL por línea)" error={errors.imagenes?.message}><textarea rows={2} className="input" {...register('imagenes')} /></Field>
         <div className="flex gap-6">
           <label className="flex cursor-pointer items-center gap-2 dim"><input type="checkbox" {...register('destacado')} /> Destacado</label>
+          <label className="flex cursor-pointer items-center gap-2 dim"><input type="checkbox" {...register('decant')} /> En catálogo de decants</label>
           <label className="flex cursor-pointer items-center gap-2 dim"><input type="checkbox" {...register('activo')} /> Publicado</label>
         </div>
         {error && <div className="notice bad">{error}</div>}
@@ -100,11 +111,26 @@ const TIPOS = [
 export function PromocionModal({ editando, onClose, onGuardado }) {
   const crear = useCrearPromocion();
   const editar = useEditarPromocion();
+  const { data: catalogo } = usePerfumesAdmin();
+  // perfumeIds vacío = la promoción vale para todo el catálogo.
+  const [soloElegidos, setSoloElegidos] = useState(Boolean(editando?.perfumeIds?.length));
+  const [perfumeIds, setPerfumeIds] = useState(editando?.perfumeIds ?? []);
+  const [busqueda, setBusqueda] = useState('');
+  const [errorPerfumes, setErrorPerfumes] = useState(null);
+  const porId = new Map((catalogo ?? []).map((x) => [x.id, x]));
+  const sugeridos = busqueda.trim()
+    ? (catalogo ?? []).filter((x) => !perfumeIds.includes(x.id) && x.nombre?.toLowerCase().includes(busqueda.trim().toLowerCase())).slice(0, 8)
+    : [];
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
     defaultValues: editando ?? { titulo: '', descripcion: '', imagen: '', activa: true, orden: 1, tipo: 'descuento', descuentoPorcentaje: 0 },
   });
 
-  async function guardar(datos) {
+  async function guardar(base) {
+    if (soloElegidos && perfumeIds.length === 0) {
+      setErrorPerfumes('Elegí al menos un perfume o volvé a "Todos los perfumes".');
+      return;
+    }
+    const datos = { ...base, perfumeIds: soloElegidos && base.tipo !== 'otro' ? perfumeIds : [] };
     if (editando) {
       await editar.mutateAsync({ id: editando.id, datos });
     } else {
@@ -127,6 +153,36 @@ export function PromocionModal({ editando, onClose, onGuardado }) {
           )}
           <Field label="Orden"><input type="number" className="input" {...register('orden', { valueAsNumber: true })} /></Field>
         </div>
+        {watch('tipo') !== 'otro' && (
+          <Field label="Aplica a" error={errorPerfumes}>
+            <Seg full value={soloElegidos ? 'algunos' : 'todos'} onChange={(v) => { setSoloElegidos(v === 'algunos'); setErrorPerfumes(null); }}
+              options={[{ value: 'todos', label: 'Todos los perfumes' }, { value: 'algunos', label: 'Solo algunos' }]} />
+            {soloElegidos && (
+              <div className="flex flex-col gap-2" style={{ marginTop: 6 }}>
+                <div className="input-wrap"><Search /><input className="input" placeholder="Buscar perfume para agregar…" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} /></div>
+                {sugeridos.length > 0 && (
+                  <div className="pick-results">
+                    {sugeridos.map((x) => (
+                      <button key={x.id} type="button" className="pick-opt" onClick={() => { setPerfumeIds((a) => [...a, x.id]); setBusqueda(''); setErrorPerfumes(null); }}>
+                        <Thumb perfume={x} size={30} /><span className="ell" style={{ flex: 1 }}>{x.nombre} <span className="card-note">· {x.marca}</span></span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {perfumeIds.length > 0 && (
+                  <ul className="flex flex-wrap gap-2" style={{ margin: 0, padding: 0, listStyle: 'none' }} aria-label="Perfumes de la promoción">
+                    {perfumeIds.map((id) => (
+                      <li key={id} className="chip on" style={{ paddingRight: 4 }}>
+                        <span className="ell" style={{ maxWidth: 220 }}>{porId.get(id)?.nombre ?? 'Perfume que ya no está en el catálogo'}</span>
+                        <button type="button" className="btn btn-ghost btn-icon" style={{ width: 22, minHeight: 22, height: 22 }} aria-label="Quitar perfume" onClick={() => setPerfumeIds((a) => a.filter((x) => x !== id))}><X size={13} /></button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </Field>
+        )}
         <Field label="Descripción"><textarea rows={2} className="input" {...register('descripcion')} /></Field>
         <Field label="URL de imagen"><input className="input" {...register('imagen')} /></Field>
         <label className="flex cursor-pointer items-center gap-2 dim"><input type="checkbox" {...register('activa')} /> Activa</label>

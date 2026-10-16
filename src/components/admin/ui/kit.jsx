@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { webpSrc } from '../../../utils/image';
+import { fuentesImagen } from '../../../utils/image';
 
 /** Tarjeta de vidrio. `i` escalona la animación de entrada (máx. 14). */
 export function Card({ i = 0, className = '', style, children, ...props }) {
@@ -110,13 +110,8 @@ export function Thumb({ perfume, src, size = 40 }) {
   const url = src ?? perfume?.imagenes?.[0];
   const style = { width: size, height: size, borderRadius: Math.round(size / 4) };
   if (!url) return <span className="thumb" style={style} />;
-  const webp = webpSrc(url);
-  return (
-    <picture>
-      {webp && <source srcSet={webp} type="image/webp" />}
-      <img className="thumb" src={url} alt="" loading="lazy" style={style} />
-    </picture>
-  );
+  const fuentes = fuentesImagen(url);
+  return <img className="thumb" src={fuentes.src} srcSet={fuentes.srcSet} sizes={`${size}px`} alt="" loading="lazy" style={style} />;
 }
 
 export function Avatar({ nombre = '', socioId }) {

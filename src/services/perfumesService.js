@@ -1,8 +1,10 @@
 import {
   collection, doc, getDoc, getDocs, query, where,
-  addDoc, updateDoc, deleteDoc, serverTimestamp,
-} from 'firebase/firestore';
+  addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp,
+} from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
+import { normalizarTexto } from '../utils/texto';
+import { coincide } from '../utils/busqueda';
 
 const COLLECTION = 'perfumes';
 
@@ -15,42 +17,74 @@ function ordenarPorFechaDesc(perfumes) {
 }
 
 /**
- * Trae todos los perfumes con `activo == true` (único filtro resuelto por
- * Firestore, con índice de campo simple automático — sin necesidad de
- * índices compuestos) y aplica el resto de los filtros combinados en el
- * cliente: `disponible`, `genero`, `marca`, `familiaOlfativa`, `destacado`
- * y `busqueda` (FR-002 exige que los filtros sean combinables entre sí).
+ * Trae todos los perfumes públicos (`activo == true` resuelto por Firestore,
+ * `disponible` en el cliente), ordenados del más nuevo al más viejo.
  *
- * Nota: los 4 índices compuestos de perfumes definidos en
- * firestore.indexes.json (activo+genero, activo+marca, activo+
- * familiaOlfativa, activo+destacado, todos +createdAt) quedan sin uso por
- * esta estrategia. Se dejan tal cual — fueron ratificados en la
- * constitución v1.0.0 y modificarlos requiere una enmienda formal, no una
- * limpieza unilateral. Si el catálogo crece y conviene mover estos filtros
- * a Firestore, ya están definidos y desplegados.
+ * Se lee el catálogo UNA vez y se cachea (ver usePerfumes): los filtros se
+ * aplican en memoria con `filtrarPerfumes`, así tipear en el buscador o
+ * cambiar un filtro no vuelve a leer ~400 documentos de Firestore.
+ *
+ * Nota: los índices compuestos de perfumes definidos en firestore.indexes.json
+ * quedan sin uso por esta estrategia. Se dejan tal cual — fueron ratificados
+ * en la constitución v1.0.0. Si el catálogo crece mucho y conviene mover los
+ * filtros a Firestore, ya están definidos y desplegados.
  */
-export async function listarPerfumesPublicos(filtros = {}) {
+export async function listarPerfumesPublicos() {
   const snap = await getDocs(query(collection(db, COLLECTION), where('activo', '==', true)));
-  let perfumes = ordenarPorFechaDesc(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  return ordenarPorFechaDesc(snap.docs.map((d) => ({ id: d.id, ...d.data() }))).filter(
+    (p) => p.disponible === true
+  );
+}
 
-  perfumes = perfumes.filter((p) => p.disponible === true);
+// Margen para el desfase entre el reloj del visitante y el del servidor, y
+// antigüedad máxima de la copia previa antes de volver a leer todo (cubre lo
+// que el modo incremental no ve, como un perfume borrado).
+const MARGEN_RELOJ_MS = 10 * 60 * 1000;
+const EDAD_MAXIMA_COPIA_MS = 3 * 24 * 60 * 60 * 1000;
 
-  if (filtros.genero) perfumes = perfumes.filter((p) => p.genero === filtros.genero);
-  if (filtros.marca) perfumes = perfumes.filter((p) => p.marca === filtros.marca);
-  if (filtros.familiaOlfativa) {
-    perfumes = perfumes.filter((p) => p.familiaOlfativa === filtros.familiaOlfativa);
+/**
+ * Actualiza el catálogo que ya se tiene (la "foto" del HTML o la última
+ * lectura) pidiendo SOLO los perfumes modificados desde `desde` (ms): cuesta
+ * una lectura por perfume cambiado en vez de ~400 por visita. Todo lo que
+ * escribe perfumes (admin y bot de precios) actualiza `updatedAt`.
+ *
+ * Sin copia previa, o si es muy vieja, lee el catálogo completo.
+ */
+export async function actualizarPerfumesPublicos(previos, desde) {
+  if (!previos?.length || !desde || Date.now() - desde > EDAD_MAXIMA_COPIA_MS) {
+    return listarPerfumesPublicos();
   }
-  if (filtros.destacado) perfumes = perfumes.filter((p) => p.destacado === true);
+  const snap = await getDocs(
+    query(collection(db, COLLECTION), where('updatedAt', '>', Timestamp.fromMillis(desde - MARGEN_RELOJ_MS)))
+  );
+  if (snap.empty) return previos;
 
-  if (filtros.busqueda) {
-    const termino = filtros.busqueda.trim().toLowerCase();
-    perfumes = perfumes.filter(
-      (p) =>
-        p.nombre?.toLowerCase().includes(termino) || p.marca?.toLowerCase().includes(termino)
-    );
-  }
+  const cambios = new Map(snap.docs.map((d) => [d.id, { id: d.id, ...d.data() }]));
+  const visible = (p) => p.activo === true && p.disponible === true;
+  const idsPrevios = new Set(previos.map((p) => p.id));
+  const vigentes = previos
+    .filter((p) => !cambios.has(p.id) || visible(cambios.get(p.id)))
+    .map((p) => cambios.get(p.id) ?? p);
+  const nuevos = ordenarPorFechaDesc([...cambios.values()].filter((p) => !idsPrevios.has(p.id) && visible(p)));
+  return [...nuevos, ...vigentes];
+}
 
-  return perfumes;
+/** Aplica los filtros combinables del catálogo (FR-002) sobre la lista cacheada. */
+export function filtrarPerfumes(perfumes, filtros = {}) {
+  if (!perfumes) return perfumes;
+  // La marca se compara sin mayúsculas ni tildes: en la base conviven
+  // "Lattafa" y "LATTAFA". La búsqueda es por palabras sueltas (utils/busqueda).
+  const marca = normalizarTexto(filtros.marca);
+  // El género admite varios a la vez (['Masculino', 'Unisex']) o uno solo.
+  const generos = [].concat(filtros.genero ?? []);
+  return perfumes.filter(
+    (p) =>
+      (!generos.length || generos.includes(p.genero)) &&
+      (!marca || normalizarTexto(p.marca) === marca) &&
+      (!filtros.familiaOlfativa || p.familiaOlfativa === filtros.familiaOlfativa) &&
+      (!filtros.destacado || p.destacado === true) &&
+      coincide(p, filtros.busqueda)
+  );
 }
 
 export async function obtenerPerfumePorId(id) {

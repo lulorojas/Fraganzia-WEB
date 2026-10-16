@@ -1,6 +1,13 @@
-import { createContext, useContext, useEffect, useReducer } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { leerCarrito, guardarCarrito } from '../utils/cartStorage';
-import { obtenerPerfumePorId } from '../services/perfumesService';
+import { incrementarAgregadoCarrito } from '../services/estadisticasService';
+import { registrarPaso } from '../services/embudoService';
+import { estaHidratando } from '../utils/hidratacion';
+
+// Tope por producto: coincide con el schema del pedido y evita pedidos
+// absurdos por un click de más.
+export const CANTIDAD_MAX = 10;
+const acotar = (n) => Math.min(CANTIDAD_MAX, Math.max(1, Math.floor(Number(n) || 1)));
 
 const initialState = {
   items: [],
@@ -16,12 +23,15 @@ function cartReducer(state, action) {
           ...state,
           items: state.items.map((item) =>
             item.perfumeId === action.payload.perfumeId
-              ? { ...item, cantidad: item.cantidad + action.payload.cantidad }
+              ? { ...item, cantidad: acotar(item.cantidad + action.payload.cantidad) }
               : item
           ),
         };
       }
-      return { ...state, items: [...state.items, action.payload] };
+      return {
+        ...state,
+        items: [...state.items, { ...action.payload, cantidad: acotar(action.payload.cantidad) }],
+      };
     }
     case 'REMOVE_ITEM':
       return {
@@ -33,7 +43,7 @@ function cartReducer(state, action) {
         ...state,
         items: state.items.map((item) =>
           item.perfumeId === action.payload.perfumeId
-            ? { ...item, cantidad: action.payload.cantidad }
+            ? { ...item, cantidad: acotar(action.payload.cantidad) }
             : item
         ),
       };
@@ -41,8 +51,8 @@ function cartReducer(state, action) {
       return { ...state, metodoPago: action.payload };
     case 'CLEAR_CART':
       return initialState;
-    case 'MIGRATE_ITEMS':
-      return { ...state, items: action.payload };
+    case 'HYDRATE':
+      return action.payload;
     default:
       return state;
   }
@@ -51,51 +61,75 @@ function cartReducer(state, action) {
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
+  // Al hidratar el HTML pre-generado se arranca con el carrito vacío (igual que
+  // el servidor) y recién al montar se carga el guardado; si no, React descarta
+  // el HTML y tira errores de hidratación a quien ya tiene productos.
+  const [hidratando] = useState(estaHidratando);
   const [state, dispatch] = useReducer(cartReducer, initialState, (init) => {
+    if (hidratando) return init;
     const guardado = leerCarrito();
     return guardado ?? init;
   });
+  // El primer guardado (mismo commit que la carga) se saltea: sería el carrito vacío.
+  const saltarPrimerGuardado = useRef(hidratando);
 
-  // Migración: actualizar items sin imagenes desde Firestore
   useEffect(() => {
-    async function migrateItems() {
-      const itemsSinImagenes = state.items.filter(item => !item.imagenes || item.imagenes.length === 0);
-      
-      if (itemsSinImagenes.length > 0) {
-        const itemsActualizados = await Promise.all(
-          state.items.map(async (item) => {
-            if (!item.imagenes || item.imagenes.length === 0) {
-              try {
-                const perfume = await obtenerPerfumePorId(item.perfumeId);
-                if (perfume?.imagenes) {
-                  return { ...item, imagenes: perfume.imagenes };
-                }
-              } catch (err) {
-                console.warn('No se pudo cargar imagen para', item.perfumeId);
-              }
-            }
-            return item;
-          })
-        );
-        
-        dispatch({ type: 'MIGRATE_ITEMS', payload: itemsActualizados });
-      }
+    if (!hidratando) return;
+    const guardado = leerCarrito();
+    if (guardado) dispatch({ type: 'HYDRATE', payload: guardado });
+  }, [hidratando]);
+
+  // Último producto agregado: lo usa el mini-carrito para abrirse. No va al
+  // estado persistido (no tiene sentido reabrirlo al recargar la página).
+  const [ultimoAgregado, setUltimoAgregado] = useState(null);
+
+  useEffect(() => {
+    if (saltarPrimerGuardado.current) {
+      saltarPrimerGuardado.current = false;
+      return;
     }
-    
-    migrateItems();
-  }, []); // Solo ejecutar una vez al montar
-
-  useEffect(() => {
     guardarCarrito(state);
   }, [state]);
 
-  return (
-    <CartContext.Provider value={{ state, dispatch }}>
-      {children}
-    </CartContext.Provider>
+  /**
+   * Agrega un perfume (objeto del catálogo) y registra la estadística.
+   * Para decants, `perfume.id` ya viene como id compuesto (ver Decants.jsx)
+   * para que 5ml y 10ml del mismo perfume sean líneas separadas del carrito;
+   * `perfumeIdBase` es el id real en Firestore, para la estadística y para
+   * revalidar disponibilidad en el checkout (Carrito.jsx).
+   */
+  const agregar = useCallback((perfume, cantidad = 1) => {
+    dispatch({
+      type: 'ADD_ITEM',
+      payload: {
+        perfumeId: perfume.id,
+        nombre: perfume.nombre,
+        marca: perfume.marca,
+        precioUSD: perfume.precioUSD,
+        imagenes: perfume.imagenes,
+        esDecant: perfume.esDecant ?? false,
+        ml: perfume.ml ?? null,
+        perfumeIdBase: perfume.perfumeIdBase ?? perfume.id,
+        cantidad,
+      },
+    });
+    incrementarAgregadoCarrito(perfume.perfumeIdBase ?? perfume.id);
+    registrarPaso('carrito');
+    setUltimoAgregado({ perfumeId: perfume.id, cantidad, momento: Date.now() });
+  }, []);
+
+  const olvidarUltimoAgregado = useCallback(() => setUltimoAgregado(null), []);
+
+  const value = useMemo(
+    () => ({ state, dispatch, agregar, ultimoAgregado, olvidarUltimoAgregado }),
+    [state, agregar, ultimoAgregado, olvidarUltimoAgregado]
   );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
-  return useContext(CartContext);
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error('useCart debe usarse dentro de <CartProvider>');
+  return ctx;
 }

@@ -1,34 +1,16 @@
-import { collection, addDoc, getDocs, getDoc, doc, query, orderBy, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, getDoc, doc, query, orderBy, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
 import { pedidoSchema } from '../schemas/pedidoSchema';
 
 const COLLECTION = 'pedidos';
 
 export async function crearPedido(pedido) {
-  console.log('🔵 crearPedido - INICIANDO');
-  console.log('📦 Pedido recibido:', JSON.stringify(pedido, null, 2));
-  
-  try {
-    console.log('🔵 Validando con schema...');
-    const datos = pedidoSchema.parse(pedido);
-    console.log('✅ Validación OK');
-    
-    console.log('🔵 Guardando en Firestore...');
-    const docRef = await addDoc(collection(db, COLLECTION), {
-      ...datos,
-      creadoEn: serverTimestamp(),
-    });
-    console.log('✅ GUARDADO EXITOSO - ID:', docRef.id);
-    return docRef.id;
-  } catch (error) {
-    console.error('❌ ERROR EN crearPedido:', error);
-    console.error('❌ Error name:', error.name);
-    console.error('❌ Error message:', error.message);
-    if (error.issues) {
-      console.error('❌ Zod validation errors:', error.issues);
-    }
-    throw error;
-  }
+  const datos = pedidoSchema.parse(pedido);
+  const docRef = await addDoc(collection(db, COLLECTION), {
+    ...datos,
+    creadoEn: serverTimestamp(),
+  });
+  return docRef.id;
 }
 
 export async function listarPedidos() {
@@ -42,8 +24,13 @@ export async function obtenerPedidoPorId(id) {
   return { id: snap.id, ...snap.data() };
 }
 
+// Guarda también cuándo pasó a cada estado (lo muestra la línea de tiempo del
+// seguimiento que ve el cliente).
 export async function actualizarEstadoPedido(id, estado) {
-  await updateDoc(doc(db, COLLECTION, id), { estado });
+  await updateDoc(doc(db, COLLECTION, id), {
+    estado,
+    [`historial.${estado}`]: serverTimestamp(),
+  });
 }
 
 export async function eliminarPedido(id) {

@@ -27,13 +27,15 @@ export function Toast({ message, type = 'success', onClose }) {
       {icons[type]}
       <p className="text-sm text-text font-body line-clamp-2 flex-1">{message}</p>
       <button
+        type="button"
+        aria-label="Cerrar aviso"
         onClick={() => {
           setIsExiting(true);
           setTimeout(onClose, 300);
         }}
         className="ml-2 flex-shrink-0 text-text-secondary hover:text-text transition-base"
       >
-        <X size={16} />
+        <X size={16} aria-hidden="true" />
       </button>
     </div>
   );
