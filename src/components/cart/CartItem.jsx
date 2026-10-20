@@ -17,7 +17,7 @@ export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
       <div className="flex-1 min-w-0">
         <p className="font-body text-sm text-text font-medium truncate">{item.marca}</p>
         <p className="text-xs text-text-secondary line-clamp-2 sm:line-clamp-1">{item.nombre}</p>
-        <p className="mt-1 text-sm text-champagne font-medium tabular-nums">{formatARS(precioARS)} c/u</p>
+        <p className="mt-1 text-sm text-lila font-medium tabular-nums">{formatARS(precioARS)} c/u</p>
       </div>
 
       {/* Controles de cantidad: 44px de área táctil */}
@@ -27,7 +27,7 @@ export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
           onClick={() => onCambiarCantidad(item.perfumeId, Math.max(1, item.cantidad - 1))}
           disabled={item.cantidad <= 1}
           aria-label={`Restar una unidad de ${nombre}`}
-          className="flex h-11 w-9 items-center justify-center text-text transition-base hover:text-champagne disabled:opacity-40"
+          className="flex h-11 w-9 items-center justify-center text-text transition-base hover:text-lila disabled:opacity-40"
         >
           <Minus size={14} aria-hidden="true" />
         </button>
@@ -39,7 +39,7 @@ export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
           onClick={() => onCambiarCantidad(item.perfumeId, Math.min(CANTIDAD_MAX, item.cantidad + 1))}
           disabled={item.cantidad >= CANTIDAD_MAX}
           aria-label={`Sumar una unidad de ${nombre}`}
-          className="flex h-11 w-9 items-center justify-center text-text transition-base hover:text-champagne disabled:opacity-40"
+          className="flex h-11 w-9 items-center justify-center text-text transition-base hover:text-lila disabled:opacity-40"
         >
           <Plus size={14} aria-hidden="true" />
         </button>

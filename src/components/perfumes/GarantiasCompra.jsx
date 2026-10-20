@@ -21,7 +21,7 @@ export function GarantiasCompra({ variante = 'lista' }) {
       <ul className="grid grid-cols-2 gap-x-4 gap-y-3 lg:grid-cols-4">
         {ITEMS.map(({ Icono, corto }) => (
           <li key={corto} className="flex items-center justify-center gap-2.5 font-body text-[13px] text-text sm:text-sm">
-            <Icono size={18} className="shrink-0 text-gold" aria-hidden="true" />
+            <Icono size={18} className="shrink-0 text-lila" aria-hidden="true" />
             {corto}
           </li>
         ))}
@@ -33,7 +33,7 @@ export function GarantiasCompra({ variante = 'lista' }) {
     <ul aria-label="Cómo comprás en Fraganzia" className="grid gap-2 sm:grid-cols-2">
       {ITEMS.map(({ Icono, texto }) => (
         <li key={texto} className="flex items-center gap-2 font-body text-xs text-text-secondary">
-          <Icono size={16} className="shrink-0 text-gold" aria-hidden="true" />
+          <Icono size={16} className="shrink-0 text-lila" aria-hidden="true" />
           {texto}
         </li>
       ))}

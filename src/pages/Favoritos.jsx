@@ -45,7 +45,7 @@ export default function Favoritos() {
           <button
             type="button"
             onClick={() => quitar(noDisponibles)}
-            className="rounded-lg px-3 py-1.5 font-body text-sm text-champagne transition-colors hover:text-text"
+            className="rounded-lg px-3 py-1.5 font-body text-sm text-lila transition-colors hover:text-text"
           >
             Quitarlos de la lista
           </button>
@@ -61,7 +61,7 @@ export default function Favoritos() {
           onAgregar={agregar}
           vacio={
             <div className="card-surface mx-auto flex max-w-md flex-col items-center gap-4 rounded-2xl p-8 text-center">
-              <Heart size={32} className="text-champagne" aria-hidden="true" />
+              <Heart size={32} className="text-lila" aria-hidden="true" />
               <div>
                 <h2 className="font-display text-xl text-text">Todavía no guardaste perfumes</h2>
                 <p className="mt-2 font-body text-sm text-text-secondary">
@@ -71,14 +71,14 @@ export default function Favoritos() {
               <div className="flex flex-wrap justify-center gap-3">
                 <Link
                   to="/catalogo"
-                  className="gradient-gold rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-ink"
+                  className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-white"
                 >
                   Ver catálogo
                 </Link>
                 <button
                   type="button"
                   onClick={abrirAsistente}
-                  className="flex items-center gap-1.5 rounded-xl border border-gold/30 px-5 py-2.5 font-body text-sm font-semibold text-text transition-colors hover:border-gold"
+                  className="flex items-center gap-1.5 rounded-xl border border-violet/30 px-5 py-2.5 font-body text-sm font-semibold text-text transition-colors hover:border-violet"
                 >
                   <Sparkles size={16} aria-hidden="true" />
                   Que me recomienden

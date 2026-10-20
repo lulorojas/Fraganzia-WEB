@@ -16,7 +16,7 @@ function paginasVisibles(actual, total) {
 function Paginador({ pagina, total, onCambiar }) {
   const base =
     'flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 font-body text-sm transition-base';
-  const inactivo = 'border-border text-text-secondary hover:border-gold hover:text-text';
+  const inactivo = 'border-border text-text-secondary hover:border-violet hover:text-text';
   const deshabilitado = 'disabled:pointer-events-none disabled:opacity-40';
 
   return (
@@ -40,7 +40,7 @@ function Paginador({ pagina, total, onCambiar }) {
             onClick={() => onCambiar(n)}
             aria-label={`Página ${n}`}
             aria-current={n === pagina ? 'page' : undefined}
-            className={`${base} ${n === pagina ? 'gradient-gold border-transparent font-semibold text-ink' : inactivo}`}
+            className={`${base} ${n === pagina ? 'gradient-violet border-transparent font-semibold text-white' : inactivo}`}
           >
             {n}
           </button>

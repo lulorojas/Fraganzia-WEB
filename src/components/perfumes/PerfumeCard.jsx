@@ -50,11 +50,11 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
           />
         ) : (
           <div className="aspect-square w-full flex items-center justify-center">
-            <span className="text-6xl opacity-10 select-none text-gold">✦</span>
+            <span className="text-6xl opacity-10 select-none text-violet">✦</span>
           </div>
         )}
         {pct > 0 && (
-          <span className="absolute top-3 right-3 rounded-full bg-gold px-3 py-1.5 text-xs font-bold text-ink shadow-xl">
+          <span className="absolute top-3 right-3 rounded-full bg-violet px-3 py-1.5 text-xs font-bold text-white shadow-xl">
             -{pct}%
           </span>
         )}
@@ -62,13 +62,13 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
 
       {/* ── Info: marca + nombre ── */}
       <Link to={url} className="block px-3 pt-3 pb-2 sm:px-5 sm:pt-4 focus-visible:outline-offset-[-2px]">
-        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-wide2 text-champagne mb-1 sm:mb-1.5 truncate">{perfume.marca}</p>
+        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-wide2 text-lila mb-1 sm:mb-1.5 truncate">{perfume.marca}</p>
         <h2 className="font-display text-sm sm:text-base font-semibold leading-snug text-text line-clamp-2 min-h-[2.5rem] sm:min-h-[2.75rem]">{perfume.nombre}</h2>
       </Link>
 
       {/* ── Divider gradiente ── */}
       <div className="px-3 sm:px-5">
-        <div className="h-px bg-gradient-to-r from-gold/10 via-gold/40 to-gold/10" />
+        <div className="h-px bg-gradient-to-r from-violet/10 via-violet/40 to-violet/10" />
       </div>
 
       {/* ── Precios + botón ── */}
@@ -109,7 +109,7 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
           type="button"
           onClick={() => onAgregar?.(perfume)}
           aria-label={`Agregar al carrito: ${nombreCompleto(perfume)}`}
-          className="w-full rounded-xl bg-gold/10 hover:bg-gold hover:text-ink border border-gold/30 hover:border-gold py-2.5 text-xs sm:text-sm font-semibold text-text transition-colors duration-300"
+          className="w-full rounded-xl bg-violet/10 hover:bg-violet hover:text-white border border-violet/30 hover:border-violet py-2.5 text-xs sm:text-sm font-semibold text-text transition-colors duration-300"
         >
           Agregar al carrito
         </button>

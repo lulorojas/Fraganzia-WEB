@@ -12,8 +12,8 @@ export function BotonFavorito({ perfume, variante = 'flotante', className = '' }
 
   const estilos =
     variante === 'flotante'
-      ? 'h-9 w-9 bg-white/90 text-gold shadow-md hover:bg-white'
-      : 'h-11 w-11 border border-border text-text-secondary hover:border-champagne/50 hover:text-champagne';
+      ? 'h-9 w-9 bg-white/90 text-violet shadow-md hover:bg-white'
+      : 'h-11 w-11 border border-border text-text-secondary hover:border-lila/50 hover:text-lila';
 
   return (
     <button

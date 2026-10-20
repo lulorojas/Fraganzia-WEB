@@ -24,7 +24,7 @@ export default function Contacto() {
       </div>
 
       {/* WhatsApp principal */}
-      <GlassCard className="mb-6 p-8 flex flex-col items-center gap-4 text-center border border-champagne/30">
+      <GlassCard className="mb-6 p-8 flex flex-col items-center gap-4 text-center border border-lila/30">
         <MessageCircle className="h-12 w-12 text-success" />
         <h2 className="font-display text-2xl text-text">WhatsApp</h2>
         <p className="font-body text-text-secondary">
@@ -49,7 +49,7 @@ export default function Contacto() {
       {/* Info adicional */}
       <div className="grid gap-4 sm:grid-cols-2">
         <GlassCard className="p-5 flex items-start gap-4">
-          <Clock className="h-6 w-6 text-champagne shrink-0 mt-0.5" />
+          <Clock className="h-6 w-6 text-lila shrink-0 mt-0.5" />
           <div>
             <h3 className="font-display text-text mb-1">Horario de atención</h3>
             <p className="font-body text-text-secondary text-sm">
@@ -60,7 +60,7 @@ export default function Contacto() {
         </GlassCard>
 
         <GlassCard className="p-5 flex items-start gap-4">
-          <MapPin className="h-6 w-6 text-champagne shrink-0 mt-0.5" />
+          <MapPin className="h-6 w-6 text-lila shrink-0 mt-0.5" />
           <div>
             <h3 className="font-display text-text mb-1">Envíos</h3>
             <p className="font-body text-text-secondary text-sm">
@@ -71,7 +71,7 @@ export default function Contacto() {
         </GlassCard>
 
         <GlassCard className="p-5 flex items-start gap-4 sm:col-span-2">
-          <Mail className="h-6 w-6 text-champagne shrink-0 mt-0.5" />
+          <Mail className="h-6 w-6 text-lila shrink-0 mt-0.5" />
           <div>
             <h3 className="font-display text-text mb-1">Sobre tus pedidos</h3>
             <p className="font-body text-text-secondary text-sm">

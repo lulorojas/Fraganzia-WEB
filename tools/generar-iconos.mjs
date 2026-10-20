@@ -9,7 +9,7 @@ const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Applic
 // La fuente va incrustada: una página cargada con setContent no puede leer archivos locales.
 const FUENTE = `data:font/woff2;base64,${readFileSync('src/assets/fonts/outfit.woff2').toString('base64')}`;
 
-const DEGRADE = `<linearGradient id="oro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAD7A8"/><stop offset=".5" stop-color="#C5A059"/><stop offset="1" stop-color="#8F7338"/></linearGradient>`;
+const DEGRADE = `<linearGradient id="oro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9D5FF"/><stop offset=".5" stop-color="#C084FC"/><stop offset="1" stop-color="#7B2FBE"/></linearGradient>`;
 
 // El monograma en su caja de 64x76. `fino` agrega el arco interior (solo en tamaños grandes).
 const marca = (fino) => `
@@ -25,20 +25,20 @@ function icono(px, { redondeado, fino }) {
   const y = (px - alto) / 2;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 ${px} ${px}">
     <defs>${DEGRADE}</defs>
-    <rect width="${px}" height="${px}" ${redondeado ? `rx="${px * 0.22}"` : ''} fill="#0A0908"/>
+    <rect width="${px}" height="${px}" ${redondeado ? `rx="${px * 0.22}"` : ''} fill="#06040D"/>
     <svg x="${x}" y="${y}" width="${ancho}" height="${alto}" viewBox="0 0 64 76">${marca(fino)}</svg>
   </svg>`;
 }
 
 const og = `<!doctype html><meta charset="utf-8"><style>
   @font-face { font-family: Outfit; font-weight: 300 700; src: url('${FUENTE}') format('woff2'); }
-  html, body { margin: 0; width: 1200px; height: 630px; background: #0A0908; font-family: Outfit, sans-serif; color: #F5EFE4; }
-  .fondo { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 80% at 50% 0%, rgba(197,160,89,.22), transparent 70%); }
+  html, body { margin: 0; width: 1200px; height: 630px; background: #06040D; font-family: Outfit, sans-serif; color: #F8F4FF; }
+  .fondo { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 80% at 50% 0%, rgba(123,47,190,.34), transparent 70%); }
   .caja { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 34px; }
   .nombre { font-size: 76px; font-weight: 500; letter-spacing: .34em; margin-right: -.34em; }
-  .linea { width: 120px; height: 1px; background: linear-gradient(90deg, transparent, #C5A059, transparent); }
-  .lema { font-size: 30px; font-weight: 300; letter-spacing: .28em; margin-right: -.28em; color: #C5A059; text-transform: uppercase; }
-  .borde { position: absolute; inset: 26px; border: 1px solid rgba(197,160,89,.35); }
+  .linea { width: 120px; height: 1px; background: linear-gradient(90deg, transparent, #C084FC, transparent); }
+  .lema { font-size: 30px; font-weight: 300; letter-spacing: .28em; margin-right: -.28em; color: #C084FC; text-transform: uppercase; }
+  .borde { position: absolute; inset: 26px; border: 1px solid rgba(192,132,252,.35); }
 </style><div class="fondo"></div><div class="borde"></div>
 <div class="caja">
   <svg width="${(150 * 64) / 76}" height="150" viewBox="0 0 64 76"><defs>${DEGRADE}</defs>${marca(true)}</svg>

@@ -56,7 +56,7 @@ export default function SobreNosotros() {
       <div className="grid gap-6 sm:grid-cols-3">
         {VALORES.map(({ Icon, titulo, descripcion }) => (
           <GlassCard key={titulo} className="flex flex-col items-center text-center p-6 gap-3">
-            <Icon className="h-8 w-8 text-champagne" />
+            <Icon className="h-8 w-8 text-lila" />
             <h3 className="font-display text-lg text-text">{titulo}</h3>
             <p className="font-body text-text-secondary text-sm leading-relaxed">{descripcion}</p>
           </GlassCard>
@@ -64,7 +64,7 @@ export default function SobreNosotros() {
       </div>
 
       {/* Compromiso */}
-      <GlassCard className="mt-10 p-6 border border-champagne/30">
+      <GlassCard className="mt-10 p-6 border border-lila/30">
         <p className="font-body text-text-secondary leading-relaxed text-center italic">
           "En Fraganzia creemos que un buen perfume no es un lujo — es una forma de expresión.
           Por eso trabajamos cada día para acercarte las mejores fragancias al mejor precio posible."

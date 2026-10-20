@@ -2,7 +2,7 @@ import { useId } from 'react';
 
 /**
  * Monograma: un arco de mihrab (la arquitectura que enmarca la caligrafía y la
- * perfumería oriental) con una F adentro. Dorado en degradé, sin serifas.
+ * perfumería oriental) con una F adentro. Lila en degradé, sin serifas.
  * `simple` saca el arco interior fino para que aguante tamaños chicos.
  */
 export function MarcaFraganzia({ className = '', simple = false, style }) {
@@ -18,9 +18,9 @@ export function MarcaFraganzia({ className = '', simple = false, style }) {
     >
       <defs>
         <linearGradient id={oro} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#EAD7A8" />
-          <stop offset=".5" stopColor="#C5A059" />
-          <stop offset="1" stopColor="#8F7338" />
+          <stop offset="0" stopColor="#E9D5FF" />
+          <stop offset=".5" stopColor="#C084FC" />
+          <stop offset="1" stopColor="#7B2FBE" />
         </linearGradient>
       </defs>
       <path
@@ -72,7 +72,7 @@ export function LogoFraganzia({ size = 1, className = '', subtitulo = false }) {
         </span>
         {subtitulo && (
           <span
-            className="font-display font-normal uppercase text-gold"
+            className="font-display font-normal uppercase text-lila"
             style={{ fontSize: 'calc(8.5px * var(--logo-scale, 1))', letterSpacing: '0.5em', marginTop: 'calc(7px * var(--logo-scale, 1))' }}
           >
             Perfumes árabes

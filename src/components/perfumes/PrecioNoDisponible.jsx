@@ -8,7 +8,7 @@ export function PrecioNoDisponible({ nombrePerfume, whatsappNumero }) {
         href={generarLinkConsultaPrecio(nombrePerfume, whatsappNumero)}
         target="_blank"
         rel="noreferrer"
-        className="text-sm underline text-champagne transition-base hover:text-gold-light"
+        className="text-sm underline text-lila transition-base hover:text-violet-light"
         onClick={(e) => e.stopPropagation()}
       >
         Consultá por WhatsApp

@@ -29,13 +29,13 @@ function LineaDeTiempo({ pedido }) {
             <div className="flex flex-col items-center">
               <span
                 className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${
-                  hecho ? 'border-gold bg-gold text-ink' : 'border-border text-text-secondary'
-                } ${esActual ? 'ring-4 ring-gold/25' : ''}`}
+                  hecho ? 'border-violet bg-violet text-white' : 'border-border text-text-secondary'
+                } ${esActual ? 'ring-4 ring-violet/25' : ''}`}
               >
                 {hecho ? <Check size={16} aria-hidden="true" /> : <span className="text-xs">{i + 1}</span>}
               </span>
               {i < PASOS.length - 1 && (
-                <span className={`my-1 h-8 w-0.5 ${i < actual ? 'bg-gold' : 'bg-border'}`} aria-hidden="true" />
+                <span className={`my-1 h-8 w-0.5 ${i < actual ? 'bg-violet' : 'bg-border'}`} aria-hidden="true" />
               )}
             </div>
             <div className="pb-4 pt-1">
@@ -90,7 +90,7 @@ export default function Pedido() {
     return (
       <div className="mx-auto max-w-md px-4 py-16">
         <div className="card-surface flex flex-col items-center gap-4 rounded-2xl p-8 text-center">
-          <PackageX size={36} className="text-champagne" aria-hidden="true" />
+          <PackageX size={36} className="text-lila" aria-hidden="true" />
           <h1 className="font-display text-2xl text-text">No encontramos ese pedido</h1>
           <p className="font-body text-sm text-text-secondary">
             Revisá que el link esté completo, o escribinos por WhatsApp con tu número de pedido.
@@ -99,7 +99,7 @@ export default function Pedido() {
             href={construirLinkWhatsApp(whatsapp, `Hola! Quiero consultar por mi pedido ${numero}.`)}
             target="_blank"
             rel="noopener noreferrer"
-            className="gradient-gold rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-ink"
+            className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-white"
           >
             Escribir por WhatsApp
           </a>
@@ -134,13 +134,13 @@ export default function Pedido() {
       </div>
 
       {esNuevo && !cancelado && (
-        <section className="card-surface mb-6 rounded-2xl p-5 ring-1 ring-gold/50" aria-labelledby="ultimo-paso">
+        <section className="card-surface mb-6 rounded-2xl p-5 ring-1 ring-violet/50" aria-labelledby="ultimo-paso">
           <h2 id="ultimo-paso" className="font-display text-lg font-semibold text-text">
             ¡Listo! Falta un último paso
           </h2>
           <p className="mt-1 font-body text-sm text-text-secondary">
             Mandanos el pedido por WhatsApp para coordinar el pago y la entrega. Este link
-            queda guardado en el mensaje y en <Link to="/mis-pedidos" className="text-champagne underline">Mis pedidos</Link>.
+            queda guardado en el mensaje y en <Link to="/mis-pedidos" className="text-lila underline">Mis pedidos</Link>.
           </p>
           <a
             href={linkEnviar}
@@ -196,7 +196,7 @@ export default function Pedido() {
           href={linkConsulta}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 rounded-xl border border-gold/30 px-4 py-2.5 font-body text-sm font-semibold text-text transition-colors hover:border-gold"
+          className="flex items-center gap-2 rounded-xl border border-violet/30 px-4 py-2.5 font-body text-sm font-semibold text-text transition-colors hover:border-violet"
         >
           <MessageCircle size={16} aria-hidden="true" />
           Consultar por este pedido

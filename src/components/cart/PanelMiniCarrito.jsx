@@ -66,7 +66,7 @@ export default function PanelMiniCarrito({ agregado, onCerrar }) {
               <ImagenProducto url={item.imagenes?.[0]} sizes="64px" width="64" height="64" className="h-full w-full object-contain p-1" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate font-body text-[11px] font-semibold uppercase tracking-wide2 text-champagne">{item.marca}</p>
+              <p className="truncate font-body text-[11px] font-semibold uppercase tracking-wide2 text-lila">{item.marca}</p>
               <p className="line-clamp-2 font-display text-sm font-semibold leading-snug text-text">{item.nombre}</p>
               <p className="mt-0.5 font-body text-xs text-text-secondary">
                 {agregado.cantidad > 1 ? `${agregado.cantidad} unidades` : '1 unidad'}
@@ -87,14 +87,14 @@ export default function PanelMiniCarrito({ agregado, onCerrar }) {
           <Link
             to="/carrito"
             data-principal=""
-            className="gradient-gold flex-1 rounded-xl px-4 py-3 text-center font-body text-sm font-semibold text-ink shadow-lg shadow-gold/20 transition-shadow hover:shadow-gold/40"
+            className="gradient-violet flex-1 rounded-xl px-4 py-3 text-center font-body text-sm font-semibold text-white shadow-lg shadow-violet/20 transition-shadow hover:shadow-violet/40"
           >
             Ir al carrito
           </Link>
           <button
             type="button"
             onClick={onCerrar}
-            className="flex-1 rounded-xl border border-gold/30 px-4 py-3 font-body text-sm font-semibold text-text transition-colors hover:border-gold"
+            className="flex-1 rounded-xl border border-violet/30 px-4 py-3 font-body text-sm font-semibold text-text transition-colors hover:border-violet"
           >
             Seguir comprando
           </button>

@@ -156,12 +156,12 @@ export default function PerfumeDetalle() {
               />
             ) : (
               <div className="flex aspect-[5/4] w-full items-center justify-center sm:aspect-square">
-                <span className="select-none text-8xl text-gold opacity-10">✦</span>
+                <span className="select-none text-8xl text-violet opacity-10">✦</span>
               </div>
             )}
             <BotonFavorito perfume={perfume} className="absolute left-4 top-4 z-10" />
             {pct > 0 && (
-              <span className="absolute right-4 top-4 rounded-full bg-gold px-3 py-1.5 text-sm font-bold text-ink shadow-xl">
+              <span className="absolute right-4 top-4 rounded-full bg-violet px-3 py-1.5 text-sm font-bold text-white shadow-xl">
                 -{pct}%
               </span>
             )}
@@ -171,7 +171,7 @@ export default function PerfumeDetalle() {
         {/* ── Info ── */}
         <div className="flex min-w-0 flex-col gap-6">
           <div>
-            <p className="mb-2 font-body text-xs font-semibold uppercase tracking-wide2 text-champagne">{perfume.marca}</p>
+            <p className="mb-2 font-body text-xs font-semibold uppercase tracking-wide2 text-lila">{perfume.marca}</p>
             <h1 className="font-display text-3xl font-medium leading-tight text-text text-balance sm:text-4xl">
               {perfume.nombre}
             </h1>
@@ -185,7 +185,7 @@ export default function PerfumeDetalle() {
           {precios ? (
             <div className="card-surface rounded-2xl p-5 tabular-nums">
               {pct > 0 && (
-                <p className="mb-3 font-body text-sm font-medium text-champagne">
+                <p className="mb-3 font-body text-sm font-medium text-lila">
                   {promo?.titulo ?? promo?.nombre ?? 'Promoción'} · {pct}% off
                 </p>
               )}
@@ -224,7 +224,7 @@ export default function PerfumeDetalle() {
 
           {/* Cantidad + agregar. En mobile queda pegada abajo mientras se lee la
               ficha (sticky dentro de esta columna, así no tapa el footer). */}
-          <div className="sticky bottom-0 z-30 -mx-4 border-t border-gold/15 bg-bg/95 px-4 py-3 sm:-mx-6 sm:px-6 md:static md:z-auto md:mx-0 md:border-0 md:bg-transparent md:p-0">
+          <div className="sticky bottom-0 z-30 -mx-4 border-t border-violet/15 bg-bg/95 px-4 py-3 sm:-mx-6 sm:px-6 md:static md:z-auto md:mx-0 md:border-0 md:bg-transparent md:p-0">
             <div className="flex items-center gap-3">
               <div className="flex items-center rounded-xl border border-border" role="group" aria-label="Cantidad">
                 <button
@@ -252,7 +252,7 @@ export default function PerfumeDetalle() {
               <button
                 type="button"
                 onClick={() => agregar(perfume, cantidad)}
-                className="h-11 flex-none whitespace-nowrap rounded-xl border border-gold/50 px-4 font-body text-sm font-semibold text-text transition-colors hover:border-gold hover:bg-gold/10 sm:flex-1"
+                className="h-11 flex-none whitespace-nowrap rounded-xl border border-violet/50 px-4 font-body text-sm font-semibold text-text transition-colors hover:border-violet hover:bg-violet/10 sm:flex-1"
               >
                 Agregar<span className="hidden sm:inline"> al carrito</span>
               </button>
@@ -284,13 +284,13 @@ export default function PerfumeDetalle() {
             )}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-fit items-center gap-2 font-body text-sm text-champagne transition-colors hover:text-text"
+            className="inline-flex w-fit items-center gap-2 font-body text-sm text-lila transition-colors hover:text-text"
           >
             <MessageCircle size={16} aria-hidden="true" />
             Consultar por WhatsApp
           </a>
 
-          <div className="border-t border-gold/15 pt-6">
+          <div className="border-t border-violet/15 pt-6">
             <NotasOlfativas
               notasSalida={perfume.notasSalida}
               notasCorazon={perfume.notasCorazon}

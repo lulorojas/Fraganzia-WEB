@@ -21,7 +21,7 @@ function FilaPedido({ id }) {
         to={`/pedido/${id}`}
         className="card-surface card-hover flex items-center gap-4 rounded-2xl p-4"
       >
-        <Package size={22} className="flex-shrink-0 text-champagne" aria-hidden="true" />
+        <Package size={22} className="flex-shrink-0 text-lila" aria-hidden="true" />
         <div className="min-w-0 flex-1">
           <p className="font-display text-base font-semibold text-text">Pedido {numeroPedido(id)}</p>
           <p className="font-body text-xs text-text-secondary">
@@ -61,9 +61,9 @@ export default function MisPedidos() {
         </ul>
       ) : (
         <div className="card-surface flex flex-col items-center gap-4 rounded-2xl p-8 text-center">
-          <Package size={32} className="text-champagne" aria-hidden="true" />
+          <Package size={32} className="text-lila" aria-hidden="true" />
           <p className="font-body text-text-secondary">Todavía no hiciste pedidos desde este dispositivo.</p>
-          <Link to="/catalogo" className="gradient-gold rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-ink">
+          <Link to="/catalogo" className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-white">
             Ver catálogo
           </Link>
         </div>

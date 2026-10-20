@@ -6,7 +6,7 @@ import { LogoFraganzia } from '../ui/LogoFraganzia';
 // envíos y el pago en la franja de la portada: acá solo lo que no se repite.
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-border bg-gradient-to-t from-gold/5 to-transparent">
+    <footer className="mt-16 border-t border-border bg-gradient-to-t from-violet/5 to-transparent">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col items-start gap-5">
@@ -15,7 +15,7 @@ export function Footer() {
               href="https://www.instagram.com/fraganzia.ar/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs text-text-secondary transition-base hover:border-champagne/40 hover:text-champagne"
+              className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs text-text-secondary transition-base hover:border-lila/40 hover:text-lila"
             >
               <Instagram size={13} aria-hidden="true" />
               @fraganzia.ar
@@ -23,7 +23,7 @@ export function Footer() {
           </div>
 
           <nav aria-label="Ayuda" className="font-body text-sm">
-            <p className="mb-3 text-[11px] font-semibold uppercase tracking-luxury text-gold">Ayuda</p>
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-luxury text-lila">Ayuda</p>
             <ul className="space-y-2.5 text-text-secondary">
               <li><Link to="/mis-pedidos" className="transition-base hover:text-text">Seguí tu pedido</Link></li>
               <li><Link to="/contacto" className="transition-base hover:text-text">Contacto</Link></li>

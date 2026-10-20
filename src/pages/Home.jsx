@@ -35,10 +35,10 @@ function TituloSeccion({ etiqueta, titulo, enlace = 'Ver todo el catálogo' }) {
   return (
     <div className="mb-8 flex items-end justify-between gap-4">
       <div>
-        <p className="mb-2 font-body text-[11px] font-semibold uppercase tracking-luxury text-gold">{etiqueta}</p>
+        <p className="mb-2 font-body text-[11px] font-semibold uppercase tracking-luxury text-lila">{etiqueta}</p>
         <h2 className="font-display text-3xl font-light tracking-tight text-text sm:text-4xl">{titulo}</h2>
       </div>
-      <Link to="/catalogo" className="shrink-0 pb-1 font-body text-sm text-champagne transition-base hover:text-text">
+      <Link to="/catalogo" className="shrink-0 pb-1 font-body text-sm text-lila transition-base hover:text-text">
         {enlace}
       </Link>
     </div>
@@ -63,13 +63,13 @@ function TarjetaVitrina({ perfume, dolarMedio, promociones, prioridad, className
           className="foto-producto aspect-[4/5] w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
         />
         {precio?.pct > 0 && (
-          <span className="absolute right-3 top-3 rounded-full bg-gold px-2.5 py-1 text-[11px] font-bold text-ink shadow-lg">
+          <span className="absolute right-3 top-3 rounded-full bg-violet px-2.5 py-1 text-[11px] font-bold text-white shadow-lg">
             -{precio.pct}%
           </span>
         )}
       </div>
       <div className="p-3.5 sm:p-4">
-        <p className="mb-1 truncate font-body text-[10px] font-semibold uppercase tracking-wide2 text-gold sm:text-[11px]">{perfume.marca}</p>
+        <p className="mb-1 truncate font-body text-[10px] font-semibold uppercase tracking-wide2 text-lila sm:text-[11px]">{perfume.marca}</p>
         <h3 className="line-clamp-2 min-h-[2.4rem] font-display text-sm font-medium leading-snug text-text">{perfume.nombre}</h3>
         {precio && (
           <p className="mt-2 flex items-baseline gap-2 tabular-nums">
@@ -112,18 +112,18 @@ export default function Home() {
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(ellipse 60% 70% at 78% 30%, rgba(197,160,89,0.2) 0%, rgba(197,160,89,0) 70%), radial-gradient(circle at 8% 90%, rgba(143,115,56,0.14) 0%, rgba(143,115,56,0) 40%)',
+              'radial-gradient(ellipse 60% 70% at 78% 30%, rgba(123,47,190,0.32) 0%, rgba(123,47,190,0) 70%), radial-gradient(circle at 8% 90%, rgba(192,132,252,0.12) 0%, rgba(192,132,252,0) 40%)',
           }}
         />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
           <div className="max-w-xl">
-            <p className="mb-5 flex items-center gap-3 font-body text-[11px] font-semibold uppercase tracking-luxury text-gold">
-              <span aria-hidden="true" className="h-px w-8 bg-gold" />
+            <p className="mb-5 flex items-center gap-3 font-body text-[11px] font-semibold uppercase tracking-luxury text-lila">
+              <span aria-hidden="true" className="h-px w-8 bg-violet" />
               Perfumería árabe original
             </p>
             <h1 className="font-display text-[2.6rem] font-light leading-[1.05] tracking-tight text-text sm:text-6xl lg:text-[4.2rem]">
-              Perfumes árabes que dejan <span className="font-normal text-champagne">huella.</span>
+              Perfumes árabes que dejan <span className="font-normal text-lila">huella.</span>
             </h1>
             <p className="mt-5 max-w-md font-body text-base leading-relaxed text-text-secondary sm:text-lg">
               Lattafa, Armaf, Al Haramain y más, con el precio en pesos siempre al día.
@@ -131,7 +131,7 @@ export default function Home() {
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link
                 to="/catalogo"
-                className="gradient-gold inline-flex items-center gap-2 rounded-full px-8 py-4 font-body text-base font-semibold text-ink shadow-lg shadow-gold/20 transition-all duration-300 hover:shadow-gold/40 hover:brightness-110"
+                className="gradient-violet inline-flex items-center gap-2 rounded-full px-8 py-4 font-body text-base font-semibold text-white shadow-lg shadow-violet/20 transition-all duration-300 hover:shadow-violet/40 hover:brightness-110"
               >
                 Ver catálogo
                 <ArrowRight size={18} aria-hidden="true" />
@@ -165,7 +165,7 @@ export default function Home() {
       </section>
 
       {/* ── Por qué comprar acá: una sola vez en toda la portada ── */}
-      <section aria-label="Cómo comprás en Fraganzia" className="border-y border-border bg-gold/[0.03]">
+      <section aria-label="Cómo comprás en Fraganzia" className="border-y border-border bg-violet/[0.03]">
         <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
           <GarantiasCompra variante="franja" />
         </div>
@@ -207,7 +207,7 @@ export default function Home() {
                       </p>
                     )}
                   </div>
-                  <span className="font-body text-sm font-semibold text-champagne transition-colors group-hover:text-text">
+                  <span className="font-body text-sm font-semibold text-lila transition-colors group-hover:text-text">
                     Ver perfumes
                   </span>
                 </div>
@@ -236,8 +236,8 @@ export default function Home() {
       <section aria-label="Ayuda para elegir" className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="card-surface relative flex flex-col items-start gap-4 overflow-hidden rounded-2xl p-7 sm:p-9">
-            <span aria-hidden="true" className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gold/10 blur-2xl" />
-            <Sparkles size={22} className="text-gold" aria-hidden="true" />
+            <span aria-hidden="true" className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-violet/10 blur-2xl" />
+            <Sparkles size={22} className="text-lila" aria-hidden="true" />
             <div>
               <h2 className="font-display text-2xl font-light tracking-tight text-text sm:text-3xl">¿No sabés cuál elegir?</h2>
               <p className="mt-2 max-w-sm font-body text-sm leading-relaxed text-text-secondary">
@@ -247,14 +247,14 @@ export default function Home() {
             <button
               type="button"
               onClick={abrirAsistente}
-              className="gradient-gold mt-auto rounded-full px-6 py-3 font-body text-sm font-semibold text-ink shadow-lg shadow-gold/20 transition-all hover:shadow-gold/40 hover:brightness-110"
+              className="gradient-violet mt-auto rounded-full px-6 py-3 font-body text-sm font-semibold text-white shadow-lg shadow-violet/20 transition-all hover:shadow-violet/40 hover:brightness-110"
             >
               Encontrá tu perfume
             </button>
           </div>
           <div className="card-surface relative flex flex-col items-start gap-4 overflow-hidden rounded-2xl p-7 sm:p-9">
-            <span aria-hidden="true" className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gold/10 blur-2xl" />
-            <span className="font-display text-xl font-light text-gold" aria-hidden="true">3 · 5 · 10 ml</span>
+            <span aria-hidden="true" className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-violet/10 blur-2xl" />
+            <span className="font-display text-xl font-light text-lila" aria-hidden="true">3 · 5 · 10 ml</span>
             <div>
               <h2 className="font-display text-2xl font-light tracking-tight text-text sm:text-3xl">Probalo antes</h2>
               <p className="mt-2 max-w-sm font-body text-sm leading-relaxed text-text-secondary">
@@ -263,7 +263,7 @@ export default function Home() {
             </div>
             <Link
               to="/decants"
-              className="mt-auto inline-flex items-center gap-2 rounded-full border border-gold/40 px-6 py-3 font-body text-sm font-semibold text-text transition-all hover:border-gold hover:bg-gold/10"
+              className="mt-auto inline-flex items-center gap-2 rounded-full border border-violet/40 px-6 py-3 font-body text-sm font-semibold text-text transition-all hover:border-violet hover:bg-violet/10"
             >
               Ver decants
               <ArrowRight size={16} aria-hidden="true" />
@@ -289,7 +289,7 @@ export default function Home() {
             <li key={titulo} className="flex gap-4 sm:flex-col sm:items-center sm:text-center">
               <span
                 aria-hidden="true"
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold/50 font-display text-lg font-light text-gold"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-violet/50 font-display text-lg font-light text-lila"
               >
                 {i + 1}
               </span>

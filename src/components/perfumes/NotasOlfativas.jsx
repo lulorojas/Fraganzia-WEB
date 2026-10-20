@@ -27,7 +27,7 @@ export function NotasOlfativas({ notasSalida, notasCorazon, notasFondo, nombre }
                 {/* El ancho de la barra crece hacia el fondo, como una pirámide. */}
                 <div className="flex w-20 shrink-0 flex-col items-center pt-1" aria-hidden="true">
                   <div
-                    className="h-1.5 rounded-full bg-gradient-to-r from-gold to-champagne"
+                    className="h-1.5 rounded-full bg-gradient-to-r from-violet to-lila"
                     style={{ width: `${40 + i * 30}%` }}
                   />
                 </div>
@@ -39,7 +39,7 @@ export function NotasOlfativas({ notasSalida, notasCorazon, notasFondo, nombre }
                     {notas[clave].map((nota) => (
                       <li
                         key={nota}
-                        className="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-xs text-text"
+                        className="rounded-full border border-violet/25 bg-violet/10 px-3 py-1 text-xs text-text"
                       >
                         {nota}
                       </li>
@@ -56,7 +56,7 @@ export function NotasOlfativas({ notasSalida, notasCorazon, notasFondo, nombre }
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex w-fit items-center gap-1 text-sm text-champagne hover:underline"
+          className="inline-flex w-fit items-center gap-1 text-sm text-lila hover:underline"
         >
           Ver notas en Fragrantica ↗
         </a>

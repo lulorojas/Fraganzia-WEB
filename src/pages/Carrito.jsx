@@ -199,7 +199,7 @@ export default function Carrito() {
             placeholder="Ingresá tu nombre"
             maxLength={100}
             autoComplete="name"
-            className="rounded-xl border border-border bg-white/[0.03] px-4 py-3 font-body text-sm text-text placeholder:text-text-secondary focus:border-gold focus:outline-none transition-colors"
+            className="rounded-xl border border-border bg-white/[0.03] px-4 py-3 font-body text-sm text-text placeholder:text-text-secondary focus:border-violet focus:outline-none transition-colors"
             required
           />
           {errorNombre && <p className="mt-1 text-xs text-error">{errorNombre}</p>}

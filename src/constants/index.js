@@ -34,7 +34,7 @@ export const ESTADO_PEDIDO_INFO = {
   confirmado: { label: 'Recibido', detalle: 'Recibimos tu pedido. Te escribimos por WhatsApp para coordinar el pago.', cls: 'text-sky-300' },
   en_proceso: { label: 'En preparación', detalle: 'Estamos preparando tu pedido.', cls: 'text-yellow-300' },
   preparando: { label: 'En preparación', detalle: 'Pago confirmado. Estamos preparando tu pedido.', cls: 'text-yellow-300' },
-  enviado: { label: 'Enviado', detalle: 'Tu pedido está en camino (o listo para retirar).', cls: 'text-champagne' },
+  enviado: { label: 'Enviado', detalle: 'Tu pedido está en camino (o listo para retirar).', cls: 'text-lila' },
   entregado: { label: 'Entregado', detalle: '¡Que lo disfrutes!', cls: 'text-emerald-400' },
   cancelado: { label: 'Cancelado', detalle: 'Este pedido fue cancelado. Si tenés dudas, escribinos.', cls: 'text-error' },
 };

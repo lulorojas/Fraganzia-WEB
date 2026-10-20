@@ -53,7 +53,7 @@ export function Navbar() {
       <nav
         ref={mobileRef}
         aria-label="Principal"
-        className="glass-frosted sticky top-0 z-40 rounded-none border-x-0 border-t-0 border-b border-gold/10"
+        className="glass-frosted sticky top-0 z-40 rounded-none border-x-0 border-t-0 border-b border-violet/10"
       >
         <div className="relative flex items-center justify-between px-4 sm:px-6 py-3 max-w-7xl mx-auto">
           {/* Logo izquierda */}
@@ -76,7 +76,7 @@ export function Navbar() {
               type="button"
               onClick={abrirAsistente}
               aria-label="Encontrá tu perfume"
-              className="mr-1 flex h-10 items-center gap-1.5 rounded-full border border-gold/50 px-3 text-sm font-semibold text-champagne transition-colors duration-200 hover:border-gold hover:bg-gold hover:text-ink sm:px-4"
+              className="mr-1 flex h-10 items-center gap-1.5 rounded-full border border-violet/50 px-3 text-sm font-semibold text-lila transition-colors duration-200 hover:border-violet hover:bg-violet hover:text-white sm:px-4"
             >
               <Sparkles size={16} aria-hidden="true" />
               <span className="hidden sm:inline">Encontrá tu perfume</span>
@@ -92,7 +92,7 @@ export function Navbar() {
               {favoritos.length > 0 && (
                 <span
                   aria-hidden="true"
-                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-gold text-[11px] font-bold text-ink ring-2 ring-bg"
+                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-[#E11D74] text-[11px] font-bold text-white ring-2 ring-bg"
                 >
                   {favoritos.length}
                 </span>
@@ -112,7 +112,7 @@ export function Navbar() {
                   // animación "bump" vuelve a correr en cada agregado.
                   key={cantidadItems}
                   aria-hidden="true"
-                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-gold text-[11px] font-bold text-ink shadow-lg ring-2 ring-bg animate-bump"
+                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-violet text-[11px] font-bold text-white shadow-lg ring-2 ring-bg animate-bump"
                 >
                   {cantidadItems}
                 </span>
@@ -134,13 +134,13 @@ export function Navbar() {
         </div>
 
         {mobileOpen && (
-          <div id="menu-mobile" className="lg:hidden border-t border-gold/10 px-4 pb-4 pt-2">
+          <div id="menu-mobile" className="lg:hidden border-t border-violet/10 px-4 pb-4 pt-2">
             <ul className="flex flex-col font-body">
               <li>
                 <button
                   type="button"
                   onClick={() => { setMobileOpen(false); abrirAsistente(); }}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-3 text-base font-semibold text-champagne transition-colors hover:bg-gold/10 hover:text-text"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-3 text-base font-semibold text-lila transition-colors hover:bg-violet/10 hover:text-text"
                 >
                   <Sparkles size={18} aria-hidden="true" />
                   Encontrá tu perfume
@@ -151,7 +151,7 @@ export function Navbar() {
                   <NavLink
                     to={to}
                     className={({ isActive }) =>
-                      `block rounded-lg px-3 py-3 text-base transition-colors hover:bg-gold/10 hover:text-text ${isActive ? 'text-text' : 'text-text-secondary'}`
+                      `block rounded-lg px-3 py-3 text-base transition-colors hover:bg-violet/10 hover:text-text ${isActive ? 'text-text' : 'text-text-secondary'}`
                     }
                   >
                     {label}
@@ -162,7 +162,7 @@ export function Navbar() {
                 <NavLink
                   to="/favoritos"
                   className={({ isActive }) =>
-                    `flex items-center gap-2 rounded-lg px-3 py-3 text-base transition-colors hover:bg-gold/10 hover:text-text ${isActive ? 'text-text' : 'text-text-secondary'}`
+                    `flex items-center gap-2 rounded-lg px-3 py-3 text-base transition-colors hover:bg-violet/10 hover:text-text ${isActive ? 'text-text' : 'text-text-secondary'}`
                   }
                 >
                   <Heart size={18} aria-hidden="true" />
