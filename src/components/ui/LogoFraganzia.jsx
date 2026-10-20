@@ -29,22 +29,29 @@ export function MarcaFraganzia({ className = '', simple = false, style }) {
   );
 }
 
-// La "A" de la marca: un arco ogival con travesaño. Se dibuja en `em` para que
-// acompañe el tamaño y el peso de las letras que la rodean.
-function ArcoA({ ultima = false }) {
+// La "A" de la marca: un arco ogival con travesaño dibujado ENCIMA de una "A" real
+// (transparente). Así el texto de la página sigue diciendo "FRAGANZIA" para buscadores,
+// lectores de pantalla y agentes de IA, y a la vista se ve el arco. Se dibuja en `em`
+// para acompañar el tamaño y el peso de las letras que la rodean.
+function ArcoA() {
   return (
-    <svg
-      viewBox="0 0 16 18"
-      aria-hidden="true"
-      fill="none"
-      style={{ width: '0.62em', height: '0.72em', marginRight: ultima ? 0 : '0.32em' }}
-    >
-      <path
-        d="M2.2 18V7.6C2.2 4.6 5 2.2 8 0.2C11 2.2 13.8 4.6 13.8 7.6V18M2.2 12.6H13.8"
-        stroke="currentColor"
-        strokeWidth="2.4"
-      />
-    </svg>
+    <span className="relative inline-block">
+      <span className="text-transparent">A</span>
+      <svg
+        viewBox="0 0 16 18"
+        aria-hidden="true"
+        fill="none"
+        className="absolute -translate-x-1/2"
+        // La caja de la "A" incluye el espaciado entre letras (0.32em) a su derecha: el centro de la letra está 0.16em antes del centro de la caja.
+        style={{ left: 'calc(50% - 0.16em)', width: '0.62em', height: '0.72em', bottom: '0.2em' }}
+      >
+        <path
+          d="M2.2 18V7.6C2.2 4.6 5 2.2 8 0.2C11 2.2 13.8 4.6 13.8 7.6V18M2.2 12.6H13.8"
+          stroke="currentColor"
+          strokeWidth="2.4"
+        />
+      </svg>
+    </span>
   );
 }
 
@@ -52,17 +59,10 @@ function ArcoA({ ultima = false }) {
 export function NombreFraganzia({ className = '', style }) {
   return (
     <span
-      role="img"
-      aria-label="Fraganzia"
       className={`inline-flex items-baseline font-display font-medium ${className}`}
-      style={{ letterSpacing: '0.32em', ...style }}
+      style={{ letterSpacing: '0.32em', marginRight: '-0.32em', ...style }}
     >
-      <span aria-hidden="true">FR</span>
-      <ArcoA />
-      <span aria-hidden="true">G</span>
-      <ArcoA />
-      <span aria-hidden="true">NZI</span>
-      <ArcoA ultima />
+      FR<ArcoA />G<ArcoA />NZI<ArcoA />
     </span>
   );
 }

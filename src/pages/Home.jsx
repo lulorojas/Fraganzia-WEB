@@ -304,8 +304,9 @@ export default function Home() {
           <div
             className="hide-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0 scroll-pl-4 sm:scroll-pl-6 lg:scroll-pl-0"
             role="region"
-            aria-label="Perfumes destacados"
+            aria-label="Algunos perfumes para empezar"
           >
+            <h2 className="sr-only">Algunos perfumes para empezar</h2>
             {isLoading || !vitrina.length ? (
               <VitrinaCargando />
             ) : (
