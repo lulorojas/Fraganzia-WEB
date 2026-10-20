@@ -1,5 +1,6 @@
 import { MessageCircle, Mail, Clock, MapPin } from 'lucide-react';
 import { GlassCard } from '../components/ui/GlassCard';
+import { Button } from '../components/ui/Button';
 import { construirLinkWhatsApp } from '../utils/whatsapp';
 import { useConfig } from '../hooks/useConfig';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
@@ -17,7 +18,7 @@ export default function Contacto() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       <div className="mb-10 text-center">
-        <h1 className="font-display text-4xl font-light tracking-tight text-text mb-4">Contacto</h1>
+        <h1 className="font-display text-4xl text-text mb-4">Contacto</h1>
         <p className="font-body text-text-secondary text-lg">
           Estamos para ayudarte. Escribinos y te respondemos a la brevedad.
         </p>
@@ -32,14 +33,11 @@ export default function Contacto() {
           precios, disponibilidad y envíos.
         </p>
         {numero ? (
-          <a
-            href={linkConsulta}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 font-body text-sm font-bold text-[#06231a] transition-opacity hover:opacity-90"
-          >
-            <MessageCircle className="h-4 w-4" aria-hidden="true" />
-            Escribirnos por WhatsApp
+          <a href={linkConsulta} target="_blank" rel="noopener noreferrer">
+            <Button className="flex items-center gap-2 bg-success/20 hover:bg-success/30 text-success border border-success/40">
+              <MessageCircle className="h-4 w-4" />
+              Escribirnos por WhatsApp
+            </Button>
           </a>
         ) : (
           <p className="text-text-secondary text-sm">Cargando número de contacto…</p>
@@ -64,8 +62,8 @@ export default function Contacto() {
           <div>
             <h3 className="font-display text-text mb-1">Envíos</h3>
             <p className="font-body text-text-secondary text-sm">
-              Solo al AMBA.<br />
-              Coordinamos la entrega con vos por WhatsApp.
+              A todo el país vía correo o encomienda.<br />
+              Coordinamos el método con vos.
             </p>
           </div>
         </GlassCard>
@@ -75,8 +73,8 @@ export default function Contacto() {
           <div>
             <h3 className="font-display text-text mb-1">Sobre tus pedidos</h3>
             <p className="font-body text-text-secondary text-sm">
-              Al confirmar tu pedido te llevamos a un último paso: mandarlo por WhatsApp con el detalle
-              completo. Ahí coordinamos el pago y la entrega, y podés seguirlo online con un link.
+              Al finalizar tu compra desde el carrito, tu pedido se envía automáticamente por WhatsApp
+              con el detalle completo. Coordinamos pago y envío en ese mismo chat.
             </p>
           </div>
         </GlassCard>

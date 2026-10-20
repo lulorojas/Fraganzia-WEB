@@ -1,5 +1,5 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Minus, Plus, ChevronLeft, MessageCircle } from 'lucide-react';
 import { usePerfume } from '../hooks/usePerfume';
@@ -56,7 +56,6 @@ export default function PerfumeDetalle() {
   const { data: config } = useConfig();
   const { data: promociones } = usePromocionesActivas();
   const { agregar } = useCart();
-  const navigate = useNavigate();
   const [cantidad, setCantidad] = useState(1);
 
   // Registra la vista una sola vez por perfume por sesión (ver
@@ -159,7 +158,6 @@ export default function PerfumeDetalle() {
                 <span className="select-none text-8xl text-violet opacity-10">✦</span>
               </div>
             )}
-            <BotonFavorito perfume={perfume} className="absolute left-4 top-4 z-10" />
             {pct > 0 && (
               <span className="absolute right-4 top-4 rounded-full bg-violet px-3 py-1.5 text-sm font-bold text-white shadow-xl">
                 -{pct}%
@@ -169,10 +167,10 @@ export default function PerfumeDetalle() {
         </div>
 
         {/* ── Info ── */}
-        <div className="flex min-w-0 flex-col gap-6">
+        <div className="flex flex-col gap-6">
           <div>
             <p className="mb-2 font-body text-xs font-semibold uppercase tracking-wide2 text-lila">{perfume.marca}</p>
-            <h1 className="font-display text-3xl font-medium leading-tight text-text text-balance sm:text-4xl">
+            <h1 className="font-display text-3xl font-semibold leading-tight text-text text-balance sm:text-4xl">
               {perfume.nombre}
             </h1>
             <p className="mt-2 font-body text-sm text-text-secondary">
@@ -232,11 +230,11 @@ export default function PerfumeDetalle() {
                   onClick={() => setCantidad((c) => Math.max(1, c - 1))}
                   disabled={cantidad <= 1}
                   aria-label="Restar una unidad"
-                  className="flex h-11 w-9 items-center justify-center text-text-secondary transition-base hover:text-text disabled:opacity-40 sm:w-11"
+                  className="flex h-11 w-11 items-center justify-center text-text-secondary transition-base hover:text-text disabled:opacity-40"
                 >
                   <Minus size={16} aria-hidden="true" />
                 </button>
-                <span className="w-7 text-center font-body tabular-nums text-text sm:w-8" aria-live="polite">
+                <span className="w-8 text-center font-body tabular-nums text-text" aria-live="polite">
                   {cantidad}
                 </span>
                 <button
@@ -244,28 +242,15 @@ export default function PerfumeDetalle() {
                   onClick={() => setCantidad((c) => Math.min(CANTIDAD_MAX, c + 1))}
                   disabled={cantidad >= CANTIDAD_MAX}
                   aria-label="Sumar una unidad"
-                  className="flex h-11 w-9 items-center justify-center text-text-secondary transition-base hover:text-text disabled:opacity-40 sm:w-11"
+                  className="flex h-11 w-11 items-center justify-center text-text-secondary transition-base hover:text-text disabled:opacity-40"
                 >
                   <Plus size={16} aria-hidden="true" />
                 </button>
               </div>
-              <button
-                type="button"
-                onClick={() => agregar(perfume, cantidad)}
-                className="h-11 flex-none whitespace-nowrap rounded-xl border border-violet/50 px-4 font-body text-sm font-semibold text-text transition-colors hover:border-violet hover:bg-violet/10 sm:flex-1"
-              >
-                Agregar<span className="hidden sm:inline"> al carrito</span>
-              </button>
-              {/* Directo al carrito, sin el panel de confirmación: un click menos. */}
-              <Button
-                onClick={() => {
-                  agregar(perfume, cantidad, { silencioso: true });
-                  navigate('/carrito');
-                }}
-                className="h-11 flex-1 whitespace-nowrap px-3 text-sm font-semibold"
-              >
-                Comprar ahora
+              <Button onClick={() => agregar(perfume, cantidad)} className="h-11 flex-1">
+                Agregar al carrito
               </Button>
+              <BotonFavorito perfume={perfume} variante="borde" />
             </div>
           </div>
 

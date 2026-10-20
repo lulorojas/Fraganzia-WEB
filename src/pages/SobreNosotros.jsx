@@ -29,7 +29,7 @@ export default function SobreNosotros() {
     <div className="mx-auto max-w-3xl px-4 py-12">
       {/* Hero */}
       <div className="mb-12 text-center">
-        <h1 className="font-display text-4xl font-light tracking-tight text-text mb-4">Sobre Nosotros</h1>
+        <h1 className="font-display text-4xl text-text mb-4">Sobre Nosotros</h1>
         <p className="font-body text-text-secondary text-lg leading-relaxed max-w-xl mx-auto">
           Somos Fraganzia — una tienda especializada en perfumería árabe y de autor, con una
           propuesta auténtica y accesible para quienes buscan diferenciarse con su fragancia.

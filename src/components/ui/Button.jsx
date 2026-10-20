@@ -1,5 +1,5 @@
 const VARIANTS = {
-  primary: 'gradient-violet text-white shadow-lg shadow-violet/20 hover:shadow-violet/40 hover:scale-[1.02]',
+  primary: 'gradient-violet text-text shadow-lg shadow-violet/20 hover:shadow-violet/40 hover:scale-[1.02]',
   secondary: 'glass text-text hover:glow hover:border-lila/40',
   ghost: 'bg-transparent text-text-secondary hover:text-text',
 };

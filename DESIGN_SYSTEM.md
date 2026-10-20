@@ -117,36 +117,47 @@ Las clases viven en `src/index.css` dentro de `@layer components`, así una util
 
 ### Familias tipográficas
 
-> Solo tipografías **sin serifa**. Se sirven desde el sitio, recortadas a los caracteres del español: ver `src/assets/fonts/` y `tools/subset-fonts.py`.
+> Las fuentes se sirven desde el sitio, recortadas a los caracteres del español: ver `src/assets/fonts/` y `tools/subset-fonts.py`. El logo usa **Playfair Display 700** (solo las letras de FRAGANZIA).
 
-#### 1. Outfit (títulos y marca)
+#### 1. Outfit (Display/Headings)
 ```css
 font-family: 'Outfit', sans-serif;
 ```
-- **Uso**: títulos, nombres de producto, logo
-- **Pesos**: 300 (títulos grandes, aire de lujo), 400, 500, 600, 700
-- **Etiquetas**: en mayúsculas con `tracking-luxury` (0.25em) y color lila
+- **Uso**: Títulos, headings, nombres de marca
+- **Características**: Geométrica, moderna, limpia
+- **Pesos**: 400, 500, 600, 700
 
-#### 2. Manrope (texto)
+#### 2. Manrope (Body)
 ```css
 font-family: 'Manrope', sans-serif;
 ```
-- **Uso**: cuerpo de texto, descripciones, interfaz
+- **Uso**: Cuerpo de texto, descripciones, UI
+- **Características**: Humanista, legible, profesional
 - **Pesos**: 400, 500, 600, 700
+
+#### 3. Cinzel (Luxury/Display)
+```css
+font-family: 'Cinzel', serif;
+letter-spacing: 0.025em; /* tracking-wide; hasta 0.25em en etiquetas chicas */
+```
+- **Sin itálica**: Cinzel no tiene cursiva, y `italic` hace que el navegador la incline artificialmente y se vea deformada.
+- **Uso**: Taglines, subtítulos especiales, elementos decorativos
+- **Características**: Serif elegante, inspirada en inscripciones romanas
+- **Efecto**: Agrega sensación de lujo y tradición
 
 ### Jerarquía tipográfica
 
 ```css
 /* Hero Title */
-font-size: 42-68px
+font-size: 48-64px (3-4rem)
 font-family: Outfit
-font-weight: 300 (la palabra destacada en 400, color lila)
-letter-spacing: -0.025em
+font-weight: 700
+letter-spacing: -0.02em
 
 /* Section Heading */
-font-size: 30-36px
+font-size: 32-40px (2-2.5rem)
 font-family: Outfit
-font-weight: 300
+font-weight: 600
 
 /* Card Title */
 font-size: 16-18px (1-1.125rem)
@@ -164,13 +175,11 @@ font-family: Manrope
 font-weight: 400
 color: text-secondary
 
-/* Etiqueta de sección (eyebrow) */
-font-size: 11px
-font-family: Manrope
-font-weight: 600
-text-transform: uppercase
+/* Luxury Tagline */
+font-size: 20-24px (1.25-1.5rem)
+font-family: Cinzel
+font-style: italic
 letter-spacing: 0.25em
-color: lila
 ```
 
 ### Letter Spacing Especial
@@ -255,21 +264,15 @@ hover: color text-primary
 - Cart icon con badge contador
 - Subtle shadow
 
-### 5. Hero (portada)
+### 5. Hero Section
 ```
-- Dos columnas en escritorio: texto + una única acción ("Ver catálogo") | vitrina de 3 destacados
-- La vitrina muestra foto, nombre y precio reales: el primer pantallazo ya vende
-- En celular, la vitrina se desliza en horizontal
-- Debajo, una sola franja de confianza (originales · envíos AMBA · pago · seguimiento)
+- Fondo con gradientes radiales decorativos
+- Logo grande centrado
+- Tagline en Cinzel italic
+- Uppercase labels con tracking amplio
+- CTAs con gradient y glow
+- Divider ornamental (líneas + símbolo ✦)
 ```
-Las cuatro razones de confianza viven en `GarantiasCompra` (una sola fuente): no repetirlas en
-el encabezado, el pie ni preguntas frecuentes.
-
-### 6. Logo
-- **Monograma**: arco de mihrab (arquitectura oriental) con una "F" adentro, en degradé lila→violeta (`MarcaFraganzia`)
-- **Nombre**: FRAGANZIA en Outfit 500, mayúsculas, espaciado 0.32em
-- `LogoFraganzia` arma las dos piezas; el tamaño sale de `--logo-scale`. `subtitulo` suma "Perfumes árabes" (pie)
-- Íconos (favicon, app, imagen para redes): `node tools/generar-iconos.mjs`
 
 ---
 
@@ -539,9 +542,9 @@ font-size: 11px;
 
 ### Ejemplos de copy
 ```
-Hero: "Perfumes árabes que dejan huella."
-Apoyo: "Lattafa, Armaf, Al Haramain y más, con el precio en pesos siempre al día."
-CTA: "Ver catálogo", "Comprar ahora", "Encontrá tu perfume"
+Hero: "Venta de perfumes árabes"
+Tagline: "fragancias importadas"
+CTA: "Ver Catálogo", "Explorar", "Descubrir"
 Social: "@fraganzia.ar"
 Location: "Envíos solo al AMBA"
 ```
@@ -606,7 +609,9 @@ Location: "Envíos solo al AMBA"
 ## 📦 Assets y Recursos
 
 ### Fuentes
-- **Outfit** y **Manrope**: paquetes @fontsource, recortadas con `tools/subset-fonts.py`
+- **Outfit**: Google Fonts
+- **Manrope**: Google Fonts  
+- **Cinzel**: Google Fonts
 
 ### Iconos
 - **Lucide React**: npm package

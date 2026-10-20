@@ -29,7 +29,7 @@ export default function Favoritos() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="mb-8">
-        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Mis favoritos</h1>
+        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Mis favoritos</h1>
         <p className="mt-2 font-body text-sm text-text-secondary">
           Se guardan en este dispositivo. No hace falta crear una cuenta.
         </p>
@@ -71,7 +71,7 @@ export default function Favoritos() {
               <div className="flex flex-wrap justify-center gap-3">
                 <Link
                   to="/catalogo"
-                  className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-white"
+                  className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-text"
                 >
                   Ver catálogo
                 </Link>

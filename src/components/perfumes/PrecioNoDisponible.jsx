@@ -2,7 +2,7 @@ import { generarLinkConsultaPrecio } from '../../utils/whatsapp';
 
 export function PrecioNoDisponible({ nombrePerfume, whatsappNumero }) {
   return (
-    <div className="font-display text-text-secondary">
+    <div className="font-luxury text-text-secondary">
       <p className="text-error">Precio no disponible</p>
       <a
         href={generarLinkConsultaPrecio(nombrePerfume, whatsappNumero)}

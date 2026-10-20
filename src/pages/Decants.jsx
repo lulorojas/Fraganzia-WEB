@@ -100,7 +100,7 @@ export default function Decants() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Decants</h1>
+        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Decants</h1>
         <p className="mt-2 font-body text-text-secondary">
           Probá estos perfumes en fracciones de 3, 5 o 10ml antes de llevarte la botella entera.
         </p>

@@ -66,19 +66,21 @@ export default function Catalogo() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
-        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Catálogo</h1>
+      <div className="mb-8">
+        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Catálogo</h1>
+      </div>
+      <div className="card-surface mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3 sm:px-5">
         <p className="font-body text-sm text-text-secondary">
-          ¿No sabés cuál elegir?{' '}
-          <button
-            type="button"
-            onClick={abrirAsistente}
-            className="inline-flex items-center gap-1.5 font-semibold text-lila transition-base hover:text-text"
-          >
-            <Sparkles size={14} aria-hidden="true" />
-            Encontrá tu perfume
-          </button>
+          <span className="text-text">¿No sabés cuál elegir?</span> Respondé unas preguntas y te recomendamos el ideal.
         </p>
+        <button
+          type="button"
+          onClick={abrirAsistente}
+          className="flex items-center gap-2 rounded-xl bg-gradient-to-br from-violet to-violet-light px-4 py-2.5 font-body text-sm font-semibold text-white shadow-md shadow-violet/30 transition-transform hover:scale-105 active:scale-95"
+        >
+          <Sparkles size={16} aria-hidden="true" />
+          Encontrá tu perfume
+        </button>
       </div>
       <Filtros filtros={filtros} onChange={setFiltros} />
       {usandoCorreccion && (
@@ -98,7 +100,7 @@ export default function Catalogo() {
             <button
               type="button"
               onClick={() => refetch()}
-              className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-white"
+              className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-text"
             >
               Reintentar
             </button>

@@ -8,7 +8,6 @@ export default {
         violet: {
           DEFAULT: '#7B2FBE',
           light: '#9B59D0',
-          deep: '#5B1F8E',
         },
         lila: '#C084FC',
         text: {
@@ -23,7 +22,8 @@ export default {
       fontFamily: {
         display: ['Outfit', 'system-ui', 'sans-serif'],
         body: ['Manrope', 'system-ui', 'sans-serif'],
-        // Solo sin serifa: Outfit para títulos y marca, Manrope para el texto.
+        luxury: ['Cinzel', 'Georgia', 'serif'],
+        logo: ['"Playfair Logo"', 'Georgia', 'serif'],
       },
       letterSpacing: {
         luxury: '0.25em',
