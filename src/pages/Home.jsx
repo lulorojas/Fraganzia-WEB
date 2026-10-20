@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Coins, Gem, MessageCircle, Sparkles } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
@@ -11,6 +12,9 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { abrirAsistente } from '../components/asistente/BotonAsistente';
 import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
 import { formatARS } from '../utils/format';
+import { GENEROS, FAMILIAS_OLFATIVAS } from '../constants';
+import { bandasDePrecio } from '../utils/ordenCatalogo';
+import { marcasDelCatalogo } from '../utils/busqueda';
 
 const PASOS = [
   { titulo: 'Elegí tus perfumes', texto: 'Sumalos al carrito. Cada uno muestra su precio por transferencia y en efectivo.' },
@@ -31,12 +35,12 @@ function precioVitrina(perfume, dolarMedio, promociones) {
   return { final, antes: pct ? precios.precioTransferencia : null, pct };
 }
 
-function TituloSeccion({ etiqueta, titulo, enlace = 'Ver todo el catálogo' }) {
+function TituloSeccion({ etiqueta, titulo, id, enlace = 'Ver todo el catálogo' }) {
   return (
     <div className="mb-8 flex items-end justify-between gap-4">
       <div>
         <p className="mb-2 font-body text-[11px] font-semibold uppercase tracking-luxury text-lila">{etiqueta}</p>
-        <h2 className="font-display text-3xl font-light tracking-tight text-text sm:text-4xl">{titulo}</h2>
+        <h2 id={id} className="font-display text-3xl font-light tracking-tight text-text sm:text-4xl">{titulo}</h2>
       </div>
       <Link to="/catalogo" className="shrink-0 pb-1 font-body text-sm text-lila transition-base hover:text-text">
         {enlace}
@@ -88,6 +92,157 @@ function VitrinaCargando() {
   ));
 }
 
+
+const ETIQUETA_GENERO = { Masculino: 'Para él', Femenino: 'Para ella', Unisex: 'Unisex', Kids: 'Kids' };
+
+function Subtitulo({ children }) {
+  return <h3 className="mb-3 font-body text-xs font-semibold uppercase tracking-wide2 text-text-secondary">{children}</h3>;
+}
+
+/** Chip de atajo: un solo toque lleva al catálogo ya filtrado. */
+function Chip({ to, children, cantidad }) {
+  return (
+    <Link
+      to={to}
+      className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-white/[0.02] px-4 py-2 font-body text-sm text-text transition-colors hover:border-violet hover:bg-violet/15"
+    >
+      {children}
+      {cantidad != null && <span className="text-xs text-text-secondary">{cantidad}</span>}
+    </Link>
+  );
+}
+
+/** Atajos para llegar a los resultados en un clic: género, presupuesto, aroma y marca (con datos reales del catálogo). */
+function Explorar({ catalogo, dolarMedio }) {
+  const { generos, bandas, familias, marcas } = useMemo(() => {
+    const lista = catalogo ?? [];
+    return {
+      generos: GENEROS.map((g) => ({ g, n: lista.filter((p) => p.genero === g).length })).filter((x) => x.n > 0),
+      bandas: bandasDePrecio(lista, dolarMedio),
+      familias: FAMILIAS_OLFATIVAS.map((f) => ({ f, n: lista.filter((p) => p.familiaOlfativa === f).length })).filter((x) => x.n >= 3),
+      marcas: marcasDelCatalogo(lista).sort((a, b) => b.cantidad - a.cantidad).slice(0, 10),
+    };
+  }, [catalogo, dolarMedio]);
+
+  if (!generos.length) return null;
+
+  const etiquetaBanda = ({ id, min, max }) =>
+    id === 'bajo' ? `Hasta ${formatARS(max)}` : id === 'alto' ? `Más de ${formatARS(min)}` : `${formatARS(min)} a ${formatARS(max)}`;
+  const tile = 'card-surface card-hover group flex justify-between rounded-2xl p-5';
+
+  return (
+    <section aria-labelledby="explorar" className="mx-auto max-w-7xl px-4 pb-14 pt-14 sm:px-6 sm:pt-16">
+      <TituloSeccion id="explorar" etiqueta="Explorar" titulo="Encontrá lo tuyo en un clic" />
+      <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr]">
+        <div>
+          <Subtitulo>¿Para quién?</Subtitulo>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {generos.map(({ g, n }) => (
+              <Link key={g} to={`/catalogo?genero=${g}`} className={`${tile} min-h-[112px] flex-col`}>
+                <span className="font-display text-2xl font-light text-text">{ETIQUETA_GENERO[g]}</span>
+                <span className="mt-4 flex items-center justify-between font-body text-xs text-text-secondary">
+                  {n} perfumes
+                  <ArrowRight size={16} className="text-lila transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+        {bandas.length > 0 && (
+          <div>
+            <Subtitulo>¿Cuánto querés invertir?</Subtitulo>
+            <div className="grid gap-3">
+              {bandas.map((banda) => (
+                <Link key={banda.id} to={`/catalogo?precio=${banda.id}&orden=precio-asc`} className={`${tile} items-center`}>
+                  <span className="font-display text-lg font-light tabular-nums text-text">{etiquetaBanda(banda)}</span>
+                  <ArrowRight size={16} className="text-lila transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="mt-10 grid gap-8 lg:grid-cols-2">
+        {familias.length > 0 && (
+          <div>
+            <Subtitulo>Por aroma</Subtitulo>
+            <div className="flex flex-wrap gap-2">
+              {familias.map(({ f, n }) => (
+                <Chip key={f} to={`/catalogo?familia=${encodeURIComponent(f)}`} cantidad={n}>{f}</Chip>
+              ))}
+            </div>
+          </div>
+        )}
+        {marcas.length > 0 && (
+          <div>
+            <Subtitulo>Por marca</Subtitulo>
+            <div className="flex flex-wrap gap-2">
+              {marcas.map(({ marca, cantidad }) => (
+                <Chip key={marca} to={`/catalogo?marca=${encodeURIComponent(marca)}`} cantidad={cantidad}>{marca}</Chip>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+const PILARES = [
+  { Icono: Gem, texto: 'Cada perfume, elegido con criterio' },
+  { Icono: Coins, texto: 'Precios al día, según la cotización del dólar' },
+  { Icono: MessageCircle, texto: 'Atención personal por WhatsApp' },
+];
+
+/** Quiénes somos en corto: la historia de la marca, tres pilares y números reales del catálogo. */
+function PorQueFraganzia({ catalogo }) {
+  const cantidad = catalogo?.length ?? 0;
+  const marcas = useMemo(() => marcasDelCatalogo(catalogo).length, [catalogo]);
+  const estadisticas = [
+    cantidad >= 50 && { valor: `${Math.floor(cantidad / 50) * 50}+`, texto: 'perfumes en el catálogo' },
+    marcas >= 3 && { valor: String(marcas), texto: 'marcas árabes' },
+    { valor: '3 · 5 · 10', texto: 'ml en decants, para probar' },
+  ].filter(Boolean);
+
+  return (
+    <section aria-labelledby="por-que" className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+      <div className="card-surface relative grid items-center gap-10 overflow-hidden rounded-3xl p-7 sm:p-12 lg:grid-cols-[1.15fr_1fr]">
+        <span aria-hidden="true" className="pointer-events-none absolute -left-16 -top-16 h-64 w-64 rounded-full bg-violet/15 blur-3xl" />
+        <div className="relative">
+          <p className="mb-3 font-body text-[11px] font-semibold uppercase tracking-luxury text-lila">Fraganzia</p>
+          <h2 id="por-que" className="font-display text-3xl font-light tracking-tight text-text sm:text-4xl">
+            Perfumería árabe, elegida con criterio
+          </h2>
+          <p className="mt-4 max-w-lg font-body text-sm leading-relaxed text-text-secondary sm:text-base">
+            Nació de la búsqueda de fragancias que cuenten historias y sean accesibles sin resignar calidad.
+            Hoy es un catálogo cuidadosamente curado.
+          </p>
+          <ul className="mt-6 flex flex-col gap-3">
+            {PILARES.map(({ Icono, texto }) => (
+              <li key={texto} className="flex items-center gap-3 font-body text-sm text-text">
+                <Icono size={18} className="shrink-0 text-lila" aria-hidden="true" />
+                {texto}
+              </li>
+            ))}
+          </ul>
+          <Link to="/sobre-nosotros" className="mt-7 inline-flex items-center gap-2 font-body text-sm font-semibold text-lila transition-base hover:text-text">
+            Conocé Fraganzia
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+        <dl className="relative grid grid-cols-3 gap-3 lg:grid-cols-1">
+          {estadisticas.map(({ valor, texto }) => (
+            <div key={texto} className="rounded-2xl border border-border bg-white/[0.02] p-4 text-center lg:flex lg:items-baseline lg:gap-4 lg:text-left">
+              <dt className="font-display text-2xl font-light tabular-nums text-lila sm:text-3xl lg:min-w-[7.5rem]">{valor}</dt>
+              <dd className="mt-1 font-body text-xs text-text-secondary sm:text-sm lg:mt-0">{texto}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const { data: destacados, isLoading } = usePerfumes({ destacado: true });
   const { data: catalogo } = usePerfumes();
@@ -97,6 +252,12 @@ export default function Home() {
   const { agregar } = useCart();
   const { data: promociones } = usePromocionesActivas();
   useDocumentMeta({ path: '/' });
+
+  // Perfumes con una promoción vigente (solo se muestra la sección si hay).
+  const ofertas = useMemo(
+    () => (promociones?.length ? (catalogo ?? []).filter((p) => getMejorPromo(p.id, promociones)) : []),
+    [catalogo, promociones]
+  );
 
   // Lo que se ve en el primer pantallazo: tres destacados con foto.
   const vitrina = destacados?.filter((p) => p.imagenes?.[0]).slice(0, 3) ?? [];
@@ -143,8 +304,9 @@ export default function Home() {
           <div
             className="hide-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0 scroll-pl-4 sm:scroll-pl-6 lg:scroll-pl-0"
             role="region"
-            aria-label="Perfumes destacados"
+            aria-label="Algunos perfumes para empezar"
           >
+            <h2 className="sr-only">Algunos perfumes para empezar</h2>
             {isLoading || !vitrina.length ? (
               <VitrinaCargando />
             ) : (
@@ -217,8 +379,18 @@ export default function Home() {
         </section>
       )}
 
+      {/* ── Atajos: marca, género, aroma y presupuesto ───────── */}
+      <Explorar catalogo={catalogo} dolarMedio={dolarMedio} />
+
+      {ofertas.length > 0 && (
+        <section className="diferir-render mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+          <TituloSeccion etiqueta="Promociones vigentes" titulo="En oferta" />
+          <HorizontalSlider perfumes={ofertas} dolarMedio={dolarMedio} onAgregar={agregar} promociones={promociones} etiqueta="Perfumes en oferta" />
+        </section>
+      )}
+
       {/* ── Destacados ───────────────────────────────────────── */}
-      <section className="diferir-render mx-auto max-w-7xl px-4 pb-14 pt-14 sm:px-6 sm:pt-16">
+      <section className="diferir-render mx-auto max-w-7xl px-4 pb-14 sm:px-6">
         <TituloSeccion etiqueta="Selección" titulo="Los más elegidos" />
         {isLoading ? (
           // Mismo alto que el slider cargado, para que la página no salte.
@@ -278,6 +450,8 @@ export default function Home() {
           <HorizontalSlider perfumes={nuevos} dolarMedio={dolarMedio} onAgregar={agregar} promociones={promociones} etiqueta="Nuevos ingresos" />
         </section>
       )}
+
+      <PorQueFraganzia catalogo={catalogo} />
 
       {/* ── Cómo comprar: reemplaza a las preguntas frecuentes, que repetían lo de la franja ── */}
       <section aria-labelledby="como-comprar" className="diferir-render mx-auto max-w-5xl px-4 pb-6 sm:px-6">

@@ -9,7 +9,8 @@
 // pruebas no suman estadísticas ni pedidos.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import puppeteer from 'puppeteer-core';
 import { preview } from 'vite';
 
@@ -185,6 +186,154 @@ test('el filtro de género admite varias opciones a la vez', async () => {
   assert.deepEqual(errores, [], `Errores al filtrar por género: ${errores.join(' | ')}`);
   await page.close();
 });
+
+// ─── Atajos y compra rápida ──────────────────────────────────────────────────
+
+test('los filtros que vienen en el link (atajos de la portada y del pie) se aplican', async () => {
+  const { page: base0 } = await abrir('/catalogo');
+  await base0.waitForSelector('ul[aria-label="Perfumes"] li', { timeout: 30000 });
+  const total = await base0.$$eval('ul[aria-label="Perfumes"] li', (l) => l.length);
+  await base0.close();
+
+  const { page, errores } = await abrir('/catalogo?genero=Femenino&marca=Lattafa');
+  await page.waitForFunction(
+    () => document.querySelector('[aria-label="Filtrar por género"] button[aria-pressed="true"]')?.textContent.trim() === 'Femenino',
+    { timeout: 20000 }
+  );
+  const tarjetas = await page.$$eval('ul[aria-label="Perfumes"] li', (l) => l.map((li) => li.innerText.toLowerCase()));
+  assert.ok(tarjetas.length > 0, `el filtro dejó el catálogo vacío (total sin filtrar: ${total})`);
+  assert.ok(tarjetas.every((t) => t.includes('lattafa')), 'hay perfumes de otra marca con el filtro de marca aplicado');
+  assert.deepEqual(errores, [], `Errores con filtros por link: ${errores.join(' | ')}`);
+  await page.close();
+});
+
+test('la portada ofrece atajos reales: un toque lleva al catálogo filtrado', async () => {
+  const { page, errores } = await abrir('/');
+  await page.waitForSelector('a[href^="/catalogo?genero="]', { timeout: 30000 });
+  const atajos = await page.$$eval('#main a[href^="/catalogo?"]', (as) => as.map((a) => a.getAttribute('href')));
+  assert.ok(atajos.some((h) => h.includes('genero=')), 'faltan atajos por género');
+  assert.ok(atajos.some((h) => h.includes('precio=')), 'faltan atajos por presupuesto');
+  assert.ok(atajos.some((h) => h.includes('marca=')), 'faltan atajos por marca');
+  await page.click('#main a[href="/catalogo?genero=Femenino"]');
+  await page.waitForFunction(
+    () => document.querySelector('[aria-label="Filtrar por género"] button[aria-pressed="true"]')?.textContent.trim() === 'Femenino',
+    { timeout: 20000 }
+  );
+  assert.deepEqual(errores, [], `Errores en los atajos: ${errores.join(' | ')}`);
+  await page.close();
+});
+
+test('"Comprar ahora" lleva directo al carrito con el perfume, sin panel intermedio', async () => {
+  const { page } = await abrir('/catalogo');
+  await page.waitForSelector('ul[aria-label="Perfumes"] li a[href^="/perfume/"]', { timeout: 30000 });
+  const ruta = await page.$eval('ul[aria-label="Perfumes"] li a[href^="/perfume/"]', (a) => a.getAttribute('href'));
+  await page.close();
+
+  const { page: ficha, errores } = await abrir(ruta);
+  await tocar(ficha, 'Comprar ahora');
+  await ficha.waitForFunction(() => location.pathname === '/carrito', { timeout: 15000 });
+  await ficha.waitForSelector('ul[aria-label="Productos en el carrito"] li', { timeout: 15000 });
+  assert.equal(await ficha.$('[role="dialog"]'), null, 'no debería abrirse el panel de "agregado" al ir directo');
+  const unidades = await ficha.$$eval('ul[aria-label="Productos en el carrito"] li [aria-live="polite"]', (n) => n.map((x) => x.textContent.trim()));
+  assert.deepEqual(unidades, ['1']);
+  assert.deepEqual(errores, [], `Errores en "Comprar ahora": ${errores.join(' | ')}`);
+  await ficha.close();
+});
+
+// ─── Agentes de IA: se leen sin ejecutar JavaScript ──────────────────────────
+
+const sinEtiquetas = (html) =>
+  html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+const jsonLdDe = (html) =>
+  [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+
+test('sin ejecutar JavaScript, la ficha trae título, descripción, notas, precios y datos estructurados', async () => {
+  const archivo = readdirSync('dist/perfume').find((f) => f !== '.html' && f.endsWith('.html'));
+  const html = await (await fetch(`${base}/perfume/${archivo}`)).text();
+  const texto = sinEtiquetas(html);
+  assert.match(html, /<h1>[^<]{3,}<\/h1>/, 'la ficha estática no tiene h1');
+  assert.match(texto, /Transferencia: \$/);
+  assert.match(texto, /Cómo comprar/);
+  assert.match(texto, /Envíos solo al AMBA/);
+  const grafos = jsonLdDe(html).flatMap((d) => d['@graph'] ?? [d]);
+  const producto = grafos.find((n) => n['@type'] === 'Product');
+  assert.ok(producto?.name && producto.offers?.length >= 1, 'falta el Product con sus ofertas');
+  assert.equal(producto.offers[0].priceCurrency, 'ARS');
+  assert.ok(grafos.some((n) => n['@type'] === 'BreadcrumbList'), 'falta BreadcrumbList');
+});
+
+test('sin ejecutar JavaScript, la portada y el catálogo declaran sitio, buscador y lista', async () => {
+  const portada = await (await fetch(`${base}/`)).text();
+  const grafosPortada = jsonLdDe(portada).flatMap((d) => d['@graph'] ?? [d]);
+  assert.ok(grafosPortada.some((n) => n['@type'] === 'WebSite' && n.potentialAction?.['@type'] === 'SearchAction'));
+  assert.ok(grafosPortada.some((n) => n['@type'] === 'Organization'));
+  assert.match(portada, /<h1[\s>]/);
+  assert.match(portada, /rel="alternate" type="text\/plain" href="\/llms\.txt"/);
+
+  const catalogo = await (await fetch(`${base}/catalogo.html`)).text();
+  const lista = jsonLdDe(catalogo).find((d) => d['@type'] === 'ItemList');
+  assert.ok(lista && lista.numberOfItems > 100 && lista.itemListElement.length > 10);
+});
+
+test('llms.txt, llms-full.txt y catalogo.json se publican y son coherentes', async () => {
+  const txt = await (await fetch(`${base}/llms.txt`)).text();
+  assert.match(txt, /^# Fraganzia/);
+  const completo = await (await fetch(`${base}/llms-full.txt`)).text();
+  const json = await (await fetch(`${base}/catalogo.json`)).json();
+  assert.ok(json.perfumes.length > 100);
+  assert.equal(completo.split('\n### ').length - 1, json.perfumes.length, 'llms-full.txt y catalogo.json no listan lo mismo');
+  assert.ok(json.perfumes.every((p) => p.nombre && p.marca && p.url.startsWith('https://')));
+});
+
+test('robots.txt da la bienvenida a los agentes de IA sin abrir lo privado', async () => {
+  const robots = await (await fetch(`${base}/robots.txt`)).text();
+  for (const bot of ['GPTBot', 'ClaudeBot', 'PerplexityBot', 'Google-Extended']) {
+    // El bot comparte grupo con las reglas: debe quedar sujeto a los mismos Disallow.
+    assert.match(robots, new RegExp(`User-agent: ${bot}\\n(?:User-agent: [^\\n]+\\n)*Allow: /\\nDisallow: /admin`), `${bot} no comparte el grupo con las restricciones`);
+  }
+  assert.match(robots, /Disallow: \/carrito/);
+  assert.match(robots, /Sitemap: /);
+});
+
+test('el nombre del logo es texto real: se lee "FRAGANZIA" aunque las A se vean como arcos', async () => {
+  const { page, errores } = await abrir('/');
+  const texto = await page.$eval('nav[aria-label="Principal"] a[href="/"]', (a) => a.textContent.replace(/\s+/g, ''));
+  assert.equal(texto, 'FRAGANZIA');
+  assert.deepEqual(errores, []);
+  await page.close();
+});
+
+// ─── Accesibilidad (WCAG 2.2 AA, con axe-core) ───────────────────────────────
+
+const axeFuente = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
+
+for (const [nombre, tamano] of [['celular', { width: 390, height: 844, isMobile: true }], ['escritorio', { width: 1366, height: 800 }]]) {
+  test(`accesibilidad: sin violaciones de WCAG A/AA en las páginas públicas (${nombre})`, async () => {
+    const { page: base0 } = await abrir('/catalogo');
+    await base0.waitForSelector('ul[aria-label="Perfumes"] li a[href^="/perfume/"]', { timeout: 30000 });
+    const ficha = await base0.$eval('ul[aria-label="Perfumes"] li a[href^="/perfume/"]', (a) => a.getAttribute('href'));
+    await base0.close();
+
+    const problemas = [];
+    for (const ruta of ['/', '/catalogo', ficha, '/decants', '/contacto', '/sobre-nosotros', '/carrito']) {
+      const { page } = await abrir(ruta);
+      await page.setViewport(tamano);
+      await page.evaluate(async () => {
+        for (let y = 0; y < document.documentElement.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
+        window.scrollTo(0, 0);
+      });
+      await page.evaluate(axeFuente);
+      const resultado = await page.evaluate(() =>
+        axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } })
+      );
+      for (const v of resultado.violations) {
+        problemas.push(`${ruta.startsWith('/perfume') ? '/ficha' : ruta} · ${v.id} (${v.impact}): ${v.nodes[0].html.slice(0, 90)}`);
+      }
+      await page.close();
+    }
+    assert.deepEqual(problemas, [], `Violaciones de accesibilidad:\n${problemas.join('\n')}`);
+  });
+}
 
 // ─── Carrito ─────────────────────────────────────────────────────────────────
 
