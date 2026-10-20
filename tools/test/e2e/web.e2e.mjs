@@ -186,6 +186,59 @@ test('el filtro de género admite varias opciones a la vez', async () => {
   await page.close();
 });
 
+// ─── Atajos y compra rápida ──────────────────────────────────────────────────
+
+test('los filtros que vienen en el link (atajos de la portada y del pie) se aplican', async () => {
+  const { page: base0 } = await abrir('/catalogo');
+  await base0.waitForSelector('ul[aria-label="Perfumes"] li', { timeout: 30000 });
+  const total = await base0.$$eval('ul[aria-label="Perfumes"] li', (l) => l.length);
+  await base0.close();
+
+  const { page, errores } = await abrir('/catalogo?genero=Femenino&marca=Lattafa');
+  await page.waitForFunction(
+    () => document.querySelector('[aria-label="Filtrar por género"] button[aria-pressed="true"]')?.textContent.trim() === 'Femenino',
+    { timeout: 20000 }
+  );
+  const tarjetas = await page.$$eval('ul[aria-label="Perfumes"] li', (l) => l.map((li) => li.innerText.toLowerCase()));
+  assert.ok(tarjetas.length > 0, `el filtro dejó el catálogo vacío (total sin filtrar: ${total})`);
+  assert.ok(tarjetas.every((t) => t.includes('lattafa')), 'hay perfumes de otra marca con el filtro de marca aplicado');
+  assert.deepEqual(errores, [], `Errores con filtros por link: ${errores.join(' | ')}`);
+  await page.close();
+});
+
+test('la portada ofrece atajos reales: un toque lleva al catálogo filtrado', async () => {
+  const { page, errores } = await abrir('/');
+  await page.waitForSelector('a[href^="/catalogo?genero="]', { timeout: 30000 });
+  const atajos = await page.$$eval('#main a[href^="/catalogo?"]', (as) => as.map((a) => a.getAttribute('href')));
+  assert.ok(atajos.some((h) => h.includes('genero=')), 'faltan atajos por género');
+  assert.ok(atajos.some((h) => h.includes('precio=')), 'faltan atajos por presupuesto');
+  assert.ok(atajos.some((h) => h.includes('marca=')), 'faltan atajos por marca');
+  await page.click('#main a[href="/catalogo?genero=Femenino"]');
+  await page.waitForFunction(
+    () => document.querySelector('[aria-label="Filtrar por género"] button[aria-pressed="true"]')?.textContent.trim() === 'Femenino',
+    { timeout: 20000 }
+  );
+  assert.deepEqual(errores, [], `Errores en los atajos: ${errores.join(' | ')}`);
+  await page.close();
+});
+
+test('"Comprar ahora" lleva directo al carrito con el perfume, sin panel intermedio', async () => {
+  const { page } = await abrir('/catalogo');
+  await page.waitForSelector('ul[aria-label="Perfumes"] li a[href^="/perfume/"]', { timeout: 30000 });
+  const ruta = await page.$eval('ul[aria-label="Perfumes"] li a[href^="/perfume/"]', (a) => a.getAttribute('href'));
+  await page.close();
+
+  const { page: ficha, errores } = await abrir(ruta);
+  await tocar(ficha, 'Comprar ahora');
+  await ficha.waitForFunction(() => location.pathname === '/carrito', { timeout: 15000 });
+  await ficha.waitForSelector('ul[aria-label="Productos en el carrito"] li', { timeout: 15000 });
+  assert.equal(await ficha.$('[role="dialog"]'), null, 'no debería abrirse el panel de "agregado" al ir directo');
+  const unidades = await ficha.$$eval('ul[aria-label="Productos en el carrito"] li [aria-live="polite"]', (n) => n.map((x) => x.textContent.trim()));
+  assert.deepEqual(unidades, ['1']);
+  assert.deepEqual(errores, [], `Errores en "Comprar ahora": ${errores.join(' | ')}`);
+  await ficha.close();
+});
+
 // ─── Carrito ─────────────────────────────────────────────────────────────────
 
 test('agregar un perfume actualiza el carrito y se mantiene al cambiar de página', async () => {

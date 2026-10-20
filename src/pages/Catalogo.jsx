@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
@@ -13,10 +13,41 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { abrirAsistente } from '../components/asistente/BotonAsistente';
 import { quisoDecir } from '../utils/busqueda';
 import { filtrarPerfumes } from '../services/perfumesService';
-import { bandasDePrecio, aplicarOrdenYPrecio } from '../utils/ordenCatalogo';
+import { bandasDePrecio, aplicarOrdenYPrecio, ORDENES } from '../utils/ordenCatalogo';
+import { GENEROS, FAMILIAS_OLFATIVAS } from '../constants';
+
+const BANDAS = ['bajo', 'medio', 'alto'];
+
+/**
+ * Filtros que vienen en el link (los atajos de la portada y del pie): ?genero=Masculino,
+ * ?marca=Lattafa, ?precio=bajo, ?familia=Oriental, ?orden=precio-asc, ?buscar=yara.
+ * Solo se aceptan valores conocidos.
+ */
+function filtrosDesdeUrl(params) {
+  const f = {};
+  const generos = params.getAll('genero').filter((g) => GENEROS.includes(g));
+  if (generos.length) f.genero = generos;
+  const marca = params.get('marca');
+  if (marca) f.marca = marca.slice(0, 60);
+  if (BANDAS.includes(params.get('precio'))) f.precio = params.get('precio');
+  if (ORDENES.some((o) => o.value === params.get('orden'))) f.orden = params.get('orden');
+  if (FAMILIAS_OLFATIVAS.includes(params.get('familia'))) f.familiaOlfativa = params.get('familia');
+  const buscar = params.get('buscar');
+  if (buscar) f.busqueda = buscar.slice(0, 80);
+  return f;
+}
 
 export default function Catalogo() {
   const [filtros, setFiltros] = useState({});
+  // Se aplican después de montar (no en el estado inicial): el HTML pre-generado del
+  // catálogo no tiene filtros y la hidratación tiene que coincidir con él.
+  const [params] = useSearchParams();
+  const enlace = params.toString();
+  useEffect(() => {
+    if (!enlace) return;
+    const desdeUrl = filtrosDesdeUrl(new URLSearchParams(enlace));
+    if (Object.keys(desdeUrl).length) setFiltros(desdeUrl);
+  }, [enlace]);
   useEffect(() => { registrarPaso('catalogo'); }, []);
   const { data: perfumes, isLoading, isError, refetch } = usePerfumes(filtros);
   const { data: catalogo } = usePerfumes();
