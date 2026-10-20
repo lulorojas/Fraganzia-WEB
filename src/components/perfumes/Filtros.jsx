@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { GENEROS, FAMILIAS_OLFATIVAS } from '../../constants';
@@ -174,11 +174,6 @@ export function Filtros({ filtros, onChange }) {
     [catalogo]
   );
   const activos = ['marca', 'familiaOlfativa', 'precio', 'orden'].filter((c) => filtros[c]).length;
-  // Si llegan filtros por un atajo (marca, precio, aroma), el panel se abre para que se vean aplicados.
-  const hayActivos = activos > 0;
-  useEffect(() => {
-    if (hayActivos) setFiltrosAbiertos(true);
-  }, [hayActivos]);
 
   function actualizar(campo, valor) {
     onChange({ ...filtros, [campo]: valor || undefined });

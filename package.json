@@ -31,7 +31,6 @@
     "@firebase/rules-unit-testing": "^6.0.0",
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.0",
-    "axe-core": "^4.14.0",
     "firebase-admin": "^14.1.0",
     "pdfjs-dist": "^6.4.299",
     "postcss": "^8.4.0",

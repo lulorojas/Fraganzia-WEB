@@ -7,10 +7,6 @@ import App from './App';
 import { marcarHidratacion } from './utils/hidratacion';
 import './index.css';
 
-// Las fichas pre-generadas traen su contenido completo para agentes de IA fuera de #root
-// (tools/lib/contenido-agentes.mjs): con la app ya viva, esa versión sobra.
-document.getElementById('contenido-estatico')?.remove();
-
 const root = document.getElementById('root');
 const app = (
   <StrictMode>

@@ -1,6 +1,6 @@
 // Genera las piezas de Instagram de Fraganzia (posts 1080x1350 e historias
 // 1080x1920) en public/flyers/instagram/*.png, con la identidad de la web
-// (fondo oscuro, violeta, Outfit + Manrope, símbolo de frasco con F) y fotos reales del catálogo.
+// (fondo oscuro, violeta, Outfit + Manrope, monograma de arco con F) y fotos reales del catálogo.
 //
 // Uso: node tools/generar-flyers-instagram.mjs
 // Necesita Chrome (CHROME_PATH o la ruta de Windows) y leer Firestore (REST).
@@ -25,11 +25,8 @@ const DECANTS = [
 ];
 
 const fuente = (nombre) => pathToFileURL(join('src/assets/fonts', nombre)).href;
-// Símbolo de la marca (el mismo de src/components/ui/LogoFraganzia.jsx) y nombre con "A" en arco.
-const GRAD = '<defs><linearGradient id="oro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9D5FF"/><stop offset=".5" stop-color="#C084FC"/><stop offset="1" stop-color="#7B2FBE"/></linearGradient></defs>';
-const MONOGRAMA = `<svg viewBox="0 0 64 76" width="64" height="76" fill="none">${GRAD}<rect x="25.5" y="3" width="13" height="7" rx="1.4" fill="url(#oro)"/><path d="M27.5 10H36.5V14.5C37 18 41 19.5 45.5 23C52 28 56 33 56 41V72H8V41C8 33 12 28 18.5 23C23 19.5 27 18 27.5 14.5Z" stroke="url(#oro)" stroke-width="2.6" stroke-linejoin="round"/><path d="M24 61V33H42V38H29.6V44.2H38.6V49.2H29.6V61Z" fill="url(#oro)"/></svg>`;
-const ARCO_A = (m) => `<svg viewBox="0 0 16 18" style="width:.62em;height:.72em;margin-right:${m}em" fill="none"><path d="M2.2 18V7.6C2.2 4.6 5 2.2 8 .2C11 2.2 13.8 4.6 13.8 7.6V18M2.2 12.6H13.8" stroke="currentColor" stroke-width="2.4"/></svg>`;
-const NOMBRE = `FR${ARCO_A(0.32)}G${ARCO_A(0.32)}NZI${ARCO_A(0)}`;
+// Monograma de la marca (el mismo de src/components/ui/LogoFraganzia.jsx).
+const MONOGRAMA = `<svg viewBox="0 0 64 76" width="64" height="76" fill="none"><defs><linearGradient id="oro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9D5FF"/><stop offset=".5" stop-color="#C084FC"/><stop offset="1" stop-color="#7B2FBE"/></linearGradient></defs><path d="M6 72V34C6 20 19 11 32 3C45 11 58 20 58 34V72" stroke="url(#oro)" stroke-width="2.6" stroke-linejoin="round"/><path d="M12 72V35C12 23 23 15.5 32 9.5C41 15.5 52 23 52 35V72" stroke="url(#oro)" stroke-width=".9" opacity=".55" stroke-linejoin="round"/><path d="M24 56V30H42V34.5H29.5V41H38.5V45.5H29.5V56Z" fill="url(#oro)"/></svg>`;
 
 // Foto local de un perfume (public/img/p/<hash>-800.webp o /productos-bot/...).
 function fotoDe(url) {
@@ -50,7 +47,7 @@ body{background:var(--bg);color:var(--t);font-family:Manrope,sans-serif;position
 .in{position:relative;height:100%;display:flex;flex-direction:column;padding:96px 90px 84px}
 .marca{display:flex;align-items:center;gap:22px}
 .marca svg{width:64px;height:76px}
-.marca span{font-family:Outfit;font-size:38px;letter-spacing:.32em;font-weight:500;display:inline-flex;align-items:baseline}
+.marca span{font-family:Outfit;font-size:38px;letter-spacing:.34em;font-weight:500}
 h1{font-family:Outfit;font-weight:300;line-height:1.06;letter-spacing:-.02em}
 h1 em{font-style:normal;color:var(--l)}
 p.sub{color:var(--s);line-height:1.45}
@@ -66,7 +63,7 @@ p.sub{color:var(--s);line-height:1.45}
 const pagina = (w, h, cuerpo) =>
   `<!doctype html><meta charset="utf-8"><style>${CSS}body{width:${w}px;height:${h}px}</style><body><div class="g1"></div><div class="g2"></div><div class="marco"></div><div class="in">${cuerpo}</div></body>`;
 
-const marca = `<div class="marca">${MONOGRAMA}<span>${NOMBRE}</span></div>`;
+const marca = `<div class="marca">${MONOGRAMA}<span>FRAGANZIA</span></div>`;
 const pie = (txt = WEB) => `<div class="pie" style="font-size:26px"><span>${txt}</span><span>${IG}</span></div>`;
 
 function piezas(destacados) {

@@ -18,10 +18,8 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { preview } from 'vite';
 import { listarColeccion, leerDocumento } from './lib/firestore-rest.mjs';
+import { preciosPorMetodo, getMejorPromo } from '../src/utils/precios.js';
 import { hashTexto } from '../src/utils/hash.js';
-import {
-  preciosDe, htmlFicha, jsonLdFicha, jsonLdSitio, jsonLdCatalogo, llmsTxt, llmsFull, catalogoJson,
-} from './lib/contenido-agentes.mjs';
 
 const DIST = 'dist';
 const SITE = 'https://fraganzia-e9b70.web.app';
@@ -134,27 +132,6 @@ try {
 writeFileSync(`${DIST}/index.html`, conDatos);
 escribirShells(conDatos);
 
-// Perfumes con descripción y notas (la foto de datos trae solo lo que usan las cards).
-let enriquecidos = datos?.perfumes ?? [];
-const dolarMedio = datos?.dolarBlue ? (datos.dolarBlue.compra + datos.dolarBlue.venta) / 2 : null;
-if (datos) {
-  try {
-    const extras = new Map(
-      (await listarColeccion('perfumes', { campos: ['descripcion', 'notasSalida', 'notasCorazon', 'notasFondo'] })).map((p) => [p.id, p])
-    );
-    enriquecidos = datos.perfumes.map((p) => ({ ...p, ...extras.get(p.id) }));
-    // Archivos de texto para agentes de IA: llms.txt, llms-full.txt y catalogo.json.
-    const opciones = { dolarMedio, promociones: datos.promociones, generadoEn: datos.generadoEn };
-    const marcas = new Set(enriquecidos.map((p) => String(p.marca ?? '').trim().toLowerCase()).filter(Boolean)).size;
-    writeFileSync(`${DIST}/llms.txt`, llmsTxt({ cantidad: enriquecidos.length, marcas, ...opciones }));
-    writeFileSync(`${DIST}/llms-full.txt`, llmsFull(enriquecidos, opciones));
-    writeFileSync(`${DIST}/catalogo.json`, JSON.stringify(catalogoJson(enriquecidos, opciones)));
-    console.log('prerender: llms.txt, llms-full.txt y catalogo.json');
-  } catch (err) {
-    console.warn(`prerender: sin archivos para agentes (${err.message})`);
-  }
-}
-
 const chrome = buscarChrome();
 if (!chrome) {
   console.warn('prerender: no se encontró Chrome (definí CHROME_PATH); se sirven shells sin pre-render');
@@ -176,20 +153,34 @@ const reemplazar = (html, regex, valor) => html.replace(regex, (_, a, b) => `${a
 
 async function paginasPorPerfume(rootEsqueleto) {
   if (!datos) return;
-  const porId = new Map(enriquecidos.map((p) => [p.id, p]));
+  const descripciones = new Map(
+    (await listarColeccion('perfumes', { campos: ['descripcion'] })).map((p) => [p.id, p.descripcion])
+  );
+  const dolarMedio = datos.dolarBlue ? (datos.dolarBlue.compra + datos.dolarBlue.venta) / 2 : null;
   mkdirSync(`${DIST}/perfume`, { recursive: true });
 
   for (const p of datos.perfumes) {
-    const completo = porId.get(p.id) ?? p;
-    const descripcion = completo.descripcion;
-    const precios = preciosDe(completo, dolarMedio, datos.promociones);
+    const descripcion = descripciones.get(p.id);
+    const base = dolarMedio && p.precioUSD ? preciosPorMetodo(p.precioUSD, dolarMedio).precioTransferencia : null;
+    const pct = getMejorPromo(p.id, datos.promociones)?.descuentoPorcentaje ?? 0;
+    const precio = base && (pct ? Math.round((base * (1 - pct / 100)) / 1000) * 1000 : base);
 
     const titulo = `${p.nombre} — ${p.marca} | Fraganzia`;
     const resumen =
       descripcion?.slice(0, 155) || `${p.nombre} de ${p.marca}, perfume original. Precio en pesos y envíos en AMBA.`;
     const url = `${SITE}/perfume/${p.id}`;
     const imagen = urlImagen(p.imagenes?.[0]);
-    const productoLd = jsonLdFicha(completo, precios, imagen);
+    const productoLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: p.nombre,
+      brand: { '@type': 'Brand', name: p.marca },
+      image: imagen,
+      description: descripcion || undefined,
+      ...(precio && {
+        offers: { '@type': 'Offer', url, priceCurrency: 'ARS', price: precio, availability: 'https://schema.org/InStock' },
+      }),
+    };
     const soloEste = {
       generadoEn: datos.generadoEn,
       promociones: datos.promociones,
@@ -201,8 +192,7 @@ async function paginasPorPerfume(rootEsqueleto) {
 
     let html = plantilla
       .replace('</head>', () => `    ${scriptDatos(soloEste)}\n    <script type="application/ld+json">${jsonLd}</script>\n  </head>`)
-      // El contenido completo para agentes va junto al esqueleto, fuera de #root: la app lo quita al montar.
-      .replace('<div id="root"></div>', () => `${htmlFicha(completo, precios)}<div id="root">${rootEsqueleto}</div>`);
+      .replace('<div id="root"></div>', () => `<div id="root">${rootEsqueleto}</div>`);
     html = shell(html).replace(
       /<title>[^<]*<\/title>/,
       () => `<title>${escaparAttr(titulo)}</title>\n    <link rel="canonical" href="${url}" />`
@@ -301,11 +291,6 @@ try {
     const { root, head } = resultados[archivo];
     let html = conDatos.replace('<div id="root"></div>', () => `<div id="root">${root}</div>`);
     html = soloRoot ? shell(html) : aplicarHead(html, head);
-    const ld = archivo === 'index.html' ? jsonLdSitio() : archivo === 'catalogo.html' ? jsonLdCatalogo(enriquecidos) : null;
-    if (ld) {
-      const texto = JSON.stringify(ld).replace(/</g, '\\u003c');
-      html = html.replace('</head>', () => `    <script type="application/ld+json">${texto}</script>\n  </head>`);
-    }
     writeFileSync(`${DIST}/${archivo}`, html);
   }
   console.log(`prerender: ${PAGINAS.length} páginas`);
