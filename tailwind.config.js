@@ -4,26 +4,29 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#06040D',
-        violet: {
-          DEFAULT: '#7B2FBE',
-          light: '#9B59D0',
+        // Paleta "oud y oro": negro cálido, dorado champagne y marfil.
+        bg: '#0A0908',
+        gold: {
+          DEFAULT: '#C5A059',
+          light: '#DDBF85',
+          deep: '#8F7338',
         },
-        lila: '#C084FC',
+        champagne: '#E4CFA0',
+        // Tinta oscura para el texto que va sobre fondos dorados.
+        ink: '#14100A',
         text: {
-          DEFAULT: '#F8F4FF',
-          secondary: '#9A90B8',
+          DEFAULT: '#F5EFE4',
+          secondary: '#A89F90',
         },
-        border: 'rgba(147, 51, 234, 0.18)',
-        glow: 'rgba(139, 51, 208, 0.4)',
+        border: 'rgba(197, 160, 89, 0.18)',
+        glow: 'rgba(197, 160, 89, 0.35)',
         success: '#10B981',
         error: '#EF4444',
       },
       fontFamily: {
+        // Solo sin serifa: Outfit para títulos y marca, Manrope para el texto.
         display: ['Outfit', 'system-ui', 'sans-serif'],
         body: ['Manrope', 'system-ui', 'sans-serif'],
-        luxury: ['Cinzel', 'Georgia', 'serif'],
-        logo: ['"Playfair Logo"', 'Georgia', 'serif'],
       },
       letterSpacing: {
         luxury: '0.25em',
@@ -74,8 +77,8 @@ export default {
           '50%': { transform: 'translate(10%, -10%)' },
         },
         'glow-pulse': {
-          '0%, 100%': { opacity: '0.5', boxShadow: '0 0 20px rgba(139, 51, 208, 0.3)' },
-          '50%': { opacity: '1', boxShadow: '0 0 40px rgba(139, 51, 208, 0.6)' },
+          '0%, 100%': { opacity: '0.5', boxShadow: '0 0 20px rgba(197, 160, 89, 0.28)' },
+          '50%': { opacity: '1', boxShadow: '0 0 40px rgba(197, 160, 89, 0.55)' },
         },
         'float': {
           '0%, 100%': { transform: 'translateY(0px)' },

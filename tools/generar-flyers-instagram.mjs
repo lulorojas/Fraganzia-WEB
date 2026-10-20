@@ -1,6 +1,6 @@
 // Genera las piezas de Instagram de Fraganzia (posts 1080x1350 e historias
 // 1080x1920) en public/flyers/instagram/*.png, con la identidad de la web
-// (fondo oscuro, violeta, Cinzel + Manrope) y fotos reales del catálogo.
+// (fondo negro cálido, dorado, Outfit + Manrope, monograma de arco con F) y fotos reales del catálogo.
 //
 // Uso: node tools/generar-flyers-instagram.mjs
 // Necesita Chrome (CHROME_PATH o la ruta de Windows) y leer Firestore (REST).
@@ -12,7 +12,7 @@ import puppeteer from 'puppeteer-core';
 import { listarColeccion } from './lib/firestore-rest.mjs';
 import { hashTexto } from '../src/utils/hash.js';
 
-const SALIDA = 'public/flyers/instagram';
+const SALIDA = process.env.SALIDA_FLYERS ?? 'public/flyers/instagram';
 const CHROME = process.env.CHROME_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const WEB = 'fraganzia-e9b70.web.app';
 const IG = '@fraganzia.ar';
@@ -25,7 +25,8 @@ const DECANTS = [
 ];
 
 const fuente = (nombre) => pathToFileURL(join('src/assets/fonts', nombre)).href;
-const logo = pathToFileURL(join('public', 'logo-256.webp')).href;
+// Monograma de la marca (el mismo de src/components/ui/LogoFraganzia.jsx).
+const MONOGRAMA = `<svg viewBox="0 0 64 76" width="64" height="76" fill="none"><defs><linearGradient id="oro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAD7A8"/><stop offset=".5" stop-color="#C5A059"/><stop offset="1" stop-color="#8F7338"/></linearGradient></defs><path d="M6 72V34C6 20 19 11 32 3C45 11 58 20 58 34V72" stroke="url(#oro)" stroke-width="2.6" stroke-linejoin="round"/><path d="M12 72V35C12 23 23 15.5 32 9.5C41 15.5 52 23 52 35V72" stroke="url(#oro)" stroke-width=".9" opacity=".55" stroke-linejoin="round"/><path d="M24 56V30H42V34.5H29.5V41H38.5V45.5H29.5V56Z" fill="url(#oro)"/></svg>`;
 
 // Foto local de un perfume (public/img/p/<hash>-800.webp o /productos-bot/...).
 function fotoDe(url) {
@@ -35,26 +36,26 @@ function fotoDe(url) {
 }
 
 const CSS = `
-@font-face{font-family:Cinzel;src:url(${fuente('cinzel.woff2')})}
+@font-face{font-family:Outfit;font-weight:300 700;src:url(${fuente('outfit.woff2')})}
 @font-face{font-family:Manrope;src:url(${fuente('manrope.woff2')})}
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#06040D;--v:#7B2FBE;--l:#C084FC;--t:#F8F4FF;--s:#C9BEE0}
+:root{--bg:#0A0908;--v:#C5A059;--l:#E4CFA0;--t:#F5EFE4;--s:#B5AB9A}
 body{background:var(--bg);color:var(--t);font-family:Manrope,sans-serif;position:relative;overflow:hidden}
-.g1{position:absolute;right:-220px;top:-260px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,#7B2FBE70,transparent 65%)}
-.g2{position:absolute;left:-260px;bottom:-300px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,#C084FC26,transparent 65%)}
-.marco{position:absolute;inset:36px;border:2px solid #C084FC33;border-radius:36px}
+.g1{position:absolute;right:-220px;top:-260px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,#C5A05944,transparent 65%)}
+.g2{position:absolute;left:-260px;bottom:-300px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,#8F733833,transparent 65%)}
+.marco{position:absolute;inset:36px;border:2px solid #C5A05944;border-radius:36px}
 .in{position:relative;height:100%;display:flex;flex-direction:column;padding:96px 90px 84px}
 .marca{display:flex;align-items:center;gap:22px}
-.marca img{width:76px;height:76px;border-radius:50%;box-shadow:0 0 36px #7B2FBE99}
-.marca span{font-family:Cinzel;font-size:38px;letter-spacing:8px;font-weight:600}
-h1{font-family:Cinzel;font-weight:600;line-height:1.08;letter-spacing:2px}
+.marca svg{width:64px;height:76px}
+.marca span{font-family:Outfit;font-size:38px;letter-spacing:.34em;font-weight:500}
+h1{font-family:Outfit;font-weight:300;line-height:1.06;letter-spacing:-.02em}
 h1 em{font-style:normal;color:var(--l)}
 p.sub{color:var(--s);line-height:1.45}
 .pie{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;color:var(--l);letter-spacing:3px;text-transform:uppercase;font-weight:600}
-.boton{display:inline-block;background:linear-gradient(135deg,#7B2FBE,#9B59D0);padding:26px 46px;border-radius:999px;font-weight:800;font-size:34px;color:#fff;box-shadow:0 14px 50px #7B2FBE88}
-.chip{display:inline-block;border:2px solid #C084FC66;background:#7B2FBE22;border-radius:999px;padding:12px 26px;margin:7px;font-weight:600;color:var(--t)}
-.num{font-family:Cinzel;color:var(--l);font-weight:700}
-.tarjeta{background:#ffffff0d;border:2px solid #C084FC33;border-radius:30px;padding:34px 38px}
+.boton{display:inline-block;background:linear-gradient(135deg,#B8924A,#E0C58C);padding:26px 46px;border-radius:999px;font-weight:800;font-size:34px;color:#14100A;box-shadow:0 14px 50px #8F733866}
+.chip{display:inline-block;border:2px solid #C5A05966;background:#C5A05915;border-radius:999px;padding:12px 26px;margin:7px;font-weight:600;color:var(--t)}
+.num{font-family:Outfit;color:var(--l);font-weight:500}
+.tarjeta{background:#ffffff0a;border:2px solid #C5A05944;border-radius:30px;padding:34px 38px}
 .foto{background:#fff;border-radius:28px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .foto img{max-width:88%;max-height:88%;object-fit:contain}
 `;
@@ -62,7 +63,7 @@ p.sub{color:var(--s);line-height:1.45}
 const pagina = (w, h, cuerpo) =>
   `<!doctype html><meta charset="utf-8"><style>${CSS}body{width:${w}px;height:${h}px}</style><body><div class="g1"></div><div class="g2"></div><div class="marco"></div><div class="in">${cuerpo}</div></body>`;
 
-const marca = `<div class="marca"><img src="${logo}"><span>FRAGANZIA</span></div>`;
+const marca = `<div class="marca">${MONOGRAMA}<span>FRAGANZIA</span></div>`;
 const pie = (txt = WEB) => `<div class="pie" style="font-size:26px"><span>${txt}</span><span>${IG}</span></div>`;
 
 function piezas(destacados) {

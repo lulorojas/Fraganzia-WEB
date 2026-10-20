@@ -32,7 +32,7 @@ function FilaDecant({ perfume, ml, dolarMedio, onAgregar }) {
         type="button"
         onClick={() => onAgregar(perfume, ml)}
         disabled={!tienePrecio}
-        className="rounded-lg bg-violet px-3 py-2 text-xs font-semibold text-white transition-base hover:bg-violet/90 disabled:opacity-40"
+        className="rounded-lg bg-gold px-3 py-2 text-xs font-semibold text-ink transition-base hover:bg-gold/90 disabled:opacity-40"
       >
         Agregar
       </button>
@@ -49,7 +49,7 @@ function CardDecant({ perfume, dolarMedio, onAgregar }) {
           <ImagenProducto url={imagen} sizes="64px" width="64" height="64" className="h-full w-full object-contain p-1" />
         </div>
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide2 text-lila truncate">{perfume.marca}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide2 text-champagne truncate">{perfume.marca}</p>
           <h2 className="font-display text-sm font-semibold leading-snug text-text line-clamp-2">{perfume.nombre}</h2>
         </div>
       </div>
@@ -100,7 +100,7 @@ export default function Decants() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Decants</h1>
+        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Decants</h1>
         <p className="mt-2 font-body text-text-secondary">
           Probá estos perfumes en fracciones de 3, 5 o 10ml antes de llevarte la botella entera.
         </p>

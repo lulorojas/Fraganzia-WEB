@@ -17,7 +17,7 @@ export function ResumenCheckout({ items, metodoPago, dolarMedio, whatsappNumero,
           )}
           target="_blank"
           rel="noreferrer"
-          className="text-sm underline text-lila transition-base hover:text-violet-light"
+          className="text-sm underline text-champagne transition-base hover:text-gold-light"
         >
           Consultá por WhatsApp
         </a>
@@ -29,15 +29,15 @@ export function ResumenCheckout({ items, metodoPago, dolarMedio, whatsappNumero,
   const { subtotalARS, totalARS, lineas } = calcularCarritoConPromos(items, promociones, esEfectivo, dolarMedio);
 
   return (
-    <div className="font-luxury text-text flex flex-col gap-1.5">
+    <div className="font-display text-text flex flex-col gap-1.5">
       <p className="font-body text-sm text-text-secondary">Subtotal: {formatARS(subtotalARS)}</p>
       {lineas.map((l) => (
-        <p key={l.nombre} className="font-body text-sm text-lila">
+        <p key={l.nombre} className="font-body text-sm text-champagne">
           {l.tipo === '2x1' ? `Promo 2×1 "${l.nombre}"` : `Promo "${l.nombre}" -${l.pct}%`}: -{formatARS(l.monto)}
         </p>
       ))}
       <div className="mt-1 border-t border-border pt-3">
-        <p className="text-2xl font-bold tracking-tight">Total: <span className="text-lila">{formatARS(totalARS)}</span></p>
+        <p className="text-2xl font-bold tracking-tight">Total: <span className="text-champagne">{formatARS(totalARS)}</span></p>
       </div>
     </div>
   );

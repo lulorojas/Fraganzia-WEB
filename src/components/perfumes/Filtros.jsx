@@ -15,7 +15,7 @@ const LINEAS_POPULARES = ['Hawas', 'Club de Nuit', 'Odyssey', 'Amber Oud', 'Kham
 const MIN_POR_LINEA = 3;
 
 const SELECT =
-  'flex-1 rounded-xl border border-border bg-bg px-3 py-2.5 text-text focus:border-violet focus:outline-none sm:flex-none';
+  'flex-1 rounded-xl border border-border bg-bg px-3 py-2.5 text-text focus:border-gold focus:outline-none sm:flex-none';
 
 /**
  * Buscador con autocompletado (patrón "combobox" accesible): mientras se
@@ -95,7 +95,7 @@ function Buscador({ valor, onBuscar, onMarca, catalogo }) {
         }}
         onFocus={() => setAbierto(true)}
         onKeyDown={onKeyDown}
-        className="w-full rounded-xl border border-border bg-white/[0.03] py-2.5 pl-10 pr-10 text-text placeholder:text-text-secondary focus:border-violet focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+        className="w-full rounded-xl border border-border bg-white/[0.03] py-2.5 pl-10 pr-10 text-text placeholder:text-text-secondary focus:border-gold focus:outline-none [&::-webkit-search-cancel-button]:hidden"
       />
       {valor && (
         <button
@@ -127,11 +127,11 @@ function Buscador({ valor, onBuscar, onMarca, catalogo }) {
                 elegir(opcion);
               }}
               onMouseEnter={() => setActiva(i)}
-              className={`flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 ${i === activa ? 'bg-violet/25' : ''}`}
+              className={`flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 ${i === activa ? 'bg-gold/25' : ''}`}
             >
               {opcion.tipo === 'marca' ? (
                 <>
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-violet/15 font-display text-sm font-semibold text-lila">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gold/15 font-display text-sm font-semibold text-champagne">
                     {opcion.marca.slice(0, 2).toUpperCase()}
                   </span>
                   <span className="min-w-0 flex-1 font-body text-sm text-text">
@@ -203,10 +203,10 @@ export function Filtros({ filtros, onChange }) {
               type="button"
               aria-pressed={activo}
               onClick={() => alternarGenero(g)}
-              className={`rounded-xl border px-3 py-2.5 font-body text-sm transition-colors focus:outline-none focus-visible:border-violet ${
+              className={`rounded-xl border px-3 py-2.5 font-body text-sm transition-colors focus:outline-none focus-visible:border-gold ${
                 activo
-                  ? 'border-violet bg-violet/30 text-text'
-                  : 'border-border bg-bg text-text-secondary hover:border-violet/60 hover:text-text'
+                  ? 'border-gold bg-gold/30 text-text'
+                  : 'border-border bg-bg text-text-secondary hover:border-gold/60 hover:text-text'
               }`}
             >
               {g}
@@ -226,7 +226,7 @@ export function Filtros({ filtros, onChange }) {
                 aria-pressed={activa}
                 onClick={() => actualizar('busqueda', activa ? '' : l)}
                 className={`shrink-0 rounded-full border px-3 py-1.5 font-body text-xs transition-colors ${
-                  activa ? 'border-violet bg-violet/30 text-text' : 'border-border text-text-secondary hover:border-violet/60 hover:text-text'
+                  activa ? 'border-gold bg-gold/30 text-text' : 'border-border text-text-secondary hover:border-gold/60 hover:text-text'
                 }`}
               >
                 {l}

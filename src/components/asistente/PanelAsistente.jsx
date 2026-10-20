@@ -160,7 +160,7 @@ function Burbuja({ de, children }) {
     <div className={`flex ${esBot ? 'justify-start' : 'justify-end'}`}>
       <p
         className={`max-w-[85%] rounded-2xl px-4 py-2.5 font-body text-sm leading-relaxed ${
-          esBot ? 'rounded-tl-md bg-white/[0.06] text-text' : 'rounded-tr-md bg-violet text-white'
+          esBot ? 'rounded-tl-md bg-white/[0.06] text-text' : 'rounded-tr-md bg-gold text-ink'
         }`}
       >
         {children}
@@ -180,13 +180,13 @@ function Recomendacion({ item, onAgregar, onVer }) {
         <ImagenProducto url={imagen} sizes="80px" width="80" height="80" className="h-full w-full object-contain p-1.5" />
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
-        <p className="truncate font-body text-[11px] font-semibold uppercase tracking-wide2 text-lila">{perfume.marca}</p>
+        <p className="truncate font-body text-[11px] font-semibold uppercase tracking-wide2 text-champagne">{perfume.marca}</p>
         <p className="line-clamp-2 font-display text-sm font-semibold leading-snug text-text">{perfume.nombre}</p>
         <p className="mt-0.5 font-body text-xs text-text-secondary">
           {[perfume.familiaOlfativa, perfume.genero].filter(Boolean).join(' · ')}
         </p>
         {inspiradoEn && (
-          <p className="mt-0.5 truncate font-body text-xs text-lila" title={`Inspirado en ${inspiradoEn}`}>
+          <p className="mt-0.5 truncate font-body text-xs text-champagne" title={`Inspirado en ${inspiradoEn}`}>
             Inspirado en {inspiradoEn}
           </p>
         )}
@@ -198,7 +198,7 @@ function Recomendacion({ item, onAgregar, onVer }) {
             <Link
               to={`/perfume/${perfume.id}`}
               onClick={onVer}
-              className="rounded-lg border border-violet/30 px-2.5 py-1.5 font-body text-xs font-semibold text-text transition-colors hover:border-violet"
+              className="rounded-lg border border-gold/30 px-2.5 py-1.5 font-body text-xs font-semibold text-text transition-colors hover:border-gold"
             >
               Ver
             </Link>
@@ -206,7 +206,7 @@ function Recomendacion({ item, onAgregar, onVer }) {
               type="button"
               onClick={() => onAgregar(perfume)}
               aria-label={`Agregar ${nombreCompleto(perfume)} al carrito`}
-              className="flex items-center gap-1 rounded-lg bg-violet px-2.5 py-1.5 font-body text-xs font-semibold text-white transition-colors hover:bg-violet-light"
+              className="flex items-center gap-1 rounded-lg bg-gold px-2.5 py-1.5 font-body text-xs font-semibold text-ink transition-colors hover:bg-gold-light"
             >
               <ShoppingBag size={13} aria-hidden="true" />
               Agregar
@@ -325,7 +325,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
   };
 
   const claseOpcion =
-    'rounded-2xl border px-3.5 py-2 text-left font-body text-sm text-text transition-colors hover:border-violet hover:bg-violet/25';
+    'rounded-2xl border px-3.5 py-2 text-left font-body text-sm text-text transition-colors hover:border-gold hover:bg-gold/25';
 
   let mensajeFinal = 'No encontré perfumes con esas características. Probá cambiar alguna respuesta.';
   if (visibles.length) {
@@ -350,9 +350,9 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
       }`}
     >
       {/* Encabezado */}
-      <header className="flex items-center gap-3 border-b border-violet/15 px-4 py-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet to-violet-light" aria-hidden="true">
-          <Sparkles size={18} className="text-white" />
+      <header className="flex items-center gap-3 border-b border-gold/15 px-4 py-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gold to-gold-light" aria-hidden="true">
+          <Sparkles size={18} className="text-ink" />
         </span>
         <div className="min-w-0 flex-1">
           <h2 id={tituloId} className="truncate font-display text-base font-semibold text-text">
@@ -386,7 +386,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
               <p className="font-body text-xs text-text-secondary">Cargando catálogo…</p>
             ) : buscandoOtra ? (
               <div className="space-y-2 pt-1">
-                <label className="flex items-center gap-2 rounded-2xl border border-violet/35 bg-white/[0.04] px-3 py-2 focus-within:border-violet">
+                <label className="flex items-center gap-2 rounded-2xl border border-gold/35 bg-white/[0.04] px-3 py-2 focus-within:border-gold">
                   <Search size={15} className="text-text-secondary" aria-hidden="true" />
                   <input
                     data-opcion=""
@@ -405,7 +405,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
                         key={s.valor}
                         type="button"
                         onClick={() => responder('parecido', s.valor)}
-                        className={`${claseOpcion} border-violet/35 bg-violet/10`}
+                        className={`${claseOpcion} border-gold/35 bg-gold/10`}
                       >
                         {s.etiqueta}
                       </button>
@@ -445,7 +445,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
                       data-opcion={i === 0 ? '' : undefined}
                       aria-pressed={pasoActual.tipo === 'multiple' ? marcada : undefined}
                       onClick={() => elegirOpcion(pasoActual, opcion)}
-                      className={`${claseOpcion} ${marcada ? 'border-violet bg-violet/40' : 'border-violet/35 bg-violet/10'} ${opcion.icono || marcada ? 'flex items-center gap-1.5' : ''}`}
+                      className={`${claseOpcion} ${marcada ? 'border-gold bg-gold/40' : 'border-gold/35 bg-gold/10'} ${opcion.icono || marcada ? 'flex items-center gap-1.5' : ''}`}
                     >
                       {marcada && <Check size={14} aria-hidden="true" />}
                       {opcion.icono && <Search size={14} aria-hidden="true" />}
@@ -461,7 +461,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
                     type="button"
                     onClick={() => responder(pasoActual.id, seleccion)}
                     disabled={seleccion.length < (pasoActual.minimo ?? 0)}
-                    className="rounded-2xl bg-violet px-4 py-2 font-body text-sm font-semibold text-white transition-colors hover:bg-violet-light disabled:opacity-40"
+                    className="rounded-2xl bg-gold px-4 py-2 font-body text-sm font-semibold text-ink transition-colors hover:bg-gold-light disabled:opacity-40"
                   >
                     {seleccion.length || pasoActual.minimo ? 'Listo' : 'Nada en especial'}
                   </button>
@@ -487,7 +487,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
                   type="button"
                   data-opcion=""
                   onClick={() => setTandas((t) => t + 1)}
-                  className="rounded-2xl border border-violet/35 bg-violet/10 px-3.5 py-2 font-body text-sm text-text transition-colors hover:border-violet hover:bg-violet/25"
+                  className="rounded-2xl border border-gold/35 bg-gold/10 px-3.5 py-2 font-body text-sm text-text transition-colors hover:border-gold hover:bg-gold/25"
                 >
                   Ver otras opciones
                 </button>
@@ -510,7 +510,7 @@ export default function PanelAsistente({ abierto, onCerrar, subir }) {
 
       {/* Pie: volver un paso */}
       {indicePaso !== 0 && (
-        <footer className="border-t border-violet/15 px-4 py-2">
+        <footer className="border-t border-gold/15 px-4 py-2">
           <button
             type="button"
             onClick={deshacer}

@@ -1,4 +1,4 @@
-// Fondo decorativo de orbes violetas: solo gradientes radiales estáticos.
+// Fondo decorativo de resplandores dorados: solo gradientes radiales estáticos.
 // Historia: primero fue WebGL con un loop infinito (bloqueaba el hilo principal)
 // y después orbes CSS animados con `filter: blur(64px)`, que obligaban a
 // repintar tres capas gigantes difuminadas en cada frame, y con ellas todo lo

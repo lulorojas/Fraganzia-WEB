@@ -29,7 +29,7 @@ export default function SobreNosotros() {
     <div className="mx-auto max-w-3xl px-4 py-12">
       {/* Hero */}
       <div className="mb-12 text-center">
-        <h1 className="font-display text-4xl text-text mb-4">Sobre Nosotros</h1>
+        <h1 className="font-display text-4xl font-light tracking-tight text-text mb-4">Sobre Nosotros</h1>
         <p className="font-body text-text-secondary text-lg leading-relaxed max-w-xl mx-auto">
           Somos Fraganzia — una tienda especializada en perfumería árabe y de autor, con una
           propuesta auténtica y accesible para quienes buscan diferenciarse con su fragancia.
@@ -56,7 +56,7 @@ export default function SobreNosotros() {
       <div className="grid gap-6 sm:grid-cols-3">
         {VALORES.map(({ Icon, titulo, descripcion }) => (
           <GlassCard key={titulo} className="flex flex-col items-center text-center p-6 gap-3">
-            <Icon className="h-8 w-8 text-lila" />
+            <Icon className="h-8 w-8 text-champagne" />
             <h3 className="font-display text-lg text-text">{titulo}</h3>
             <p className="font-body text-text-secondary text-sm leading-relaxed">{descripcion}</p>
           </GlassCard>
@@ -64,7 +64,7 @@ export default function SobreNosotros() {
       </div>
 
       {/* Compromiso */}
-      <GlassCard className="mt-10 p-6 border border-lila/30">
+      <GlassCard className="mt-10 p-6 border border-champagne/30">
         <p className="font-body text-text-secondary leading-relaxed text-center italic">
           "En Fraganzia creemos que un buen perfume no es un lujo — es una forma de expresión.
           Por eso trabajamos cada día para acercarte las mejores fragancias al mejor precio posible."

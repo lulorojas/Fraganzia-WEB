@@ -21,37 +21,43 @@ Fraganzia es una marca de perfumes árabes premium que combina:
 
 ## 🎨 Paleta de Colores
 
+Paleta "oud y oro": negro cálido, dorado champagne y marfil. Se eligió porque el violeta/lila neón
+se leía como tecnología o gaming, y no como perfumería árabe de lujo. El dorado remite a la
+perfumería oriental y se ve exclusivo sin necesidad de efectos.
+
 ### Colores Primarios
 ```css
 /* Fondos */
---color-bg: #06040D              /* Negro profundo con tinte violeta */
+--color-bg: #0A0908              /* Negro cálido */
 
-/* Acentos principales */
---color-violet: #7B2FBE          /* Violeta real - color principal */
---color-violet-light: #9B59D0    /* Violeta claro - hover states */
---color-lila-accent: #C084FC     /* Lila brillante - highlights */
+/* Acentos */
+--color-gold: #C5A059            /* Dorado: color principal (botones, íconos, etiquetas) */
+--color-gold-light: #DDBF85      /* Dorado claro: degradés y hover */
+--color-champagne: #E4CFA0       /* Champagne: enlaces y destacados de texto */
+--color-ink: #14100A             /* Tinta oscura: texto SOBRE fondos dorados */
 
 /* Texto */
---color-text: #F8F4FF            /* Blanco lavanda - texto principal */
---color-text-secondary: #9A90B8  /* Gris violeta - texto secundario */
+--color-text: #F5EFE4            /* Marfil: texto principal */
+--color-text-secondary: #A89F90  /* Gris cálido: texto secundario */
 ```
+
+En Tailwind: `gold`, `gold-light`, `gold-deep`, `champagne`, `ink`, `text`, `text-secondary`.
+**Regla de contraste:** sobre un fondo dorado (`bg-gold`, `gradient-gold`) el texto va siempre en
+`text-ink`, nunca en blanco ni marfil.
 
 ### Colores Funcionales
 ```css
-/* Estados */
---color-success: #10B981         /* Verde esmeralda - éxito */
---color-error: #EF4444           /* Rojo coral - error */
-
-/* Bordes y efectos */
---color-border: rgba(147, 51, 234, 0.18)  /* Borde sutil violeta */
---color-glow: rgba(139, 51, 208, 0.4)     /* Glow effect violeta */
+--color-success: #10B981         /* Verde: éxito y precios con descuento */
+--color-error: #EF4444           /* Rojo: error */
+--color-border: rgba(197, 160, 89, 0.18)  /* Borde dorado sutil */
+--color-glow: rgba(197, 160, 89, 0.35)    /* Brillo dorado */
 ```
 
 ### Contexto de uso
-- **Fondos oscuros**: Crean atmósfera premium y destacan los productos
-- **Violeta como protagonista**: Asociado con lujo, realeza y misterio
-- **Lila para acentos**: Añade sofisticación y modernidad
-- **Blanco lavanda**: Suaviza el contraste, más elegante que blanco puro
+- **Fondo oscuro cálido**: destaca los productos, que se muestran sobre un "plinto" marfil
+- **Dorado como único protagonista**: un solo color de acento, para que lo importante se vea
+- **Champagne para texto**: enlaces y palabras destacadas (no para fondos)
+- El panel de admin (`src/styles/admin.css`) mantiene su propia paleta violeta, aparte del sitio
 
 ---
 
@@ -69,7 +75,7 @@ Interfaz basada en **glassmorphism** (morfismo de vidrio) que crea:
 | Clase | Dónde | Por qué |
 |---|---|---|
 | `.glass` | Superficies secundarias: chips, tablas y tarjetas del admin | Fondo casi transparente, blur 16px |
-| `.glass-strong` | El protagonista de la página (card del hero) | Más opaco y con borde violeta marcado |
+| `.glass-strong` | El protagonista de la página (card del hero) | Más opaco y con borde dorado marcado |
 | `.glass-frosted` | Lo que flota sobre el contenido: navbar, modales, menús, asistente, mini-carrito | Fondo 85% opaco: el texto se lee sobre cualquier cosa |
 
 `.glass-subtle` y `.glass-medium` quedan como **alias de `.glass`** por compatibilidad. En código nuevo, usá `.glass`.
@@ -83,12 +89,12 @@ Las clases viven en `src/index.css` dentro de `@layer components`, así una util
 #### Glass Hover
 ```css
 .glass-hover:hover {
-  background: rgba(139, 51, 208, 0.08);
-  border-color: rgba(192, 132, 252, 0.4);
+  background: rgba(197, 160, 89, 0.07);
+  border-color: rgba(228, 207, 160, 0.4);
   box-shadow: 
-    0 12px 40px rgba(123, 47, 190, 0.3),
+    0 12px 40px rgba(143, 115, 56, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 40px rgba(139, 51, 208, 0.2);
+    0 0 40px rgba(197, 160, 89, 0.16);
   transform: translateY(-2px);
 }
 ```
@@ -117,47 +123,36 @@ Las clases viven en `src/index.css` dentro de `@layer components`, así una util
 
 ### Familias tipográficas
 
-> Las fuentes se sirven desde el sitio, recortadas a los caracteres del español: ver `src/assets/fonts/` y `tools/subset-fonts.py`. El logo usa **Playfair Display 700** (solo las letras de FRAGANZIA).
+> Solo tipografías **sin serifa**. Se sirven desde el sitio, recortadas a los caracteres del español: ver `src/assets/fonts/` y `tools/subset-fonts.py`.
 
-#### 1. Outfit (Display/Headings)
+#### 1. Outfit (títulos y marca)
 ```css
 font-family: 'Outfit', sans-serif;
 ```
-- **Uso**: Títulos, headings, nombres de marca
-- **Características**: Geométrica, moderna, limpia
-- **Pesos**: 400, 500, 600, 700
+- **Uso**: títulos, nombres de producto, logo
+- **Pesos**: 300 (títulos grandes, aire de lujo), 400, 500, 600, 700
+- **Etiquetas**: en mayúsculas con `tracking-luxury` (0.25em) y color dorado
 
-#### 2. Manrope (Body)
+#### 2. Manrope (texto)
 ```css
 font-family: 'Manrope', sans-serif;
 ```
-- **Uso**: Cuerpo de texto, descripciones, UI
-- **Características**: Humanista, legible, profesional
+- **Uso**: cuerpo de texto, descripciones, interfaz
 - **Pesos**: 400, 500, 600, 700
-
-#### 3. Cinzel (Luxury/Display)
-```css
-font-family: 'Cinzel', serif;
-letter-spacing: 0.025em; /* tracking-wide; hasta 0.25em en etiquetas chicas */
-```
-- **Sin itálica**: Cinzel no tiene cursiva, y `italic` hace que el navegador la incline artificialmente y se vea deformada.
-- **Uso**: Taglines, subtítulos especiales, elementos decorativos
-- **Características**: Serif elegante, inspirada en inscripciones romanas
-- **Efecto**: Agrega sensación de lujo y tradición
 
 ### Jerarquía tipográfica
 
 ```css
 /* Hero Title */
-font-size: 48-64px (3-4rem)
+font-size: 42-68px
 font-family: Outfit
-font-weight: 700
-letter-spacing: -0.02em
+font-weight: 300 (la palabra destacada en 400, color champagne)
+letter-spacing: -0.025em
 
 /* Section Heading */
-font-size: 32-40px (2-2.5rem)
+font-size: 30-36px
 font-family: Outfit
-font-weight: 600
+font-weight: 300
 
 /* Card Title */
 font-size: 16-18px (1-1.125rem)
@@ -175,11 +170,13 @@ font-family: Manrope
 font-weight: 400
 color: text-secondary
 
-/* Luxury Tagline */
-font-size: 20-24px (1.25-1.5rem)
-font-family: Cinzel
-font-style: italic
+/* Etiqueta de sección (eyebrow) */
+font-size: 11px
+font-family: Manrope
+font-weight: 600
+text-transform: uppercase
 letter-spacing: 0.25em
+color: gold
 ```
 
 ### Letter Spacing Especial
@@ -202,12 +199,12 @@ letter-spacing: 0.25em
 **Estructura**:
 ```
 ┌─────────────────────────┐
-│   [Imagen producto]     │ ← Fondo claro (#F5F2FB)
+│   [Imagen producto]     │ ← Fondo marfil (plinto)
 │                         │
 │   Badge -30%            │ ← Promoción (si aplica)
 └─────────────────────────┘
 ┌─────────────────────────┐
-│ ARMAF                   │ ← Marca (uppercase, lila)
+│ ARMAF                   │ ← Marca (uppercase, dorado)
 │ Club de Nuit Intense    │ ← Nombre (Outfit, bold)
 │                         │
 │ ─────────────────       │ ← Divider
@@ -219,9 +216,9 @@ letter-spacing: 0.25em
 ```
 
 **Características**:
-- Background oscuro `#100d20` con glassmorphism
+- Background oscuro cálido con superficie translúcida (sin blur)
 - Imagen con fondo claro para destacar el producto
-- Hover: elevación, borde violeta brillante, sombra con glow
+- Hover: elevación, borde dorado brillante, sombra con glow
 - Border radius: 16px
 - Transición suave 300ms
 
@@ -229,9 +226,9 @@ letter-spacing: 0.25em
 
 #### Primary (Gradient Violet)
 ```css
-background: linear-gradient(135deg, #7B2FBE, #9B59D0);
-color: #F8F4FF;
-box-shadow: 0 4px 12px rgba(123, 47, 190, 0.3);
+background: linear-gradient(135deg, #B8924A, #E0C58C);
+color: #14100A;
+box-shadow: 0 4px 12px rgba(143, 115, 56, 0.3);
 hover: scale(1.02), shadow(0.5);
 ```
 
@@ -264,15 +261,21 @@ hover: color text-primary
 - Cart icon con badge contador
 - Subtle shadow
 
-### 5. Hero Section
+### 5. Hero (portada)
 ```
-- Fondo con gradientes radiales decorativos
-- Logo grande centrado
-- Tagline en Cinzel italic
-- Uppercase labels con tracking amplio
-- CTAs con gradient y glow
-- Divider ornamental (líneas + símbolo ✦)
+- Dos columnas en escritorio: texto + una única acción ("Ver catálogo") | vitrina de 3 destacados
+- La vitrina muestra foto, nombre y precio reales: el primer pantallazo ya vende
+- En celular, la vitrina se desliza en horizontal
+- Debajo, una sola franja de confianza (originales · envíos AMBA · pago · seguimiento)
 ```
+Las cuatro razones de confianza viven en `GarantiasCompra` (una sola fuente): no repetirlas en
+el encabezado, el pie ni preguntas frecuentes.
+
+### 6. Logo
+- **Monograma**: arco de mihrab (arquitectura oriental) con una "F" adentro, en degradé dorado (`MarcaFraganzia`)
+- **Nombre**: FRAGANZIA en Outfit 500, mayúsculas, espaciado 0.32em
+- `LogoFraganzia` arma las dos piezas; el tamaño sale de `--logo-scale`. `subtitulo` suma "Perfumes árabes" (pie)
+- Íconos (favicon, app, imagen para redes): `node tools/generar-iconos.mjs`
 
 ---
 
@@ -312,7 +315,7 @@ rounded-full: 999px /* Pills, badges */
 
 ### 1. Glow Effect
 ```css
-box-shadow: 0 0 40px rgba(139, 51, 208, 0.3);
+box-shadow: 0 0 40px rgba(197, 160, 89, 0.3);
 ```
 Uso: Hover states, elementos destacados, CTAs
 
@@ -374,7 +377,7 @@ Uso: Loading states, highlights
 2. Hover: 
    - translateY(-2px) ← elevación
    - border-color más brillante
-   - shadow con glow violeta
+   - shadow con glow dorado
    - scale(1.02) en imagen interior
    - transition 300ms smooth
 ```
@@ -383,7 +386,7 @@ Uso: Loading states, highlights
 ```
 - Glass background
 - Inputs con border sutil
-- Focus: border violeta + glow
+- Focus: border dorado + glow
 - Labels floating o top-aligned
 - Error states en rojo coral
 - Success states en verde esmeralda
@@ -391,7 +394,7 @@ Uso: Loading states, highlights
 
 ### Loading Pattern
 ```
-- Spinner con gradient violeta rotando
+- Spinner con gradient dorado rotando
 - Skeleton screens con shimmer effect
 - Backdrop blur durante loading overlays
 ```
@@ -417,7 +420,7 @@ Lucide React (línea clean, moderna)
 ### Estilo
 - Stroke width: 1.5-2px
 - Size: 16-24px típicamente
-- Color: text-secondary por defecto, text o lila en hover
+- Color: text-secondary por defecto, text o champagne en hover
 
 ---
 
@@ -445,10 +448,10 @@ xl:  1280px  /* Desktop grande */
 
 ### Body Background
 ```css
-background-color: #06040D;
+background-color: #0A0908;
 background-image:
-  radial-gradient(ellipse 80% 40% at 50% 0%, rgba(90, 20, 160, 0.18) 0%, transparent 70%),
-  radial-gradient(circle at 85% 95%, rgba(192, 132, 252, 0.08) 0%, transparent 50%);
+  radial-gradient(ellipse 80% 40% at 50% 0%, rgba(197, 160, 89, 0.14) 0%, transparent 70%),
+  radial-gradient(circle at 85% 95%, rgba(228, 207, 160, 0.06) 0%, transparent 50%);
 background-attachment: fixed;
 ```
 
@@ -463,7 +466,7 @@ overflow: hidden;
   top: 0; left: 50%;
   transform: translate(-50%, -50%);
   width: 288px; height: 288px;
-  background: rgba(90, 20, 160, 0.2);
+  background: rgba(197, 160, 89, 0.18);
   filter: blur(80px);
   border-radius: 50%;
 }
@@ -473,7 +476,7 @@ overflow: hidden;
   position: absolute;
   top: 40px; right: 40px;
   width: 160px; height: 160px;
-  background: rgba(192, 132, 252, 0.1);
+  background: rgba(228, 207, 160, 0.1);
   filter: blur(60px);
   border-radius: 50%;
 }
@@ -484,7 +487,7 @@ overflow: hidden;
 ## 🛍️ E-commerce Specifics
 
 ### Product Image Presentation
-- Background claro `#F5F2FB` para destacar productos
+- Fondo marfil "plinto" (multiply) para destacar productos
 - Aspect ratio: 1:1 (square)
 - Object fit: contain con padding
 - Hover: scale 1.05, transition suave
@@ -509,8 +512,8 @@ Con promoción:
 ```css
 position: absolute;
 top: 10px; right: 10px;
-background: #7B2FBE;
-color: white;
+background: #C5A059;
+color: #14100A;
 padding: 4px 10px;
 border-radius: 999px;
 font-size: 11px;
@@ -542,9 +545,9 @@ font-size: 11px;
 
 ### Ejemplos de copy
 ```
-Hero: "Venta de perfumes árabes"
-Tagline: "fragancias importadas"
-CTA: "Ver Catálogo", "Explorar", "Descubrir"
+Hero: "Perfumes árabes que dejan huella."
+Apoyo: "Lattafa, Armaf, Al Haramain y más, con el precio en pesos siempre al día."
+CTA: "Ver catálogo", "Comprar ahora", "Encontrá tu perfume"
 Social: "@fraganzia.ar"
 Location: "Envíos solo al AMBA"
 ```
@@ -592,8 +595,8 @@ Location: "Envíos solo al AMBA"
 10. **Sound design**: Micro-sounds en interacciones clave
 
 ### Mantener:
-- Sistema de glassmorphism como concepto base
-- Paleta violeta/lila como identidad
+- Superficies con transparencia sutil como base (sin abusar del blur)
+- Paleta dorado/negro cálido como identidad (ver "Paleta de Colores")
 - Profesionalismo y elegancia
 - Fácil navegación y UX clara
 
@@ -609,9 +612,7 @@ Location: "Envíos solo al AMBA"
 ## 📦 Assets y Recursos
 
 ### Fuentes
-- **Outfit**: Google Fonts
-- **Manrope**: Google Fonts  
-- **Cinzel**: Google Fonts
+- **Outfit** y **Manrope**: paquetes @fontsource, recortadas con `tools/subset-fonts.py`
 
 ### Iconos
 - **Lucide React**: npm package

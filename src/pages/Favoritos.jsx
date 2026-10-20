@@ -29,7 +29,7 @@ export default function Favoritos() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="mb-8">
-        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Mis favoritos</h1>
+        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Mis favoritos</h1>
         <p className="mt-2 font-body text-sm text-text-secondary">
           Se guardan en este dispositivo. No hace falta crear una cuenta.
         </p>
@@ -45,7 +45,7 @@ export default function Favoritos() {
           <button
             type="button"
             onClick={() => quitar(noDisponibles)}
-            className="rounded-lg px-3 py-1.5 font-body text-sm text-lila transition-colors hover:text-text"
+            className="rounded-lg px-3 py-1.5 font-body text-sm text-champagne transition-colors hover:text-text"
           >
             Quitarlos de la lista
           </button>
@@ -61,7 +61,7 @@ export default function Favoritos() {
           onAgregar={agregar}
           vacio={
             <div className="card-surface mx-auto flex max-w-md flex-col items-center gap-4 rounded-2xl p-8 text-center">
-              <Heart size={32} className="text-lila" aria-hidden="true" />
+              <Heart size={32} className="text-champagne" aria-hidden="true" />
               <div>
                 <h2 className="font-display text-xl text-text">Todavía no guardaste perfumes</h2>
                 <p className="mt-2 font-body text-sm text-text-secondary">
@@ -71,14 +71,14 @@ export default function Favoritos() {
               <div className="flex flex-wrap justify-center gap-3">
                 <Link
                   to="/catalogo"
-                  className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-text"
+                  className="gradient-gold rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-ink"
                 >
                   Ver catálogo
                 </Link>
                 <button
                   type="button"
                   onClick={abrirAsistente}
-                  className="flex items-center gap-1.5 rounded-xl border border-violet/30 px-5 py-2.5 font-body text-sm font-semibold text-text transition-colors hover:border-violet"
+                  className="flex items-center gap-1.5 rounded-xl border border-gold/30 px-5 py-2.5 font-body text-sm font-semibold text-text transition-colors hover:border-gold"
                 >
                   <Sparkles size={16} aria-hidden="true" />
                   Que me recomienden

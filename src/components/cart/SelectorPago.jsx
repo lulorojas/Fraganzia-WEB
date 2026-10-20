@@ -7,7 +7,7 @@ export function SelectorPago({ value, onChange }) {
         <label
           key={metodo}
           className={`cursor-pointer rounded-xl border px-4 py-2 font-body transition-base ${
-            value === metodo ? 'border-violet text-text glow' : 'border-border text-text-secondary'
+            value === metodo ? 'border-gold text-text glow' : 'border-border text-text-secondary'
           }`}
         >
           <input

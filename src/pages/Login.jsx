@@ -40,7 +40,7 @@ export default function Login() {
               id="admin-email"
               type="email"
               autoComplete="email"
-              className="w-full rounded-xl border border-border bg-white/[0.03] px-3 py-2.5 text-text focus:border-violet focus:outline-none"
+              className="w-full rounded-xl border border-border bg-white/[0.03] px-3 py-2.5 text-text focus:border-gold focus:outline-none"
               {...register('email')}
             />
             {errors.email && (
@@ -55,7 +55,7 @@ export default function Login() {
               id="admin-password"
               type="password"
               autoComplete="current-password"
-              className="w-full rounded-xl border border-border bg-white/[0.03] px-3 py-2.5 text-text focus:border-violet focus:outline-none"
+              className="w-full rounded-xl border border-border bg-white/[0.03] px-3 py-2.5 text-text focus:border-gold focus:outline-none"
               {...register('password')}
             />
             {errors.password && (

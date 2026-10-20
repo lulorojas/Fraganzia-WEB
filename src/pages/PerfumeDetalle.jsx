@@ -1,5 +1,5 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Minus, Plus, ChevronLeft, MessageCircle } from 'lucide-react';
 import { usePerfume } from '../hooks/usePerfume';
@@ -56,6 +56,7 @@ export default function PerfumeDetalle() {
   const { data: config } = useConfig();
   const { data: promociones } = usePromocionesActivas();
   const { agregar } = useCart();
+  const navigate = useNavigate();
   const [cantidad, setCantidad] = useState(1);
 
   // Registra la vista una sola vez por perfume por sesión (ver
@@ -155,11 +156,12 @@ export default function PerfumeDetalle() {
               />
             ) : (
               <div className="flex aspect-[5/4] w-full items-center justify-center sm:aspect-square">
-                <span className="select-none text-8xl text-violet opacity-10">✦</span>
+                <span className="select-none text-8xl text-gold opacity-10">✦</span>
               </div>
             )}
+            <BotonFavorito perfume={perfume} className="absolute left-4 top-4 z-10" />
             {pct > 0 && (
-              <span className="absolute right-4 top-4 rounded-full bg-violet px-3 py-1.5 text-sm font-bold text-white shadow-xl">
+              <span className="absolute right-4 top-4 rounded-full bg-gold px-3 py-1.5 text-sm font-bold text-ink shadow-xl">
                 -{pct}%
               </span>
             )}
@@ -167,10 +169,10 @@ export default function PerfumeDetalle() {
         </div>
 
         {/* ── Info ── */}
-        <div className="flex flex-col gap-6">
+        <div className="flex min-w-0 flex-col gap-6">
           <div>
-            <p className="mb-2 font-body text-xs font-semibold uppercase tracking-wide2 text-lila">{perfume.marca}</p>
-            <h1 className="font-display text-3xl font-semibold leading-tight text-text text-balance sm:text-4xl">
+            <p className="mb-2 font-body text-xs font-semibold uppercase tracking-wide2 text-champagne">{perfume.marca}</p>
+            <h1 className="font-display text-3xl font-medium leading-tight text-text text-balance sm:text-4xl">
               {perfume.nombre}
             </h1>
             <p className="mt-2 font-body text-sm text-text-secondary">
@@ -183,7 +185,7 @@ export default function PerfumeDetalle() {
           {precios ? (
             <div className="card-surface rounded-2xl p-5 tabular-nums">
               {pct > 0 && (
-                <p className="mb-3 font-body text-sm font-medium text-lila">
+                <p className="mb-3 font-body text-sm font-medium text-champagne">
                   {promo?.titulo ?? promo?.nombre ?? 'Promoción'} · {pct}% off
                 </p>
               )}
@@ -222,7 +224,7 @@ export default function PerfumeDetalle() {
 
           {/* Cantidad + agregar. En mobile queda pegada abajo mientras se lee la
               ficha (sticky dentro de esta columna, así no tapa el footer). */}
-          <div className="sticky bottom-0 z-30 -mx-4 border-t border-violet/15 bg-bg/95 px-4 py-3 sm:-mx-6 sm:px-6 md:static md:z-auto md:mx-0 md:border-0 md:bg-transparent md:p-0">
+          <div className="sticky bottom-0 z-30 -mx-4 border-t border-gold/15 bg-bg/95 px-4 py-3 sm:-mx-6 sm:px-6 md:static md:z-auto md:mx-0 md:border-0 md:bg-transparent md:p-0">
             <div className="flex items-center gap-3">
               <div className="flex items-center rounded-xl border border-border" role="group" aria-label="Cantidad">
                 <button
@@ -230,11 +232,11 @@ export default function PerfumeDetalle() {
                   onClick={() => setCantidad((c) => Math.max(1, c - 1))}
                   disabled={cantidad <= 1}
                   aria-label="Restar una unidad"
-                  className="flex h-11 w-11 items-center justify-center text-text-secondary transition-base hover:text-text disabled:opacity-40"
+                  className="flex h-11 w-9 items-center justify-center text-text-secondary transition-base hover:text-text disabled:opacity-40 sm:w-11"
                 >
                   <Minus size={16} aria-hidden="true" />
                 </button>
-                <span className="w-8 text-center font-body tabular-nums text-text" aria-live="polite">
+                <span className="w-7 text-center font-body tabular-nums text-text sm:w-8" aria-live="polite">
                   {cantidad}
                 </span>
                 <button
@@ -242,15 +244,28 @@ export default function PerfumeDetalle() {
                   onClick={() => setCantidad((c) => Math.min(CANTIDAD_MAX, c + 1))}
                   disabled={cantidad >= CANTIDAD_MAX}
                   aria-label="Sumar una unidad"
-                  className="flex h-11 w-11 items-center justify-center text-text-secondary transition-base hover:text-text disabled:opacity-40"
+                  className="flex h-11 w-9 items-center justify-center text-text-secondary transition-base hover:text-text disabled:opacity-40 sm:w-11"
                 >
                   <Plus size={16} aria-hidden="true" />
                 </button>
               </div>
-              <Button onClick={() => agregar(perfume, cantidad)} className="h-11 flex-1">
-                Agregar al carrito
+              <button
+                type="button"
+                onClick={() => agregar(perfume, cantidad)}
+                className="h-11 flex-none whitespace-nowrap rounded-xl border border-gold/50 px-4 font-body text-sm font-semibold text-text transition-colors hover:border-gold hover:bg-gold/10 sm:flex-1"
+              >
+                Agregar<span className="hidden sm:inline"> al carrito</span>
+              </button>
+              {/* Directo al carrito, sin el panel de confirmación: un click menos. */}
+              <Button
+                onClick={() => {
+                  agregar(perfume, cantidad, { silencioso: true });
+                  navigate('/carrito');
+                }}
+                className="h-11 flex-1 whitespace-nowrap px-3 text-sm font-semibold"
+              >
+                Comprar ahora
               </Button>
-              <BotonFavorito perfume={perfume} variante="borde" />
             </div>
           </div>
 
@@ -269,13 +284,13 @@ export default function PerfumeDetalle() {
             )}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-fit items-center gap-2 font-body text-sm text-lila transition-colors hover:text-text"
+            className="inline-flex w-fit items-center gap-2 font-body text-sm text-champagne transition-colors hover:text-text"
           >
             <MessageCircle size={16} aria-hidden="true" />
             Consultar por WhatsApp
           </a>
 
-          <div className="border-t border-violet/15 pt-6">
+          <div className="border-t border-gold/15 pt-6">
             <NotasOlfativas
               notasSalida={perfume.notasSalida}
               notasCorazon={perfume.notasCorazon}

@@ -65,7 +65,7 @@ export function InspiradoEn({ perfume, catalogo }) {
               <li key={p.id}>
                 <Link
                   to={`/perfume/${p.id}`}
-                  className="inline-block rounded-full border border-violet/25 bg-violet/10 px-3 py-1 text-xs text-text transition-colors hover:border-violet"
+                  className="inline-block rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-xs text-text transition-colors hover:border-gold"
                 >
                   {p.nombre}
                 </Link>

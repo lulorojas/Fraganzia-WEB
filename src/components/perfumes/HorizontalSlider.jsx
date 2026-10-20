@@ -30,7 +30,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, promociones,
       <button
         type="button"
         onClick={() => scroll('left')}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex glass-frosted p-3 rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-300 hover:bg-violet/20"
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex glass-frosted p-3 rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-300 hover:bg-gold/20"
         aria-label="Ver perfumes anteriores"
       >
         <ChevronLeft size={20} className="text-text" />
@@ -38,7 +38,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, promociones,
       <button
         type="button"
         onClick={() => scroll('right')}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex glass-frosted p-3 rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-300 hover:bg-violet/20"
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex glass-frosted p-3 rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-300 hover:bg-gold/20"
         aria-label="Ver más perfumes"
       >
         <ChevronRight size={20} className="text-text" />
@@ -76,7 +76,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, promociones,
                       className="foto-producto w-full h-full object-contain p-4 transition-transform duration-300 group-hover/card:scale-110"
                     />
                     {pct > 0 && (
-                      <div className="absolute top-3 right-3 bg-violet px-3 py-1 rounded-full text-xs font-semibold text-white shadow-lg">
+                      <div className="absolute top-3 right-3 bg-gold px-3 py-1 rounded-full text-xs font-semibold text-ink shadow-lg">
                         -{pct}%
                       </div>
                     )}
@@ -84,16 +84,16 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, promociones,
                 </Link>
 
                 <div className="p-4">
-                  <p className="text-xs font-medium text-lila uppercase tracking-wide2 mb-1">
+                  <p className="text-xs font-medium text-champagne uppercase tracking-wide2 mb-1">
                     {perfume.marca}
                   </p>
                   <h3 className="font-display font-semibold text-text mb-3 line-clamp-2">
-                    <Link to={`/perfume/${perfume.id}`} className="hover:text-lila transition-base">
+                    <Link to={`/perfume/${perfume.id}`} className="hover:text-champagne transition-base">
                       {perfume.nombre}
                     </Link>
                   </h3>
 
-                  <div className="h-px bg-gradient-to-r from-violet/20 via-violet/50 to-violet/20 mb-3" />
+                  <div className="h-px bg-gradient-to-r from-gold/20 via-gold/50 to-gold/20 mb-3" />
 
                   {precios ? (
                     pct > 0 ? (
@@ -130,7 +130,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, promociones,
                     type="button"
                     onClick={() => onAgregar(perfume)}
                     aria-label={`Agregar al carrito: ${nombreCompleto(perfume)}`}
-                    className="w-full py-2.5 px-4 bg-violet/10 hover:bg-violet text-text rounded-xl font-medium text-sm transition-colors duration-300 border border-violet/30 hover:border-violet"
+                    className="w-full py-2.5 px-4 bg-gold/10 hover:bg-gold hover:text-ink text-text rounded-xl font-medium text-sm transition-colors duration-300 border border-gold/30 hover:border-gold"
                   >
                     Agregar al carrito
                   </button>
@@ -144,11 +144,11 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, promociones,
             to="/catalogo"
             className="card-surface card-hover flex w-[280px] flex-none snap-start flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center"
           >
-            <span className="font-luxury text-xl tracking-wide text-text">Ver todo el catálogo</span>
+            <span className="font-display font-light text-xl tracking-tight text-text">Ver todo el catálogo</span>
             <span className="font-body text-sm text-text-secondary">
               Hay {perfumes.length - MAX_VISIBLES} destacados más y el resto de la colección
             </span>
-            <ChevronRight size={22} className="text-lila" aria-hidden="true" />
+            <ChevronRight size={22} className="text-champagne" aria-hidden="true" />
           </Link>
         )}
       </div>

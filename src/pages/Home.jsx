@@ -1,14 +1,92 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
 import { usePromocionesActivas } from '../hooks/usePromociones';
 import { HorizontalSlider } from '../components/perfumes/HorizontalSlider';
+import { ImagenProducto } from '../components/perfumes/ImagenProducto';
+import { GarantiasCompra } from '../components/perfumes/GarantiasCompra';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
-import { LogoFraganzia } from '../components/ui/LogoFraganzia';
 import { abrirAsistente } from '../components/asistente/BotonAsistente';
-import { PreguntasFrecuentes } from '../components/PreguntasFrecuentes';
+import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
+import { formatARS } from '../utils/format';
+
+const PASOS = [
+  { titulo: 'Elegí tus perfumes', texto: 'Sumalos al carrito. Cada uno muestra su precio por transferencia y en efectivo.' },
+  { titulo: 'Confirmá el pedido', texto: 'Solo con tu nombre, sin crear una cuenta.' },
+  { titulo: 'Lo coordinamos por WhatsApp', texto: 'Acordamos el pago y la entrega, y seguís tu pedido online con un link.' },
+];
+
+/** Precio por transferencia (con la promo aplicada) para la vitrina del encabezado. */
+function precioVitrina(perfume, dolarMedio, promociones) {
+  const precios = dolarMedio
+    ? preciosPorMetodo(perfume.precioUSD, dolarMedio)
+    : perfume.precioTransferencia
+      ? { precioTransferencia: perfume.precioTransferencia }
+      : null;
+  if (!precios) return null;
+  const pct = getMejorPromo(perfume.id, promociones)?.descuentoPorcentaje ?? 0;
+  const final = pct ? Math.round((precios.precioTransferencia * (1 - pct / 100)) / 1000) * 1000 : precios.precioTransferencia;
+  return { final, antes: pct ? precios.precioTransferencia : null, pct };
+}
+
+function TituloSeccion({ etiqueta, titulo, enlace = 'Ver todo el catálogo' }) {
+  return (
+    <div className="mb-8 flex items-end justify-between gap-4">
+      <div>
+        <p className="mb-2 font-body text-[11px] font-semibold uppercase tracking-luxury text-gold">{etiqueta}</p>
+        <h2 className="font-display text-3xl font-light tracking-tight text-text sm:text-4xl">{titulo}</h2>
+      </div>
+      <Link to="/catalogo" className="shrink-0 pb-1 font-body text-sm text-champagne transition-base hover:text-text">
+        {enlace}
+      </Link>
+    </div>
+  );
+}
+
+/** Tarjeta de la vitrina del encabezado: foto, nombre y precio; todo el bloque es un enlace. */
+function TarjetaVitrina({ perfume, dolarMedio, promociones, prioridad, className = '' }) {
+  const precio = precioVitrina(perfume, dolarMedio, promociones);
+  return (
+    <Link
+      to={`/perfume/${perfume.id}`}
+      className={`card-surface card-hover group block overflow-hidden rounded-2xl ${className}`}
+    >
+      <div className="plinto relative overflow-hidden">
+        <ImagenProducto
+          url={perfume.imagenes?.[0]}
+          sizes="(min-width: 1024px) 220px, 46vw"
+          width="400"
+          height="500"
+          prioridad={prioridad}
+          className="foto-producto aspect-[4/5] w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+        />
+        {precio?.pct > 0 && (
+          <span className="absolute right-3 top-3 rounded-full bg-gold px-2.5 py-1 text-[11px] font-bold text-ink shadow-lg">
+            -{precio.pct}%
+          </span>
+        )}
+      </div>
+      <div className="p-3.5 sm:p-4">
+        <p className="mb-1 truncate font-body text-[10px] font-semibold uppercase tracking-wide2 text-gold sm:text-[11px]">{perfume.marca}</p>
+        <h3 className="line-clamp-2 min-h-[2.4rem] font-display text-sm font-medium leading-snug text-text">{perfume.nombre}</h3>
+        {precio && (
+          <p className="mt-2 flex items-baseline gap-2 tabular-nums">
+            <span className={`font-display text-base font-semibold ${precio.pct ? 'text-emerald-400' : 'text-text'}`}>{formatARS(precio.final)}</span>
+            {precio.antes && <span className="text-xs text-text-secondary line-through">{formatARS(precio.antes)}</span>}
+          </p>
+        )}
+      </div>
+    </Link>
+  );
+}
+
+function VitrinaCargando() {
+  return Array.from({ length: 3 }, (_, i) => (
+    <div key={i} className="card-surface aspect-[4/7] w-[44vw] flex-none animate-pulse rounded-2xl sm:w-[30vw] lg:w-auto" aria-hidden="true" />
+  ));
+}
 
 export default function Home() {
   const { data: destacados, isLoading } = usePerfumes({ destacado: true });
@@ -20,111 +98,82 @@ export default function Home() {
   const { data: promociones } = usePromocionesActivas();
   useDocumentMeta({ path: '/' });
 
+  // Lo que se ve en el primer pantallazo: tres destacados con foto.
+  const vitrina = destacados?.filter((p) => p.imagenes?.[0]).slice(0, 3) ?? [];
+  // La del medio sube (en pantallas grandes), así la vitrina no es una fila plana.
+  const claseVitrina = ['lg:mt-10', 'lg:-mt-2', 'lg:mt-10'];
+
   return (
-    <div className="relative min-h-screen">
-      {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="grano relative overflow-hidden px-4 pb-12 pt-8 sm:px-6 sm:py-24 lg:py-32">
-        {/* Resplandores de ambiente: gradientes radiales (ya difusos), sin
-            filter: blur ni animación, que costaban mucho repintado. */}
+    <div className="relative">
+      {/* ── Encabezado ───────────────────────────────────────── */}
+      <section className="grano relative overflow-hidden px-4 pb-10 pt-10 sm:px-6 sm:pb-16 sm:pt-14 lg:pb-20 lg:pt-16">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 50% 0%, rgba(123,47,190,0.35) 0%, rgba(123,47,190,0) 40%), radial-gradient(circle at 85% 25%, rgba(192,132,252,0.18) 0%, rgba(192,132,252,0) 25%), radial-gradient(circle at 12% 85%, rgba(123,47,190,0.15) 0%, rgba(123,47,190,0) 22%)',
+              'radial-gradient(ellipse 60% 70% at 78% 30%, rgba(197,160,89,0.2) 0%, rgba(197,160,89,0) 70%), radial-gradient(circle at 8% 90%, rgba(143,115,56,0.14) 0%, rgba(143,115,56,0) 40%)',
           }}
         />
 
-        {/* Glass card container con más profundidad */}
-        <div className="relative mx-auto max-w-4xl">
-          <div className="relative overflow-hidden p-2 sm:p-6 md:p-10">
-            {/* En celular el logo ya está en el encabezado: repetirlo gastaba media pantalla.
-                Sin animación de entrada, para que se vea apenas se pinta. */}
-            <div className="mb-6 hidden justify-center sm:mb-8 sm:flex">
-              <LogoFraganzia
-                priority
-                className="drop-shadow-2xl [--logo-scale:1.6] sm:[--logo-scale:2.6] md:[--logo-scale:3.2]"
-                sizes="(min-width: 768px) 115px, (min-width: 640px) 94px, 58px"
-              />
-            </div>
-
-            {/* Tagline con Cinzel */}
-            <h1 className="font-luxury text-3xl sm:text-5xl md:text-6xl tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-text via-text to-lila mb-5 text-center leading-[1.1] text-balance">
-              Perfumes Árabes de Alta Gama
-            </h1>
-
-            {/* Descripción */}
-            <p className="text-text-secondary text-sm sm:text-base md:text-lg max-w-xl mx-auto mb-8 sm:mb-10 text-center leading-relaxed px-2 text-balance">
-              Descubrí la elegancia de las fragancias orientales: exclusividad y calidad premium en cada esencia.
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
+          <div className="max-w-xl">
+            <p className="mb-5 flex items-center gap-3 font-body text-[11px] font-semibold uppercase tracking-luxury text-gold">
+              <span aria-hidden="true" className="h-px w-8 bg-gold" />
+              Perfumería árabe original
             </p>
-
-            {/* CTAs mejorados */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-12 animate-fade-up w-full sm:w-auto">
-              <button
-                type="button"
-                onClick={abrirAsistente}
-                className="relative group/btn px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-body font-bold text-sm sm:text-base text-text tracking-wide overflow-hidden shadow-2xl hover:shadow-violet/50 transition-all duration-300 hover:scale-105 text-center"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-violet via-violet-light to-violet" />
-                <div className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity bg-gradient-to-r from-white/20 to-transparent" />
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <Sparkles size={16} className="sm:w-[18px] sm:h-[18px]" aria-hidden="true" />
-                  Encontrá tu perfume
-                </span>
-              </button>
+            <h1 className="font-display text-[2.6rem] font-light leading-[1.05] tracking-tight text-text sm:text-6xl lg:text-[4.2rem]">
+              Perfumes árabes que dejan <span className="font-normal text-champagne">huella.</span>
+            </h1>
+            <p className="mt-5 max-w-md font-body text-base leading-relaxed text-text-secondary sm:text-lg">
+              Lattafa, Armaf, Al Haramain y más, con el precio en pesos siempre al día.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link
                 to="/catalogo"
-                className="flex items-center justify-center px-6 sm:px-8 py-3.5 sm:py-4 rounded-full glass-hover border border-lila/30 font-body text-sm sm:text-base text-text transition-all duration-300 hover:border-lila/60"
+                className="gradient-gold inline-flex items-center gap-2 rounded-full px-8 py-4 font-body text-base font-semibold text-ink shadow-lg shadow-gold/20 transition-all duration-300 hover:shadow-gold/40 hover:brightness-110"
               >
                 Ver catálogo
+                <ArrowRight size={18} aria-hidden="true" />
               </Link>
             </div>
-
-            {/* Ornamental divider - más elaborado */}
-            <div className="flex items-center justify-center gap-4 sm:gap-6" aria-hidden="true">
-              <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-violet/60 to-transparent" />
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="text-violet/70 text-xl sm:text-2xl">✦</span>
-                <span className="text-lila/50 text-base sm:text-lg">◆</span>
-                <span className="text-violet/70 text-xl sm:text-2xl">✦</span>
-              </div>
-              <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-violet/60 to-transparent" />
-            </div>
-
-            {/* Detalles adicionales */}
-            <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-text-secondary">
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/70 shrink-0"></span>
-                <span className="whitespace-nowrap">Envíos AMBA</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet/70 shrink-0"></span>
-                <span className="whitespace-nowrap">100% Originales</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-lila/70 shrink-0"></span>
-                <span className="whitespace-nowrap">Consultas WhatsApp</span>
-              </span>
-            </div>
-
-            <p className="mt-6 text-center text-xs text-text-secondary">
-              <a
-                href="https://www.instagram.com/fraganzia.ar/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 transition-colors hover:text-lila"
-              >
-                <Instagram size={14} aria-hidden="true" />
-                Seguinos en @fraganzia.ar
-              </a>
-            </p>
           </div>
+
+          {/* Vitrina: en celular se desliza, en pantallas grandes son tres tarjetas. */}
+          <div
+            className="hide-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0 scroll-pl-4 sm:scroll-pl-6 lg:scroll-pl-0"
+            role="region"
+            aria-label="Perfumes destacados"
+          >
+            {isLoading || !vitrina.length ? (
+              <VitrinaCargando />
+            ) : (
+              vitrina.map((perfume, i) => (
+                <div key={perfume.id} className={`w-[44vw] flex-none snap-start sm:w-[30vw] lg:w-auto ${claseVitrina[i]}`}>
+                  <TarjetaVitrina
+                    perfume={perfume}
+                    dolarMedio={dolarMedio}
+                    promociones={promociones}
+                    prioridad={i === 0}
+                    className="h-full"
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Por qué comprar acá: una sola vez en toda la portada ── */}
+      <section aria-label="Cómo comprás en Fraganzia" className="border-y border-border bg-gold/[0.03]">
+        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
+          <GarantiasCompra variante="franja" />
         </div>
       </section>
 
       {/* ── Promociones: antes de los destacados, es lo que más empuja la compra ── */}
       {promociones?.length > 0 && (
-        <section aria-label="Promociones" className="mx-auto max-w-7xl px-4 pb-8 pt-4 sm:px-6">
+        <section aria-label="Promociones" className="mx-auto max-w-7xl px-4 pt-12 sm:px-6">
           <div className={`grid gap-5 ${promociones.length > 1 ? 'md:grid-cols-2' : 'mx-auto max-w-5xl'}`}>
             {promociones.map((promo, i) => (
               <Link
@@ -158,7 +207,7 @@ export default function Home() {
                       </p>
                     )}
                   </div>
-                  <span className="font-body text-sm font-semibold text-lila transition-colors group-hover:text-text">
+                  <span className="font-body text-sm font-semibold text-champagne transition-colors group-hover:text-text">
                     Ver perfumes
                   </span>
                 </div>
@@ -168,14 +217,9 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── Destacados Slider ────────────────────────────────── */}
-      <section className="diferir-render px-6 py-16 max-w-7xl mx-auto">
-        <div className="mb-8 flex items-baseline justify-between">
-          <h2 className="font-luxury text-2xl tracking-wide text-text sm:text-3xl">Destacados</h2>
-          <Link to="/catalogo" className="font-body text-sm text-lila transition-base hover:text-text">
-            Ver todo el catálogo
-          </Link>
-        </div>
+      {/* ── Destacados ───────────────────────────────────────── */}
+      <section className="diferir-render mx-auto max-w-7xl px-4 pb-14 pt-14 sm:px-6 sm:pt-16">
+        <TituloSeccion etiqueta="Selección" titulo="Los más elegidos" />
         {isLoading ? (
           // Mismo alto que el slider cargado, para que la página no salte.
           <div className="flex gap-4 overflow-hidden pb-4" role="status" aria-label="Cargando destacados">
@@ -188,19 +232,75 @@ export default function Home() {
         )}
       </section>
 
-      {nuevos?.length > 0 && (
-        <section className="diferir-render px-6 pb-16 max-w-7xl mx-auto">
-          <div className="mb-8 flex items-baseline justify-between">
-            <h2 className="font-luxury text-2xl tracking-wide text-text sm:text-3xl">Nuevos ingresos</h2>
-            <Link to="/catalogo" className="font-body text-sm text-lila transition-base hover:text-text">
-              Ver todo el catálogo
+      {/* ── ¿No sabés cuál elegir? Las dos salidas para quien duda ── */}
+      <section aria-label="Ayuda para elegir" className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="card-surface relative flex flex-col items-start gap-4 overflow-hidden rounded-2xl p-7 sm:p-9">
+            <span aria-hidden="true" className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gold/10 blur-2xl" />
+            <Sparkles size={22} className="text-gold" aria-hidden="true" />
+            <div>
+              <h2 className="font-display text-2xl font-light tracking-tight text-text sm:text-3xl">¿No sabés cuál elegir?</h2>
+              <p className="mt-2 max-w-sm font-body text-sm leading-relaxed text-text-secondary">
+                Respondé unas preguntas rápidas y te recomendamos el ideal para vos.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={abrirAsistente}
+              className="gradient-gold mt-auto rounded-full px-6 py-3 font-body text-sm font-semibold text-ink shadow-lg shadow-gold/20 transition-all hover:shadow-gold/40 hover:brightness-110"
+            >
+              Encontrá tu perfume
+            </button>
+          </div>
+          <div className="card-surface relative flex flex-col items-start gap-4 overflow-hidden rounded-2xl p-7 sm:p-9">
+            <span aria-hidden="true" className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gold/10 blur-2xl" />
+            <span className="font-display text-xl font-light text-gold" aria-hidden="true">3 · 5 · 10 ml</span>
+            <div>
+              <h2 className="font-display text-2xl font-light tracking-tight text-text sm:text-3xl">Probalo antes</h2>
+              <p className="mt-2 max-w-sm font-body text-sm leading-relaxed text-text-secondary">
+                Los decants son porciones chicas de perfumes originales, para conocerlos sin comprar el frasco entero.
+              </p>
+            </div>
+            <Link
+              to="/decants"
+              className="mt-auto inline-flex items-center gap-2 rounded-full border border-gold/40 px-6 py-3 font-body text-sm font-semibold text-text transition-all hover:border-gold hover:bg-gold/10"
+            >
+              Ver decants
+              <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {nuevos?.length > 0 && (
+        <section className="diferir-render mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+          <TituloSeccion etiqueta="Recién llegados" titulo="Nuevos ingresos" />
           <HorizontalSlider perfumes={nuevos} dolarMedio={dolarMedio} onAgregar={agregar} promociones={promociones} etiqueta="Nuevos ingresos" />
         </section>
       )}
 
-      <PreguntasFrecuentes />
+      {/* ── Cómo comprar: reemplaza a las preguntas frecuentes, que repetían lo de la franja ── */}
+      <section aria-labelledby="como-comprar" className="diferir-render mx-auto max-w-5xl px-4 pb-6 sm:px-6">
+        <h2 id="como-comprar" className="mb-10 text-center font-display text-3xl font-light tracking-tight text-text sm:text-4xl">
+          Comprar es simple
+        </h2>
+        <ol className="grid gap-8 sm:grid-cols-3 sm:gap-6">
+          {PASOS.map(({ titulo, texto }, i) => (
+            <li key={titulo} className="flex gap-4 sm:flex-col sm:items-center sm:text-center">
+              <span
+                aria-hidden="true"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold/50 font-display text-lg font-light text-gold"
+              >
+                {i + 1}
+              </span>
+              <div>
+                <h3 className="font-display text-lg font-medium text-text">{titulo}</h3>
+                <p className="mt-1.5 font-body text-sm leading-relaxed text-text-secondary">{texto}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
     </div>
   );
 }

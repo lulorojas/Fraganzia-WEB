@@ -26,7 +26,7 @@ export function ResumenBot({ conLink = true }) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-display text-lg text-text">Bot de precios</h2>
         {conLink && (
-          <Link to="/admin/bot-proveedor" className="font-body text-xs text-violet hover:underline">
+          <Link to="/admin/bot-proveedor" className="font-body text-xs text-[#C084FC] hover:underline">
             Ver detalle
           </Link>
         )}
