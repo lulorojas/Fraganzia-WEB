@@ -128,7 +128,7 @@ function Explorar({ catalogo, dolarMedio }) {
 
   const etiquetaBanda = ({ id, min, max }) =>
     id === 'bajo' ? `Hasta ${formatARS(max)}` : id === 'alto' ? `Más de ${formatARS(min)}` : `${formatARS(min)} a ${formatARS(max)}`;
-  const tile = 'card-surface card-hover group flex flex-col justify-between rounded-2xl p-5';
+  const tile = 'card-surface card-hover group flex justify-between rounded-2xl p-5';
 
   return (
     <section aria-labelledby="explorar" className="mx-auto max-w-7xl px-4 pb-14 pt-14 sm:px-6 sm:pt-16">
@@ -136,9 +136,9 @@ function Explorar({ catalogo, dolarMedio }) {
       <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr]">
         <div>
           <Subtitulo>¿Para quién?</Subtitulo>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {generos.map(({ g, n }) => (
-              <Link key={g} to={`/catalogo?genero=${g}`} className={`${tile} min-h-[112px]`}>
+              <Link key={g} to={`/catalogo?genero=${g}`} className={`${tile} min-h-[112px] flex-col`}>
                 <span className="font-display text-2xl font-light text-text">{ETIQUETA_GENERO[g]}</span>
                 <span className="mt-4 flex items-center justify-between font-body text-xs text-text-secondary">
                   {n} perfumes
@@ -153,7 +153,7 @@ function Explorar({ catalogo, dolarMedio }) {
             <Subtitulo>¿Cuánto querés invertir?</Subtitulo>
             <div className="grid gap-3">
               {bandas.map((banda) => (
-                <Link key={banda.id} to={`/catalogo?precio=${banda.id}&orden=precio-asc`} className={`${tile} flex-row items-center`}>
+                <Link key={banda.id} to={`/catalogo?precio=${banda.id}&orden=precio-asc`} className={`${tile} items-center`}>
                   <span className="font-display text-lg font-light tabular-nums text-text">{etiquetaBanda(banda)}</span>
                   <ArrowRight size={16} className="text-lila transition-transform group-hover:translate-x-1" aria-hidden="true" />
                 </Link>
