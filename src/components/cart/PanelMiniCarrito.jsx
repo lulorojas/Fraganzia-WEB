@@ -87,7 +87,7 @@ export default function PanelMiniCarrito({ agregado, onCerrar }) {
           <Link
             to="/carrito"
             data-principal=""
-            className="gradient-violet flex-1 rounded-xl px-4 py-3 text-center font-body text-sm font-semibold text-text shadow-lg shadow-violet/20 transition-shadow hover:shadow-violet/40"
+            className="gradient-violet flex-1 rounded-xl px-4 py-3 text-center font-body text-sm font-semibold text-white shadow-lg shadow-violet/20 transition-shadow hover:shadow-violet/40"
           >
             Ir al carrito
           </Link>

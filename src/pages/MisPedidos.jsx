@@ -46,7 +46,7 @@ export default function MisPedidos() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Mis pedidos</h1>
+        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Mis pedidos</h1>
         <p className="mt-2 font-body text-sm text-text-secondary">
           Los pedidos que hiciste desde este dispositivo. Si compraste desde otro, usá el link
           de seguimiento que quedó en tu mensaje de WhatsApp.
@@ -63,7 +63,7 @@ export default function MisPedidos() {
         <div className="card-surface flex flex-col items-center gap-4 rounded-2xl p-8 text-center">
           <Package size={32} className="text-lila" aria-hidden="true" />
           <p className="font-body text-text-secondary">Todavía no hiciste pedidos desde este dispositivo.</p>
-          <Link to="/catalogo" className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-text">
+          <Link to="/catalogo" className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-white">
             Ver catálogo
           </Link>
         </div>

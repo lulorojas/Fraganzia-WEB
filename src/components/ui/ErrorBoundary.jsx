@@ -23,7 +23,7 @@ export class ErrorBoundary extends Component {
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="gradient-violet rounded-xl px-5 py-2.5 font-body font-medium text-text shadow-lg shadow-violet/20 transition-base hover:shadow-violet/40"
+            className="gradient-violet rounded-xl px-5 py-2.5 font-body font-medium text-white shadow-lg shadow-violet/20 transition-base hover:shadow-violet/40"
           >
             Recargar
           </button>

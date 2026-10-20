@@ -29,7 +29,7 @@ export function ResumenCheckout({ items, metodoPago, dolarMedio, whatsappNumero,
   const { subtotalARS, totalARS, lineas } = calcularCarritoConPromos(items, promociones, esEfectivo, dolarMedio);
 
   return (
-    <div className="font-luxury text-text flex flex-col gap-1.5">
+    <div className="font-display text-text flex flex-col gap-1.5">
       <p className="font-body text-sm text-text-secondary">Subtotal: {formatARS(subtotalARS)}</p>
       {lineas.map((l) => (
         <p key={l.nombre} className="font-body text-sm text-lila">

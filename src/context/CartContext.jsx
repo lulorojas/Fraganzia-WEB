@@ -98,7 +98,7 @@ export function CartProvider({ children }) {
    * `perfumeIdBase` es el id real en Firestore, para la estadística y para
    * revalidar disponibilidad en el checkout (Carrito.jsx).
    */
-  const agregar = useCallback((perfume, cantidad = 1) => {
+  const agregar = useCallback((perfume, cantidad = 1, { silencioso = false } = {}) => {
     dispatch({
       type: 'ADD_ITEM',
       payload: {
@@ -115,7 +115,8 @@ export function CartProvider({ children }) {
     });
     incrementarAgregadoCarrito(perfume.perfumeIdBase ?? perfume.id);
     registrarPaso('carrito');
-    setUltimoAgregado({ perfumeId: perfume.id, cantidad, momento: Date.now() });
+    // `silencioso`: "Comprar ahora" va directo al carrito, sin abrir el panel de confirmación.
+    if (!silencioso) setUltimoAgregado({ perfumeId: perfume.id, cantidad, momento: Date.now() });
   }, []);
 
   const olvidarUltimoAgregado = useCallback(() => setUltimoAgregado(null), []);

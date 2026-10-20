@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ShoppingBag, Instagram, Menu, X, Heart, Sparkles } from 'lucide-react';
+import { ShoppingBag, Menu, X, Heart, Sparkles } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useFavoritos } from '../../context/FavoritosContext';
 import { LogoFraganzia } from '../ui/LogoFraganzia';
@@ -58,7 +58,7 @@ export function Navbar() {
         <div className="relative flex items-center justify-between px-4 sm:px-6 py-3 max-w-7xl mx-auto">
           {/* Logo izquierda */}
           <Link to="/" aria-label="Fraganzia, ir al inicio" className="transition-opacity duration-300 hover:opacity-80">
-            <LogoFraganzia size={1.2} />
+            <LogoFraganzia className="[--logo-scale:0.95] sm:[--logo-scale:1.15]" />
           </Link>
 
           {/* Links centro (desktop) */}
@@ -76,21 +76,11 @@ export function Navbar() {
               type="button"
               onClick={abrirAsistente}
               aria-label="Encontrá tu perfume"
-              className="mr-1 flex h-10 items-center gap-1.5 rounded-full bg-gradient-to-br from-violet to-violet-light px-3 text-sm font-semibold text-white shadow-md shadow-violet/30 transition-transform duration-200 hover:scale-105 active:scale-95 sm:px-4"
+              className="mr-1 flex h-10 items-center gap-1.5 rounded-full border border-violet/50 px-3 text-sm font-semibold text-lila transition-colors duration-200 hover:border-violet hover:bg-violet hover:text-white sm:px-4"
             >
               <Sparkles size={16} aria-hidden="true" />
               <span className="hidden sm:inline">Encontrá tu perfume</span>
             </button>
-
-            <a
-              href="https://www.instagram.com/fraganzia.ar/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-lila"
-              aria-label="Instagram de Fraganzia"
-            >
-              <Instagram size={19} aria-hidden="true" />
-            </a>
 
             {/* Favoritos (en mobile está en el menú, para no apretar la barra) */}
             <Link
@@ -178,17 +168,6 @@ export function Navbar() {
                   <Heart size={18} aria-hidden="true" />
                   Favoritos{favoritos.length > 0 && ` (${favoritos.length})`}
                 </NavLink>
-              </li>
-              <li>
-                <a
-                  href="https://www.instagram.com/fraganzia.ar/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-lg px-3 py-3 text-base text-text-secondary transition-colors hover:bg-violet/10 hover:text-lila"
-                >
-                  <Instagram size={18} aria-hidden="true" />
-                  @fraganzia.ar
-                </a>
               </li>
             </ul>
           </div>

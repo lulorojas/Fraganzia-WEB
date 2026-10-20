@@ -143,7 +143,7 @@ if (!chrome) {
 // rewrite de /perfume/** (Hosting sirve primero el archivo que existe) y siguen siendo
 // el mismo esqueleto de la app, pero con datos de un solo perfume para no pesar de más.
 function urlImagen(url) {
-  if (!url) return `${SITE}/icon-512.png`;
+  if (!url) return `${SITE}/og-fraganzia.png`;
   const hash = hashTexto(url);
   if (existsSync(`${DIST}/img/p/${hash}-800.webp`)) return `${SITE}/img/p/${hash}-800.webp`;
   return url.startsWith('/') ? `${SITE}${url}` : url;

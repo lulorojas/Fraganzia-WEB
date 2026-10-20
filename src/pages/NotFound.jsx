@@ -15,7 +15,7 @@ export default function NotFound() {
         <div className="flex flex-wrap justify-center gap-3">
           <Link
             to="/catalogo"
-            className="gradient-violet rounded-xl px-5 py-2.5 font-body font-medium text-text shadow-lg shadow-violet/20 transition-base hover:shadow-violet/40"
+            className="gradient-violet rounded-xl px-5 py-2.5 font-body font-medium text-white shadow-lg shadow-violet/20 transition-base hover:shadow-violet/40"
           >
             Ver catálogo
           </Link>

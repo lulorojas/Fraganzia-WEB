@@ -130,7 +130,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, promociones,
                     type="button"
                     onClick={() => onAgregar(perfume)}
                     aria-label={`Agregar al carrito: ${nombreCompleto(perfume)}`}
-                    className="w-full py-2.5 px-4 bg-violet/10 hover:bg-violet text-text rounded-xl font-medium text-sm transition-colors duration-300 border border-violet/30 hover:border-violet"
+                    className="w-full py-2.5 px-4 bg-violet/10 hover:bg-violet hover:text-white text-text rounded-xl font-medium text-sm transition-colors duration-300 border border-violet/30 hover:border-violet"
                   >
                     Agregar al carrito
                   </button>
@@ -144,7 +144,7 @@ export function HorizontalSlider({ perfumes, dolarMedio, onAgregar, promociones,
             to="/catalogo"
             className="card-surface card-hover flex w-[280px] flex-none snap-start flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center"
           >
-            <span className="font-luxury text-xl tracking-wide text-text">Ver todo el catálogo</span>
+            <span className="font-display font-light text-xl tracking-tight text-text">Ver todo el catálogo</span>
             <span className="font-body text-sm text-text-secondary">
               Hay {perfumes.length - MAX_VISIBLES} destacados más y el resto de la colección
             </span>

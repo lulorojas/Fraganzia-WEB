@@ -17,6 +17,7 @@ import { GlassCard } from '../components/ui/GlassCard';
 import { preciosPorMetodo, calcularCarritoConPromos } from '../utils/precios';
 import { formatARS } from '../utils/format';
 import { guardarPedidoLocal } from '../utils/misPedidos';
+import { leerNombreCliente, guardarNombreCliente } from '../utils/nombreCliente';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export default function Carrito() {
@@ -29,7 +30,7 @@ export default function Carrito() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [clienteNombre, setClienteNombre] = useState(user?.displayName ?? '');
+  const [clienteNombre, setClienteNombre] = useState(() => user?.displayName ?? leerNombreCliente());
   const [errorNombre, setErrorNombre] = useState(null);
   const [avisoDisponibilidad, setAvisoDisponibilidad] = useState(null);
 
@@ -126,6 +127,7 @@ export default function Carrito() {
     crearPedidoMutation(pedido, {
       onSuccess: (pedidoId) => {
         registrarPaso('pedidos');
+        guardarNombreCliente(pedido.clienteNombre);
         dispatch({ type: 'CLEAR_CART' });
         setClienteNombre('');
         notificarNuevoPedido(
@@ -156,7 +158,7 @@ export default function Carrito() {
     <div className="mx-auto max-w-2xl px-4 py-10">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Tu carrito</h1>
+        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Tu carrito</h1>
       </div>
 
       {/* Productos */}

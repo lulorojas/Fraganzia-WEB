@@ -40,7 +40,7 @@ function Paginador({ pagina, total, onCambiar }) {
             onClick={() => onCambiar(n)}
             aria-label={`Página ${n}`}
             aria-current={n === pagina ? 'page' : undefined}
-            className={`${base} ${n === pagina ? 'gradient-violet border-transparent font-semibold text-text' : inactivo}`}
+            className={`${base} ${n === pagina ? 'gradient-violet border-transparent font-semibold text-white' : inactivo}`}
           >
             {n}
           </button>
