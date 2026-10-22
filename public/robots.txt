@@ -1,4 +1,21 @@
+# Fraganzia: el contenido público está pensado para ser leído por personas y por agentes de IA.
+# Resumen para modelos de lenguaje: /llms.txt · catálogo completo: /llms-full.txt y /catalogo.json
+#
+# Un solo grupo para todos (los rastreadores de IA se nombran aparte solo para dejar clara
+# la bienvenida): si cada uno tuviera su grupo, las restricciones de lo privado no les aplicarían.
+
 User-agent: *
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
 Allow: /
 Disallow: /admin
 Disallow: /login

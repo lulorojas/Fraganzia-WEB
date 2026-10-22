@@ -6,16 +6,22 @@ o se necesitan caracteres nuevos.
     pip install fonttools brotli
     python tools/subset-fonts.py
 
-Por qué: las 4 fuentes completas sumaban ~105 KB y el navegador las baja antes
-de pintar el texto principal. Recortadas al español quedan en una fracción.
+Por qué: las fuentes completas pesan mucho y el navegador las baja antes de
+pintar el texto principal. Recortadas al español quedan en una fracción.
+
+Los paquetes @fontsource no están en package.json: se bajan aparte
+(`npm pack @fontsource-variable/outfit @fontsource-variable/manrope`) y se
+indica la carpeta donde quedaron con la variable FUENTES_DIR (cada paquete
+extraído en <FUENTES_DIR>/<nombre>/package). Sin la variable, usa node_modules.
 """
+import os
 from pathlib import Path
 from fontTools import subset
 from fontTools.ttLib import TTFont
 from fontTools.varLib import instancer
 
 RAIZ = Path(__file__).resolve().parent.parent
-NM = RAIZ / "node_modules"
+NM = Path(os.environ["FUENTES_DIR"]) if os.environ.get("FUENTES_DIR") else RAIZ / "node_modules"
 SALIDA = RAIZ / "src" / "assets" / "fonts"
 
 # Latín básico + Latin-1 (tildes, ñ, ü, ¡, ¿, º) + tipografía común en español
@@ -27,11 +33,9 @@ ESPANOL = (
 
 # (origen, destino, caracteres, rango de pesos a conservar en fuentes variables)
 FUENTES = [
-    ("@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2", "outfit.woff2", ESPANOL, (400, 700)),
+    # Outfit llega hasta el peso 300: los títulos grandes van livianos y con aire (look de lujo).
+    ("@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2", "outfit.woff2", ESPANOL, (300, 700)),
     ("@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2", "manrope.woff2", ESPANOL, (400, 700)),
-    ("@fontsource-variable/cinzel/files/cinzel-latin-wght-normal.woff2", "cinzel.woff2", ESPANOL, (400, 600)),
-    # Playfair Display solo se usa para la palabra FRAGANZIA del logo.
-    ("@fontsource/playfair-display/files/playfair-display-latin-700-normal.woff2", "playfair-logo.woff2", "text:FRAGANZI", None),
 ]
 
 SALIDA.mkdir(parents=True, exist_ok=True)

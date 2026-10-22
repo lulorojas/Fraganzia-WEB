@@ -1,6 +1,6 @@
 # Spec 006 — Rediseño del front (marca premium, producto protagonista, legible por IA, accesible)
 
-Estado: **BORRADOR EN ENTREVISTA** — se construye con el usuario ronda por ronda. Nada se implementa hasta que el usuario apruebe esta spec (Principio I) y las **maquetas** (sección 9).
+Estado: **APROBADA POR EL USUARIO Y EN CONSTRUCCIÓN** (22/10/2026). Las maquetas (portada final, header, cards, logo) fueron aprobadas; se construye en la rama `rediseno-front` y cada entrega pasa por vista previa. A producción solo se sube con el OK del usuario.
 Rama: `rediseno-front` (desde `main`). Retorno exacto al estado previo a todo el rediseño: etiqueta `antes-del-rediseno` (`79c16e6`).
 
 ## 1. Historia (por qué se rehace)
@@ -21,14 +21,16 @@ Rama: `rediseno-front` (desde `main`). Retorno exacto al estado previo a todo el
 | D7 | Fotos | Se dejan como están; **se cambia el fondo**: escenario oscuro con luz violeta. | 2, 3 |
 | D8 | "Inspirado en" | Se **mantiene visible** (ficha y asistente). | 2 |
 | D9 | Header | Más alto y diferenciado del fondo, con información útil. Todo cabe en **dos niveles**: franja de anuncio + buscador, categorías, carrito con importe, favoritos y asistente. **El buscador es el único elemento con color lleno.** | 3, 4, 5 |
-| D10 | Logo | Dirección **sello macizo (F)**, variante **P2 «lacre»** (borde festoneado). Profundizar: **el borde del lacre** y **el nombre junto al sello**. Más peso que los conceptos de línea fina. | 3, 4 |
+| D10 | Logo | **Sello «lacre» de borde fino** con la F con estela, **nombre FRAGANZIA en negrita normal** (texto real). | 3, 4, 7 |
 | D11 | Clics | **Secundarios**: primero marca y visibilidad. El panel de pedido de 3 clics se deja para una etapa posterior. | 3 |
-| D12 | Recorte de fotos | **Mixto automático**: fondo oscuro donde el recorte sale limpio (control de calidad automático); donde falla, **fondo claro redondeado tipo "ventana"**. | 4, 5 |
-| D13 | Bloques de la portada | Dos puertas (protagonista) · Más elegidos y novedades · Decants para probar · La marca (quiénes somos y cómo comprar). | 4, 5 |
+| D12 | Fotos | **TODAS las cards con fondo oscuro** (no mixto). Recorte híbrido (modelo + color + casco convexo); si alguna no queda bien se busca otra foto en tiendas y bases de perfumes, con aprobación del usuario. La "ventana clara" solo es respaldo para fotos nuevas sin procesar. | 4, 5, 7 |
+| D13 | Portada | **Portada A «Lujo silencioso»**. Titular **«Encontrá el perfume que te define»**. Dos puertas (protagonista) · Más elegidos · Decants · Novedades · La marca (quiénes somos y cómo comprar). "Regalar" abre el asistente actual. | 4, 5, 7 |
 | D14 | Éxito | Que **se vea premium** (criterio del usuario), **aparecer en Google**, que **asistentes de IA nos citen** con datos correctos, y que **los pedidos no bajen**. | 5 |
 | D15 | Accesibilidad | Cumplir **WCAG 2.2 AA** y sumar un **panel de preferencias** del usuario. | previa |
 | D16 | Tipografía | **Sin serifa** (Outfit + Manrope). Requiere enmienda a la sección 4 de la constitución (hoy dice serifa): **pendiente de aprobación explícita**. | previa |
 | D17 | Paleta | Se **mantiene el violeta** de la marca. | previa |
+| D18 | Dispositivo | **Mobile-first**: casi todos los clientes llegan desde el celular. | 6 |
+| D19 | Constitución | **Enmienda aprobada** a la sección 4 (tipografía sin serifa, logo, fondo `#06040D`); se aplica al cerrar esta feature. | 6 |
 
 ## 3. Evidencia técnica recogida (no es opinión)
 - **Recorte automático de fondo** (`@imgly/background-removal-node`, modelo medio, ~11 s por foto, una sola vez): en una muestra de 8 fotos reales, **5 quedan limpias** (Yara Moi, Nitro Green, Fatima Velvet, Eclaire, Freeze in Flames) y **3 fallan** (Donna Intense, Khamrah de vidrio, Atlas con caja celeste): el modelo no reconoce partes claras sobre fondo blanco.
@@ -78,7 +80,7 @@ Rama: `rediseno-front` (desde `main`). Retorno exacto al estado previo a todo el
 - "Más vendidos": las estadísticas no son públicas.
 - Datos de negocio (envíos, horarios, opiniones de clientes): los aporta el usuario; no se inventan.
 
-## 6. Preguntas todavía abiertas
+## 6. Preguntas todavía abiertas (las ya resueltas están en la tabla de decisiones)
 1. ¿Desde qué dispositivo y canal llegan los clientes (celular, Instagram, Google)? Define cuánto pesa el celular en el diseño.
 2. ¿Qué hace exactamente la puerta "Regalar"? (el asistente actual, o un flujo nuevo por destinatario y presupuesto).
 3. Estilo visual final: nicho sobrio, oriental o mezcla (se resuelve con 3 maquetas).
@@ -95,6 +97,7 @@ Rama: `rediseno-front` (desde `main`). Retorno exacto al estado previo a todo el
 - Reversibilidad: cada fase en su commit y su vista previa; el retorno exacto previo a todo sigue siendo `antes-del-rediseno`.
 
 ## 8. Fases (cada una termina en vista previa y espera OK antes de `main`)
+Estado al 22/10/2026: fase 0 y 1 (maquetas) **aprobadas**; fases 2 a 5 **en construcción** (logo, header, card, portada, pipeline de recorte de las 406 fotos, contenido para agentes de IA, pruebas); falta accesibilidad completa con panel de preferencias y la medición posterior.
 0. **Entrevista y spec** (esta).
 1. **Maquetas HTML estáticas** de: portada (3 estilos), header, card (oscura y ventana clara), logo P2 refinado. Sin tocar el sitio real.
 2. **Cimientos:** tokens de diseño, tipografía, componentes base.

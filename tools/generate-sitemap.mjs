@@ -16,13 +16,14 @@ try {
   console.warn(`sitemap: sin perfumes (${err.message}); solo páginas fijas`);
 }
 
+const hoy = new Date().toISOString();
 const url = (loc, lastmod) =>
   `  <url><loc>${SITE}${loc}</loc>${lastmod ? `<lastmod>${lastmod.slice(0, 10)}</lastmod>` : ''}</url>`;
 
 const xml = [
   '<?xml version="1.0" encoding="UTF-8"?>',
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ...PAGINAS_FIJAS.map((p) => url(p)),
+  ...PAGINAS_FIJAS.map((p) => url(p, hoy)),
   ...perfumes.map((p) => url(`/perfume/${p.id}`, p.updatedAt)),
   '</urlset>',
   '',
