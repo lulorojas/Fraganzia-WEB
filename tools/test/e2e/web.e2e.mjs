@@ -9,7 +9,8 @@
 // pruebas no suman estadísticas ni pedidos.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import puppeteer from 'puppeteer-core';
 import { preview } from 'vite';
 
@@ -135,7 +136,7 @@ test('el catálogo muestra perfumes con precio y el buscador filtra', async () =
   const hayPrecio = await page.$eval('ul[aria-label="Perfumes"]', (ul) => /\$\s?\d/.test(ul.innerText));
   assert.ok(hayPrecio, 'las tarjetas no muestran precio en pesos');
 
-  await page.type('input[type="search"], input[placeholder^="Buscar"]', 'lattafa');
+  await page.type('#main input[type="search"]', 'lattafa');
   await page.waitForFunction(
     () => [...document.querySelectorAll('ul[aria-label="Perfumes"] li')].every((li) => /lattafa/i.test(li.innerText)),
     { timeout: 10000 }
@@ -185,6 +186,160 @@ test('el filtro de género admite varias opciones a la vez', async () => {
   assert.deepEqual(errores, [], `Errores al filtrar por género: ${errores.join(' | ')}`);
   await page.close();
 });
+
+// ─── Portada y encabezado ────────────────────────────────────────────────────
+
+test('la portada ofrece las dos puertas y "Regalar" abre el asistente', async () => {
+  const { page, errores } = await abrir('/');
+  await page.waitForSelector('#titular', { timeout: 30000 });
+  assert.match(await textoDe(page, '#titular'), /Encontrá el perfume que te define/);
+  const puertas = await page.$$eval('.puerta h2', (hs) => hs.map((h) => h.textContent.trim()));
+  assert.deepEqual(puertas, ['Regalar', 'Explorar']);
+  await page.evaluate(() => [...document.querySelectorAll('.puerta')].find((el) => el.textContent.includes('Regalar')).click());
+  await page.waitForSelector('[role="dialog"]', { timeout: 15000 });
+  assert.deepEqual(errores, [], `Errores en la portada: ${errores.join(' | ')}`);
+  await page.close();
+});
+
+test('el buscador del encabezado lleva al catálogo con los resultados', async () => {
+  const { page, errores } = await abrir('/');
+  await page.waitForSelector('#buscar-cabecera', { timeout: 30000 });
+  await page.type('#buscar-cabecera', 'yara');
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(() => location.pathname === '/catalogo' && location.search.includes('buscar=yara'), { timeout: 15000 });
+  await page.waitForSelector('ul[aria-label="Perfumes"] li', { timeout: 30000 });
+  await new Promise((r) => setTimeout(r, 800));
+  const nombres = await page.$$eval('ul[aria-label="Perfumes"] li h2', (hs) => hs.map((h) => h.textContent.toLowerCase()));
+  assert.ok(nombres.length > 0 && nombres.every((n) => n.includes('yara')), `la búsqueda trajo perfumes que no son Yara: ${nombres.slice(0, 5)}`);
+  assert.deepEqual(errores, [], `Errores al buscar: ${errores.join(' | ')}`);
+  await page.close();
+});
+
+test('las categorías del encabezado filtran el catálogo por género', async () => {
+  const { page, errores } = await abrir('/');
+  await tocar(page, 'Para ella');
+  await page.waitForFunction(
+    () => document.querySelector('[aria-label="Filtrar por género"] button[aria-pressed="true"]')?.textContent.trim() === 'Femenino',
+    { timeout: 20000 }
+  );
+  assert.deepEqual(errores, [], `Errores en las categorías: ${errores.join(' | ')}`);
+  await page.close();
+});
+
+// ─── Atajos por link ─────────────────────────────────────────────────────────
+
+test('los filtros que vienen en el link (atajos de la portada y del pie) se aplican', async () => {
+  const { page: base0 } = await abrir('/catalogo');
+  await base0.waitForSelector('ul[aria-label="Perfumes"] li', { timeout: 30000 });
+  const total = await base0.$$eval('ul[aria-label="Perfumes"] li', (l) => l.length);
+  await base0.close();
+
+  const { page, errores } = await abrir('/catalogo?genero=Femenino&marca=Lattafa');
+  await page.waitForFunction(
+    () => document.querySelector('[aria-label="Filtrar por género"] button[aria-pressed="true"]')?.textContent.trim() === 'Femenino',
+    { timeout: 20000 }
+  );
+  const tarjetas = await page.$$eval('ul[aria-label="Perfumes"] li', (l) => l.map((li) => li.innerText.toLowerCase()));
+  assert.ok(tarjetas.length > 0, `el filtro dejó el catálogo vacío (total sin filtrar: ${total})`);
+  assert.ok(tarjetas.every((t) => t.includes('lattafa')), 'hay perfumes de otra marca con el filtro de marca aplicado');
+  assert.deepEqual(errores, [], `Errores con filtros por link: ${errores.join(' | ')}`);
+  await page.close();
+});
+
+// ─── Agentes de IA: se leen sin ejecutar JavaScript ──────────────────────────
+
+const sinEtiquetas = (html) =>
+  html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+const jsonLdDe = (html) =>
+  [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+
+test('sin ejecutar JavaScript, la ficha trae título, descripción, notas, precios y datos estructurados', async () => {
+  const archivo = readdirSync('dist/perfume').find((f) => f !== '.html' && f.endsWith('.html'));
+  const html = await (await fetch(`${base}/perfume/${archivo}`)).text();
+  const texto = sinEtiquetas(html);
+  assert.match(html, /<h1>[^<]{3,}<\/h1>/, 'la ficha estática no tiene h1');
+  assert.match(texto, /Transferencia: \$/);
+  assert.match(texto, /Cómo comprar/);
+  assert.match(texto, /Envíos solo al AMBA/);
+  const grafos = jsonLdDe(html).flatMap((d) => d['@graph'] ?? [d]);
+  const producto = grafos.find((n) => n['@type'] === 'Product');
+  assert.ok(producto?.name && producto.offers?.length >= 1, 'falta el Product con sus ofertas');
+  assert.equal(producto.offers[0].priceCurrency, 'ARS');
+  assert.ok(grafos.some((n) => n['@type'] === 'BreadcrumbList'), 'falta BreadcrumbList');
+});
+
+test('sin ejecutar JavaScript, la portada y el catálogo declaran sitio, buscador y lista', async () => {
+  const portada = await (await fetch(`${base}/`)).text();
+  const grafosPortada = jsonLdDe(portada).flatMap((d) => d['@graph'] ?? [d]);
+  assert.ok(grafosPortada.some((n) => n['@type'] === 'WebSite' && n.potentialAction?.['@type'] === 'SearchAction'));
+  assert.ok(grafosPortada.some((n) => n['@type'] === 'Organization'));
+  assert.match(portada, /<h1[\s>]/);
+  assert.match(portada, /rel="alternate" type="text\/plain" href="\/llms\.txt"/);
+
+  const catalogo = await (await fetch(`${base}/catalogo.html`)).text();
+  const lista = jsonLdDe(catalogo).find((d) => d['@type'] === 'ItemList');
+  assert.ok(lista && lista.numberOfItems > 100 && lista.itemListElement.length > 10);
+});
+
+test('llms.txt, llms-full.txt y catalogo.json se publican y son coherentes', async () => {
+  const txt = await (await fetch(`${base}/llms.txt`)).text();
+  assert.match(txt, /^# Fraganzia/);
+  const completo = await (await fetch(`${base}/llms-full.txt`)).text();
+  const json = await (await fetch(`${base}/catalogo.json`)).json();
+  assert.ok(json.perfumes.length > 100);
+  assert.equal(completo.split('\n### ').length - 1, json.perfumes.length, 'llms-full.txt y catalogo.json no listan lo mismo');
+  assert.ok(json.perfumes.every((p) => p.nombre && p.marca && p.url.startsWith('https://')));
+});
+
+test('robots.txt da la bienvenida a los agentes de IA sin abrir lo privado', async () => {
+  const robots = (await (await fetch(`${base}/robots.txt`)).text()).replace(/\r\n/g, '\n');
+  for (const bot of ['GPTBot', 'ClaudeBot', 'PerplexityBot', 'Google-Extended']) {
+    // El bot comparte grupo con las reglas: debe quedar sujeto a los mismos Disallow.
+    assert.match(robots, new RegExp(`User-agent: ${bot}\\n(?:User-agent: [^\\n]+\\n)*Allow: /\\nDisallow: /admin`), `${bot} no comparte el grupo con las restricciones`);
+  }
+  assert.match(robots, /Disallow: \/carrito/);
+  assert.match(robots, /Sitemap: /);
+});
+
+test('el nombre del logo es texto real: se lee "FRAGANZIA"', async () => {
+  const { page, errores } = await abrir('/');
+  const texto = await page.$eval('header a[href="/"]', (a) => a.textContent.replace(/\s+/g, ''));
+  assert.equal(texto, 'FRAGANZIA');
+  assert.deepEqual(errores, []);
+  await page.close();
+});
+
+// ─── Accesibilidad (WCAG 2.2 AA, con axe-core) ───────────────────────────────
+
+const axeFuente = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
+
+for (const [nombre, tamano] of [['celular', { width: 390, height: 844, isMobile: true }], ['escritorio', { width: 1366, height: 800 }]]) {
+  test(`accesibilidad: sin violaciones de WCAG A/AA en las páginas públicas (${nombre})`, async () => {
+    const { page: base0 } = await abrir('/catalogo');
+    await base0.waitForSelector('ul[aria-label="Perfumes"] li a[href^="/perfume/"]', { timeout: 30000 });
+    const ficha = await base0.$eval('ul[aria-label="Perfumes"] li a[href^="/perfume/"]', (a) => a.getAttribute('href'));
+    await base0.close();
+
+    const problemas = [];
+    for (const ruta of ['/', '/catalogo', ficha, '/decants', '/contacto', '/sobre-nosotros', '/carrito']) {
+      const { page } = await abrir(ruta);
+      await page.setViewport(tamano);
+      await page.evaluate(async () => {
+        for (let y = 0; y < document.documentElement.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
+        window.scrollTo(0, 0);
+      });
+      await page.evaluate(axeFuente);
+      const resultado = await page.evaluate(() =>
+        axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } })
+      );
+      for (const v of resultado.violations) {
+        problemas.push(`${ruta.startsWith('/perfume') ? '/ficha' : ruta} · ${v.id} (${v.impact}): ${v.nodes[0].html.slice(0, 90)}`);
+      }
+      await page.close();
+    }
+    assert.deepEqual(problemas, [], `Violaciones de accesibilidad:\n${problemas.join('\n')}`);
+  });
+}
 
 // ─── Carrito ─────────────────────────────────────────────────────────────────
 
@@ -239,7 +394,7 @@ test('los decants muestran los 12 perfumes con 3, 5 y 10 ml', async () => {
 test('el asistente llega a recomendaciones sin callejones sin salida', async () => {
   const { page, errores } = await abrir('/catalogo');
   await page.waitForSelector('ul[aria-label="Perfumes"] li', { timeout: 30000 });
-  await page.click('button[aria-label="Encontrá tu perfume"], a[aria-label="Encontrá tu perfume"]');
+  await tocar(page, 'Encontrá tu perfume');
 
   await tocar(page, 'Para mí');
   await tocar(page, 'Me da igual'); // género
@@ -261,7 +416,7 @@ test('el asistente llega a recomendaciones sin callejones sin salida', async () 
 test('el asistente con perfume de referencia devuelve alternativas', async () => {
   const { page } = await abrir('/catalogo');
   await page.waitForSelector('ul[aria-label="Perfumes"] li', { timeout: 30000 });
-  await page.click('button[aria-label="Encontrá tu perfume"], a[aria-label="Encontrá tu perfume"]');
+  await tocar(page, 'Encontrá tu perfume');
 
   await tocar(page, 'Para mí');
   await tocar(page, 'Me da igual');

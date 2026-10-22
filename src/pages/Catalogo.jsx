@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
@@ -13,10 +13,45 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { abrirAsistente } from '../components/asistente/BotonAsistente';
 import { quisoDecir } from '../utils/busqueda';
 import { filtrarPerfumes } from '../services/perfumesService';
-import { bandasDePrecio, aplicarOrdenYPrecio } from '../utils/ordenCatalogo';
+import { bandasDePrecio, aplicarOrdenYPrecio, ORDENES } from '../utils/ordenCatalogo';
+import { usePromocionesActivas } from '../hooks/usePromociones';
+import { getMejorPromo } from '../utils/precios';
+import { GENEROS, FAMILIAS_OLFATIVAS } from '../constants';
+
+const BANDAS = ['bajo', 'medio', 'alto'];
+
+/**
+ * Filtros que vienen en el link (el encabezado, el pie y los atajos): ?genero=Masculino,
+ * ?marca=Lattafa, ?precio=bajo, ?familia=Oriental, ?orden=precio-asc, ?buscar=yara y ?ofertas=1.
+ * Solo se aceptan valores conocidos.
+ */
+function filtrosDesdeUrl(params) {
+  const f = {};
+  const generos = params.getAll('genero').filter((g) => GENEROS.includes(g));
+  if (generos.length) f.genero = generos;
+  const marca = params.get('marca');
+  if (marca) f.marca = marca.slice(0, 60);
+  if (BANDAS.includes(params.get('precio'))) f.precio = params.get('precio');
+  if (ORDENES.some((o) => o.value === params.get('orden'))) f.orden = params.get('orden');
+  if (FAMILIAS_OLFATIVAS.includes(params.get('familia'))) f.familiaOlfativa = params.get('familia');
+  const buscar = params.get('buscar');
+  if (buscar) f.busqueda = buscar.slice(0, 80);
+  if (params.get('ofertas') === '1') f.ofertas = true;
+  return f;
+}
 
 export default function Catalogo() {
   const [filtros, setFiltros] = useState({});
+  // Se aplican después de montar (no en el estado inicial): el HTML pre-generado del catálogo no
+  // tiene filtros y la hidratación tiene que coincidir con él.
+  const [params] = useSearchParams();
+  const enlace = params.toString();
+  useEffect(() => {
+    if (!enlace) return;
+    const desdeUrl = filtrosDesdeUrl(new URLSearchParams(enlace));
+    if (Object.keys(desdeUrl).length) setFiltros(desdeUrl);
+  }, [enlace]);
+  const { data: promos } = usePromocionesActivas();
   useEffect(() => { registrarPaso('catalogo'); }, []);
   const { data: perfumes, isLoading, isError, refetch } = usePerfumes(filtros);
   const { data: catalogo } = usePerfumes();
@@ -44,10 +79,11 @@ export default function Catalogo() {
     [correccion, catalogo, filtros]
   );
   const usandoCorreccion = Boolean(perfumesCorregidos?.length);
-  const lista = useMemo(
-    () => aplicarOrdenYPrecio(usandoCorreccion ? perfumesCorregidos : perfumes, filtros, dolarMedio, bandas),
-    [usandoCorreccion, perfumesCorregidos, perfumes, filtros, dolarMedio, bandas]
-  );
+  const lista = useMemo(() => {
+    const base = aplicarOrdenYPrecio(usandoCorreccion ? perfumesCorregidos : perfumes, filtros, dolarMedio, bandas);
+    // "Ofertas": solo los perfumes con una promoción vigente.
+    return filtros.ofertas && base ? base.filter((p) => getMejorPromo(p.id, promos)) : base;
+  }, [usandoCorreccion, perfumesCorregidos, perfumes, filtros, dolarMedio, bandas, promos]);
 
   const busqueda = filtros.busqueda ?? '';
 
@@ -66,21 +102,19 @@ export default function Catalogo() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <div className="mb-8">
-        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Catálogo</h1>
-      </div>
-      <div className="card-surface mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3 sm:px-5">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Catálogo</h1>
         <p className="font-body text-sm text-text-secondary">
-          <span className="text-text">¿No sabés cuál elegir?</span> Respondé unas preguntas y te recomendamos el ideal.
+          ¿No sabés cuál elegir?{' '}
+          <button
+            type="button"
+            onClick={abrirAsistente}
+            className="inline-flex items-center gap-1.5 font-semibold text-lila transition-base hover:text-text"
+          >
+            <Sparkles size={14} aria-hidden="true" />
+            Encontrá tu perfume
+          </button>
         </p>
-        <button
-          type="button"
-          onClick={abrirAsistente}
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-br from-violet to-violet-light px-4 py-2.5 font-body text-sm font-semibold text-white shadow-md shadow-violet/30 transition-transform hover:scale-105 active:scale-95"
-        >
-          <Sparkles size={16} aria-hidden="true" />
-          Encontrá tu perfume
-        </button>
       </div>
       <Filtros filtros={filtros} onChange={setFiltros} />
       {usandoCorreccion && (

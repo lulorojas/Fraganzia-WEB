@@ -258,3 +258,143 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .modal-fondo, .modal-panel { animation: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   VITRINA: la card de producto sobre un escenario oscuro con luz violeta.
+   La foto va recortada (sin fondo) y flota sobre el escenario; sin backdrop-filter
+   (las grillas largas se vuelven lentas en celulares).
+   ═══════════════════════════════════════════════════════════ */
+@layer components {
+  .vitrina {
+    background: linear-gradient(180deg, #171230, #0d0a1e);
+    border: 1px solid var(--color-border);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .vitrina:hover {
+    transform: translateY(-3px);
+    border-color: rgba(192, 132, 252, 0.5);
+    box-shadow: 0 18px 40px rgba(60, 20, 120, 0.35);
+  }
+  .escenario {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 80% 58% at 50% 42%, rgba(160, 92, 220, 0.6), rgba(70, 28, 130, 0.38) 52%, transparent 88%),
+      #0a0616;
+  }
+  .escenario::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 22%, rgba(255, 255, 255, 0.1), transparent 45%);
+    pointer-events: none;
+  }
+  /* Reflejo de luz en el "piso" bajo el producto. */
+  .escenario::after {
+    content: '';
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    bottom: 7%;
+    height: 7%;
+    background: radial-gradient(ellipse, rgba(200, 130, 255, 0.38), transparent 70%);
+    filter: blur(5px);
+    pointer-events: none;
+  }
+  .foto-recorte {
+    position: relative;
+    z-index: 1;
+    width: 76%;
+    height: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 18px 16px rgba(0, 0, 0, 0.6));
+    transition: transform 0.5s ease;
+  }
+  .vitrina:hover .foto-recorte {
+    transform: scale(1.04) translateY(-2px);
+  }
+}
+
+/* Las dos puertas de la portada (Regalar / Explorar). */
+@layer components {
+  .puerta {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 300px;
+    overflow: hidden;
+    text-align: left;
+    border: 1px solid rgba(192, 132, 252, 0.22);
+    border-radius: 22px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+  .puerta::before {
+    content: '';
+    position: absolute;
+    right: -8%;
+    bottom: -10%;
+    width: 75%;
+    height: 75%;
+    background: radial-gradient(circle, rgba(155, 89, 208, 0.4), transparent 65%);
+    pointer-events: none;
+  }
+  .puerta:hover {
+    transform: translateY(-3px);
+    border-color: rgba(192, 132, 252, 0.5);
+  }
+  @media (min-width: 820px) {
+    .puerta { min-height: 420px; }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PREFERENCIAS DE ACCESIBILIDAD (panel del botón flotante)
+   Los atributos los pone el script de index.html y usePreferenciasAccesibilidad.
+   ═══════════════════════════════════════════════════════════ */
+html[data-texto='1'] { font-size: 112.5%; }
+html[data-texto='2'] { font-size: 125%; }
+
+/* Alto contraste: textos secundarios y bordes mucho más claros. */
+html[data-contraste='alto'] .text-text-secondary,
+html[data-contraste='alto'] [class*='text-[#b9aed6]'],
+html[data-contraste='alto'] [class*='text-[#cfc3ea]'],
+html[data-contraste='alto'] [class*='text-[#d7caf2]'],
+html[data-contraste='alto'] [class*='text-[#d9ccf2]'] {
+  color: #f0eafa !important;
+}
+html[data-contraste='alto'] .border-border,
+html[data-contraste='alto'] .vitrina,
+html[data-contraste='alto'] .puerta {
+  border-color: rgba(228, 205, 255, 0.6) !important;
+}
+html[data-contraste='alto'] :focus-visible { outline-width: 3px; outline-color: #fff; }
+
+/* Menos movimiento: sin animaciones, transiciones ni desplazamiento suave. */
+html[data-movimiento='reducido'] *,
+html[data-movimiento='reducido'] *::before,
+html[data-movimiento='reducido'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+html[data-movimiento='reducido'] .vitrina:hover,
+html[data-movimiento='reducido'] .puerta:hover { transform: none; }
+
+html[data-enlaces='subrayados'] a:not(.puerta):not(.vitrina) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Lectura fácil: tipografía simple con más aire. */
+html[data-lectura='facil'] body,
+html[data-lectura='facil'] h1, html[data-lectura='facil'] h2, html[data-lectura='facil'] h3,
+html[data-lectura='facil'] .font-display, html[data-lectura='facil'] .font-body {
+  font-family: Verdana, 'Segoe UI', Tahoma, system-ui, sans-serif !important;
+  letter-spacing: 0.02em;
+  word-spacing: 0.08em;
+}
+html[data-lectura='facil'] p, html[data-lectura='facil'] li { line-height: 1.7; }

@@ -1,8 +1,11 @@
 import locales from '../data/imagenes-locales.json';
+import recortes from '../data/recortes.json';
 import { hashTexto } from './hash';
 
 // Hashes de las fotos que tools/localizar-imagenes.mjs ya descargó y optimizó.
 const LOCALES = new Set(locales);
+// Hashes con la foto recortada (sin fondo) que deja tools/recortar-fotos.mjs: se muestran sobre el escenario oscuro.
+const RECORTADAS = new Set(recortes);
 
 export const PLACEHOLDER_PERFUME = '/placeholder-perfume.svg';
 
@@ -27,4 +30,11 @@ export function imagenGrande(url) {
   if (!url) return undefined;
   const hash = hashTexto(url);
   return LOCALES.has(hash) ? `/img/p/${hash}-800.webp` : url;
+}
+
+/** Foto recortada (WebP con transparencia) para el escenario oscuro de las cards, o null si todavía no hay. */
+export function fuenteRecorte(url) {
+  if (!url) return null;
+  const hash = hashTexto(url);
+  return RECORTADAS.has(hash) ? `/img/p/${hash}-cut.webp` : null;
 }

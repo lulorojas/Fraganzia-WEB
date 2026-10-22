@@ -156,7 +156,7 @@ export default function Carrito() {
     <div className="mx-auto max-w-2xl px-4 py-10">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Tu carrito</h1>
+        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Tu carrito</h1>
       </div>
 
       {/* Productos */}

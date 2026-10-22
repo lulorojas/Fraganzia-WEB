@@ -1,14 +1,28 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ShoppingBag, Instagram, Menu, X, Heart, Sparkles } from 'lucide-react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { ShoppingBag, Search, Menu, X, Heart, Sparkles } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useFavoritos } from '../../context/FavoritosContext';
+import { useDolarBlue } from '../../hooks/useDolarBlue';
+import { usePromocionesActivas } from '../../hooks/usePromociones';
+import { calcularCarritoConPromos } from '../../utils/precios';
+import { formatARS } from '../../utils/format';
 import { LogoFraganzia } from '../ui/LogoFraganzia';
 import { abrirAsistente } from '../asistente/BotonAsistente';
 
-const LINKS = [
+// Categorías: llevan al catálogo ya filtrado (el catálogo lee ?genero=, ?ofertas=1, ?buscar=).
+const CATEGORIAS = [
+  { to: '/catalogo?genero=Masculino', label: 'Para él' },
+  { to: '/catalogo?genero=Femenino', label: 'Para ella' },
+  { to: '/catalogo?genero=Unisex', label: 'Unisex' },
+  { to: '/decants', label: 'Decants' },
+];
+
+const MENU_MOVIL = [
   { to: '/catalogo', label: 'Catálogo' },
   { to: '/decants', label: 'Decants' },
+  { to: '/favoritos', label: 'Favoritos' },
+  { to: '/mis-pedidos', label: 'Seguí tu pedido' },
   { to: '/sobre-nosotros', label: 'Nosotros' },
   { to: '/contacto', label: 'Contacto' },
 ];
@@ -32,131 +46,141 @@ function useCerrarAlSalir(ref, abierto, cerrar) {
   }, [ref, abierto, cerrar]);
 }
 
+/**
+ * Encabezado de dos niveles: franja fina de anuncio y, debajo, el logo, el buscador (el único
+ * elemento con color lleno), favoritos, el carrito con su importe, y una fila de categorías con
+ * el asistente "Encontrá tu perfume".
+ */
 export function Navbar() {
   const { state } = useCart();
   const { ids: favoritos } = useFavoritos();
+  const { dolarMedio } = useDolarBlue();
+  const { data: promociones } = usePromocionesActivas();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [consulta, setConsulta] = useState('');
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const cabeceraRef = useRef(null);
+
   const cantidadItems = state.items.reduce((acc, item) => acc + item.cantidad, 0);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const mobileRef = useRef(null);
+  const importe =
+    cantidadItems > 0 && dolarMedio
+      ? calcularCarritoConPromos(state.items, promociones, state.metodoPago === 'Efectivo', dolarMedio).totalARS
+      : null;
+  const hayOfertas = Boolean(promociones?.length);
 
-  useCerrarAlSalir(mobileRef, mobileOpen, () => setMobileOpen(false));
+  useCerrarAlSalir(cabeceraRef, menuAbierto, () => setMenuAbierto(false));
+  // Al navegar se cierra el menú.
+  useEffect(() => setMenuAbierto(false), [pathname]);
 
-  // Al navegar, cerrar el menú mobile.
-  useEffect(() => setMobileOpen(false), [pathname]);
+  function buscar(e) {
+    e.preventDefault();
+    const q = consulta.trim();
+    navigate(q ? `/catalogo?buscar=${encodeURIComponent(q)}` : '/catalogo');
+  }
 
-  const claseLink = ({ isActive }) =>
-    `transition-colors duration-200 hover:text-text ${isActive ? 'text-text' : ''}`;
+  const claseCat =
+    'shrink-0 rounded-full border border-transparent px-4 py-2 font-body text-[13.5px] text-[#cfc3ea] transition-colors hover:border-border hover:text-text';
 
   return (
-    <>
-      <nav
-        ref={mobileRef}
-        aria-label="Principal"
-        className="glass-frosted sticky top-0 z-40 rounded-none border-x-0 border-t-0 border-b border-violet/10"
-      >
-        <div className="relative flex items-center justify-between px-4 sm:px-6 py-3 max-w-7xl mx-auto">
-          {/* Logo izquierda */}
-          <Link to="/" aria-label="Fraganzia, ir al inicio" className="transition-opacity duration-300 hover:opacity-80">
-            <LogoFraganzia size={1.2} />
+    <header ref={cabeceraRef} className="sticky top-0 z-40">
+      <div className="bg-gradient-to-r from-[#150d2e] via-[#2a1658] to-[#150d2e] px-3 py-1.5 text-center font-body text-[10.5px] font-medium uppercase tracking-[0.16em] text-[#dcc6ff]">
+        Envíos a todo el AMBA · Transferencia o efectivo
+      </div>
+
+      <div className="border-b border-border bg-[rgba(12,9,26,0.97)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
+        <div className="mx-auto grid max-w-7xl grid-cols-[44px_1fr_auto] items-center gap-x-2 gap-y-2.5 px-3.5 pb-2 pt-2.5 [grid-template-areas:'menu_logo_acc'_'busq_busq_busq'_'cats_cats_cats'] lg:grid-cols-[auto_minmax(340px,1fr)_auto] lg:gap-x-7 lg:gap-y-3 lg:px-6 lg:pt-3.5 lg:[grid-template-areas:'logo_busq_acc'_'cats_cats_cats']">
+          <button
+            type="button"
+            onClick={() => setMenuAbierto((a) => !a)}
+            aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={menuAbierto}
+            aria-controls="menu-movil"
+            className="flex h-11 w-11 items-center justify-center rounded-xl text-[#d9ccf2] [grid-area:menu] lg:hidden"
+          >
+            {menuAbierto ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
+          </button>
+
+          <Link to="/" aria-label="Fraganzia, ir al inicio" className="justify-self-start [grid-area:logo] transition-opacity hover:opacity-85">
+            <LogoFraganzia className="[--logo-scale:0.9] lg:[--logo-scale:1.05]" />
           </Link>
 
-          {/* Links centro (desktop) */}
-          <div className="hidden lg:flex items-center gap-8 font-body text-text-secondary text-sm absolute left-1/2 -translate-x-1/2">
-            {LINKS.map(({ to, label }) => (
-              <NavLink key={to} to={to} className={claseLink}>
-                {label}
-              </NavLink>
-            ))}
-          </div>
-
-          {/* Actions derecha */}
-          <div className="flex items-center justify-end gap-1 sm:gap-2 font-body text-text-secondary">
-            <button
-              type="button"
-              onClick={abrirAsistente}
-              aria-label="Encontrá tu perfume"
-              className="mr-1 flex h-10 items-center gap-1.5 rounded-full bg-gradient-to-br from-violet to-violet-light px-3 text-sm font-semibold text-white shadow-md shadow-violet/30 transition-transform duration-200 hover:scale-105 active:scale-95 sm:px-4"
-            >
-              <Sparkles size={16} aria-hidden="true" />
-              <span className="hidden sm:inline">Encontrá tu perfume</span>
+          <form role="search" onSubmit={buscar} className="flex items-stretch overflow-hidden rounded-full border-[1.5px] border-lila bg-white/[0.05] shadow-[0_0_0_4px_rgba(155,89,208,0.12)] [grid-area:busq]">
+            <label htmlFor="buscar-cabecera" className="sr-only">Buscar perfumes por nombre, marca o aroma</label>
+            <input
+              id="buscar-cabecera"
+              type="search"
+              value={consulta}
+              onChange={(e) => setConsulta(e.target.value)}
+              placeholder="Buscá por nombre, marca o aroma"
+              autoComplete="off"
+              maxLength={80}
+              className="min-w-0 flex-1 bg-transparent px-4 py-3 font-body text-[15px] text-text placeholder:text-[#a99fc7] focus:outline-none"
+            />
+            <button type="submit" className="gradient-violet flex items-center gap-2 px-5 font-body text-sm font-bold text-white">
+              <Search size={20} aria-hidden="true" />
+              <span className="hidden sm:inline">Buscar</span>
+              <span className="sr-only sm:hidden">Buscar</span>
             </button>
+          </form>
 
-            <a
-              href="https://www.instagram.com/fraganzia.ar/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-lila"
-              aria-label="Instagram de Fraganzia"
-            >
-              <Instagram size={19} aria-hidden="true" />
-            </a>
-
-            {/* Favoritos (en mobile está en el menú, para no apretar la barra) */}
+          <div className="flex items-center gap-0.5 [grid-area:acc]">
             <Link
               to="/favoritos"
               aria-label={favoritos.length ? `Favoritos, ${favoritos.length} guardados` : 'Favoritos'}
-              className="relative hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-text"
+              className="relative flex h-11 w-11 items-center justify-center rounded-xl text-[#d9ccf2] transition-colors hover:text-text"
             >
-              <Heart size={20} aria-hidden="true" />
+              <Heart size={22} aria-hidden="true" />
               {favoritos.length > 0 && (
-                <span
-                  aria-hidden="true"
-                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-[#E11D74] text-[11px] font-bold text-white ring-2 ring-bg"
-                >
+                <span aria-hidden="true" className="absolute left-5 top-0.5 flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#E11D74] px-1 text-[10px] font-bold text-white">
                   {favoritos.length}
                 </span>
               )}
             </Link>
-
-            {/* Carrito */}
             <Link
               to="/carrito"
-              aria-label={cantidadItems > 0 ? `Carrito, ${cantidadItems} ${cantidadItems === 1 ? "producto" : "productos"}` : "Carrito"}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-text"
+              aria-label={
+                cantidadItems > 0
+                  ? `Carrito, ${cantidadItems} ${cantidadItems === 1 ? 'producto' : 'productos'}${importe ? `, ${formatARS(importe)}` : ''}`
+                  : 'Carrito'
+              }
+              className="relative flex h-11 items-center gap-2 rounded-xl px-2.5 text-[#d9ccf2] transition-colors hover:text-text"
             >
-              <ShoppingBag size={21} aria-hidden="true" />
+              <ShoppingBag size={22} aria-hidden="true" />
+              {importe != null && <b className="hidden font-body text-[13px] font-semibold text-text tabular-nums sm:inline">{formatARS(importe)}</b>}
               {cantidadItems > 0 && (
                 <span
-                  // La key cambia con la cantidad: React recrea el badge y la
-                  // animación "bump" vuelve a correr en cada agregado.
+                  // La key cambia con la cantidad: React recrea el badge y la animación "bump" corre en cada agregado.
                   key={cantidadItems}
                   aria-hidden="true"
-                  className="absolute top-0 right-0 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-violet text-[11px] font-bold text-white shadow-lg ring-2 ring-bg animate-bump"
+                  className="absolute left-5 top-0.5 flex h-[17px] min-w-[17px] animate-bump items-center justify-center rounded-full bg-[#E11D74] px-1 text-[10px] font-bold text-white"
                 >
                   {cantidadItems}
                 </span>
               )}
             </Link>
+          </div>
 
-            {/* Menú mobile */}
+          <nav aria-label="Categorías" className="hide-scrollbar -mx-3.5 flex items-center gap-2 overflow-x-auto px-3.5 py-0.5 [grid-area:cats] lg:mx-0 lg:px-0">
             <button
               type="button"
-              onClick={() => setMobileOpen((o) => !o)}
-              aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
-              aria-expanded={mobileOpen}
-              aria-controls="menu-mobile"
-              className="flex lg:hidden h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:text-text"
+              onClick={abrirAsistente}
+              className="order-first flex shrink-0 items-center gap-2 rounded-full border border-lila/45 px-4 py-2 font-body text-[13.5px] font-semibold text-lila transition-colors hover:bg-violet/20 hover:text-text lg:order-last lg:ml-auto"
             >
-              {mobileOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+              <Sparkles size={16} aria-hidden="true" />
+              Encontrá tu perfume
             </button>
-          </div>
+            {CATEGORIAS.map(({ to, label }) => (
+              <Link key={to} to={to} className={claseCat}>{label}</Link>
+            ))}
+            {hayOfertas && <Link to="/catalogo?ofertas=1" className={claseCat}>Ofertas</Link>}
+          </nav>
         </div>
 
-        {mobileOpen && (
-          <div id="menu-mobile" className="lg:hidden border-t border-violet/10 px-4 pb-4 pt-2">
+        {menuAbierto && (
+          <nav id="menu-movil" aria-label="Menú" className="border-t border-border px-3.5 pb-4 pt-2 lg:hidden">
             <ul className="flex flex-col font-body">
-              <li>
-                <button
-                  type="button"
-                  onClick={() => { setMobileOpen(false); abrirAsistente(); }}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-3 text-base font-semibold text-lila transition-colors hover:bg-violet/10 hover:text-text"
-                >
-                  <Sparkles size={18} aria-hidden="true" />
-                  Encontrá tu perfume
-                </button>
-              </li>
-              {LINKS.map(({ to, label }) => (
+              {MENU_MOVIL.map(({ to, label }) => (
                 <li key={to}>
                   <NavLink
                     to={to}
@@ -168,32 +192,10 @@ export function Navbar() {
                   </NavLink>
                 </li>
               ))}
-              <li>
-                <NavLink
-                  to="/favoritos"
-                  className={({ isActive }) =>
-                    `flex items-center gap-2 rounded-lg px-3 py-3 text-base transition-colors hover:bg-violet/10 hover:text-text ${isActive ? 'text-text' : 'text-text-secondary'}`
-                  }
-                >
-                  <Heart size={18} aria-hidden="true" />
-                  Favoritos{favoritos.length > 0 && ` (${favoritos.length})`}
-                </NavLink>
-              </li>
-              <li>
-                <a
-                  href="https://www.instagram.com/fraganzia.ar/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-lg px-3 py-3 text-base text-text-secondary transition-colors hover:bg-violet/10 hover:text-lila"
-                >
-                  <Instagram size={18} aria-hidden="true" />
-                  @fraganzia.ar
-                </a>
-              </li>
             </ul>
-          </div>
+          </nav>
         )}
-      </nav>
-    </>
+      </div>
+    </header>
   );
 }

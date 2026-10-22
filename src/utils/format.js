@@ -85,3 +85,17 @@ export function diaMes(valor) {
   if (!d) return '—';
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
+
+const PALABRA = (p) => (/\d/.test(p) ? p.toUpperCase() : p.charAt(0).toUpperCase() + p.slice(1).toLowerCase());
+
+/**
+ * Título corto para las cards: sin la marca ni el volumen y con mayúscula inicial
+ * ("LATTAFA YARA MOI 100ML" de Lattafa → "Yara Moi"). El nombre completo se sigue usando
+ * en los textos accesibles.
+ */
+export function tituloCard({ marca = '', nombre = '' }) {
+  let t = nombre.trim();
+  if (marca && t.toLowerCase().startsWith(marca.toLowerCase())) t = t.slice(marca.length).trim();
+  t = t.replace(/\s*\d+\s*ml\s*$/i, '').trim();
+  return (t || nombre).split(/\s+/).map(PALABRA).join(' ');
+}

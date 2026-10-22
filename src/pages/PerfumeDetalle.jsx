@@ -16,7 +16,7 @@ import { PrecioNoDisponible } from '../components/perfumes/PrecioNoDisponible';
 import { Button } from '../components/ui/Button';
 import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
 import { formatARS, nombreCompleto } from '../utils/format';
-import { imagenGrande } from '../utils/image';
+import { imagenGrande, fuenteRecorte } from '../utils/image';
 import { construirLinkWhatsApp } from '../utils/whatsapp';
 import { WHATSAPP_NUMERO } from '../constants';
 import { ImagenProducto } from '../components/perfumes/ImagenProducto';
@@ -80,6 +80,8 @@ export default function PerfumeDetalle() {
   const precioEfectivoFinal = precios && (pct ? precioConPromo(precios.precioEfectivo, pct) : precios.precioEfectivo);
 
   const imagen = perfume?.imagenes?.[0];
+  // Foto recortada sobre el escenario oscuro (si todavía no hay, la original sobre fondo claro).
+  const recorte = fuenteRecorte(imagen);
   const imagenOg = imagenGrande(imagen);
   const imagenAbsoluta = imagenOg?.startsWith('/') ? `${SITE_URL}${imagenOg}` : imagenOg;
 
@@ -142,8 +144,18 @@ export default function PerfumeDetalle() {
       <div className="grid gap-8 md:grid-cols-2 md:gap-12">
         {/* ── Imagen ── */}
         <div className="md:sticky md:top-24 md:self-start">
-          <div className="relative overflow-hidden rounded-3xl plinto">
-            {imagen ? (
+          <div className={`relative overflow-hidden rounded-3xl ${recorte ? 'escenario !aspect-[5/4] sm:!aspect-square' : 'plinto'}`}>
+            {recorte ? (
+              <img
+                src={recorte}
+                alt={nombreCompleto(perfume)}
+                width="600"
+                height="600"
+                fetchpriority="high"
+                decoding="async"
+                className="foto-recorte !h-[88%] !w-[82%]"
+              />
+            ) : imagen ? (
               <ImagenProducto
                 url={imagen}
                 alt={nombreCompleto(perfume)}
@@ -159,7 +171,7 @@ export default function PerfumeDetalle() {
               </div>
             )}
             {pct > 0 && (
-              <span className="absolute right-4 top-4 rounded-full bg-violet px-3 py-1.5 text-sm font-bold text-white shadow-xl">
+              <span className="absolute right-4 top-4 z-10 rounded-full bg-violet px-3 py-1.5 text-sm font-bold text-white shadow-xl">
                 -{pct}%
               </span>
             )}

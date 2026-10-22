@@ -44,7 +44,7 @@ export function useDocumentMeta({ title, description, path, image, jsonLd } = {}
     setMeta('meta[property="og:title"]', 'property', 'og:title', titulo);
     setMeta('meta[property="og:description"]', 'property', 'og:description', desc);
     setMeta('meta[property="og:url"]', 'property', 'og:url', url);
-    setMeta('meta[property="og:image"]', 'property', 'og:image', image || `${SITE_URL}/icon-512.png`);
+    setMeta('meta[property="og:image"]', 'property', 'og:image', image || `${SITE_URL}/og-fraganzia.png`);
     setCanonical(url);
 
     let script;

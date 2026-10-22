@@ -126,7 +126,7 @@ export default function Pedido() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <div className="mb-6">
-        <h1 className="font-luxury text-3xl tracking-wide text-text sm:text-4xl">Pedido {numero}</h1>
+        <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Pedido {numero}</h1>
         <p className="mt-1 font-body text-sm text-text-secondary">
           {pedido.clienteNombre}
           {pedido.creadoEn && ` · ${formatFechaHora(pedido.creadoEn)}`}

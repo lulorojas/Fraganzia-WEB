@@ -1,4 +1,4 @@
-import { MessageCircle, Mail, Clock, MapPin } from 'lucide-react';
+import { MessageCircle, Mail, Clock, MapPin, Accessibility } from 'lucide-react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Button } from '../components/ui/Button';
 import { construirLinkWhatsApp } from '../utils/whatsapp';
@@ -18,7 +18,7 @@ export default function Contacto() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       <div className="mb-10 text-center">
-        <h1 className="font-display text-4xl text-text mb-4">Contacto</h1>
+        <h1 className="font-display text-4xl font-light tracking-tight text-text mb-4">Contacto</h1>
         <p className="font-body text-text-secondary text-lg">
           Estamos para ayudarte. Escribinos y te respondemos a la brevedad.
         </p>
@@ -62,8 +62,21 @@ export default function Contacto() {
           <div>
             <h3 className="font-display text-text mb-1">Envíos</h3>
             <p className="font-body text-text-secondary text-sm">
-              A todo el país vía correo o encomienda.<br />
-              Coordinamos el método con vos.
+              Solo al AMBA.<br />
+              Coordinamos la entrega con vos por WhatsApp.
+            </p>
+          </div>
+        </GlassCard>
+
+        <GlassCard className="p-5 flex items-start gap-4 sm:col-span-2">
+          <Accessibility className="h-6 w-6 text-lila shrink-0 mt-0.5" aria-hidden="true" />
+          <div>
+            <h3 className="font-display text-text mb-1">Accesibilidad</h3>
+            <p className="font-body text-text-secondary text-sm">
+              Trabajamos para que el sitio cumpla las pautas WCAG 2.2 de nivel AA: se puede usar con teclado y
+              lector de pantalla, y el botón de accesibilidad (abajo a la izquierda) permite agrandar el texto,
+              subir el contraste, reducir el movimiento, subrayar los enlaces y usar una letra de lectura fácil.
+              Si encontrás algo que no puedas usar, escribinos por WhatsApp y lo corregimos.
             </p>
           </div>
         </GlassCard>
@@ -73,8 +86,8 @@ export default function Contacto() {
           <div>
             <h3 className="font-display text-text mb-1">Sobre tus pedidos</h3>
             <p className="font-body text-text-secondary text-sm">
-              Al finalizar tu compra desde el carrito, tu pedido se envía automáticamente por WhatsApp
-              con el detalle completo. Coordinamos pago y envío en ese mismo chat.
+              Al confirmar tu pedido te llevamos a un último paso: mandarlo por WhatsApp con el detalle
+              completo. Ahí coordinamos el pago y la entrega, y podés seguirlo online con un link.
             </p>
           </div>
         </GlassCard>

@@ -1,143 +1,122 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Sparkles } from 'lucide-react';
+import { ArrowRight, Compass, Gift } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
 import { usePromocionesActivas } from '../hooks/usePromociones';
-import { HorizontalSlider } from '../components/perfumes/HorizontalSlider';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
-import { LogoFraganzia } from '../components/ui/LogoFraganzia';
 import { abrirAsistente } from '../components/asistente/BotonAsistente';
-import { PreguntasFrecuentes } from '../components/PreguntasFrecuentes';
+import { PerfumeCard } from '../components/perfumes/PerfumeCard';
+import { PerfumeGridSkeleton } from '../components/perfumes/PerfumeCardSkeleton';
+import { fuenteRecorte } from '../utils/image';
+
+const AROMAS = ['Oriental', 'Floral', 'Amaderado', 'Gourmand'];
+
+const PASOS = [
+  { titulo: 'Elegí tus perfumes', texto: 'Sumalos al carrito: cada uno muestra su precio por transferencia y en efectivo.' },
+  { titulo: 'Confirmá el pedido', texto: 'Solo con tu nombre, sin crear una cuenta.' },
+  { titulo: 'Lo coordinamos por WhatsApp', texto: 'Acordamos pago y entrega, y seguís tu pedido con un link.' },
+];
+
+const GRILLA = 'grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4';
+
+function TituloSeccion({ etiqueta, titulo, id }) {
+  return (
+    <div className="mb-6 flex items-end justify-between gap-4">
+      <div>
+        <p className="mb-2.5 font-body text-[11px] font-semibold uppercase tracking-luxury text-lila">{etiqueta}</p>
+        <h2 id={id} className="font-display text-[1.7rem] font-extralight leading-tight tracking-tight text-text sm:text-4xl">{titulo}</h2>
+      </div>
+      <Link to="/catalogo" className="flex shrink-0 items-center gap-1.5 pb-1 font-body text-sm font-semibold text-lila transition-base hover:text-text">
+        Ver todo <ArrowRight size={16} aria-hidden="true" />
+      </Link>
+    </div>
+  );
+}
+
+/** Foto recortada que flota en una puerta (solo se muestra si el perfume tiene recorte). */
+function Flotante({ perfume, className }) {
+  const recorte = perfume && fuenteRecorte(perfume.imagenes?.[0]);
+  if (!recorte) return null;
+  return <img src={recorte} alt="" aria-hidden="true" loading="eager" decoding="async" className={`pointer-events-none absolute object-contain drop-shadow-[0_16px_16px_rgba(0,0,0,0.55)] ${className}`} />;
+}
 
 export default function Home() {
   const { data: destacados, isLoading } = usePerfumes({ destacado: true });
   const { data: catalogo } = usePerfumes();
-  // El catálogo viene ordenado de más nuevo a más viejo.
-  const nuevos = catalogo?.slice(0, 8);
   const { dolarMedio } = useDolarBlue();
   const { agregar } = useCart();
   const { data: promociones } = usePromocionesActivas();
   useDocumentMeta({ path: '/' });
 
+  // Las fotos que flotan en las puertas: perfumes distintos, solo los que tienen recorte.
+  const conRecorte = (lista) => (lista ?? []).filter((p) => fuenteRecorte(p.imagenes?.[0]));
+  const flotantes = conRecorte(destacados);
+  const masElegidos = destacados?.slice(0, 8);
+  // El catálogo viene de más nuevo a más viejo: las novedades son los primeros que no están ya arriba.
+  const idsArriba = new Set(masElegidos?.map((p) => p.id));
+  const novedades = catalogo?.filter((p) => !idsArriba.has(p.id)).slice(0, 8);
+
+  const tarjeta = (p, i) => (
+    <li key={p.id} className="flex">
+      <PerfumeCard perfume={p} dolarMedio={dolarMedio} onAgregar={agregar} promociones={promociones} prioridad={i < 2} />
+    </li>
+  );
+
   return (
-    <div className="relative min-h-screen">
-      {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="grano relative overflow-hidden px-4 pb-12 pt-8 sm:px-6 sm:py-24 lg:py-32">
-        {/* Resplandores de ambiente: gradientes radiales (ya difusos), sin
-            filter: blur ni animación, que costaban mucho repintado. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 50% 0%, rgba(123,47,190,0.35) 0%, rgba(123,47,190,0) 40%), radial-gradient(circle at 85% 25%, rgba(192,132,252,0.18) 0%, rgba(192,132,252,0) 25%), radial-gradient(circle at 12% 85%, rgba(123,47,190,0.15) 0%, rgba(123,47,190,0) 22%)',
-          }}
-        />
-
-        {/* Glass card container con más profundidad */}
-        <div className="relative mx-auto max-w-4xl">
-          <div className="relative overflow-hidden p-2 sm:p-6 md:p-10">
-            {/* En celular el logo ya está en el encabezado: repetirlo gastaba media pantalla.
-                Sin animación de entrada, para que se vea apenas se pinta. */}
-            <div className="mb-6 hidden justify-center sm:mb-8 sm:flex">
-              <LogoFraganzia
-                priority
-                className="drop-shadow-2xl [--logo-scale:1.6] sm:[--logo-scale:2.6] md:[--logo-scale:3.2]"
-                sizes="(min-width: 768px) 115px, (min-width: 640px) 94px, 58px"
-              />
-            </div>
-
-            {/* Tagline con Cinzel */}
-            <h1 className="font-luxury text-3xl sm:text-5xl md:text-6xl tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-text via-text to-lila mb-5 text-center leading-[1.1] text-balance">
-              Perfumes Árabes de Alta Gama
-            </h1>
-
-            {/* Descripción */}
-            <p className="text-text-secondary text-sm sm:text-base md:text-lg max-w-xl mx-auto mb-8 sm:mb-10 text-center leading-relaxed px-2 text-balance">
-              Descubrí la elegancia de las fragancias orientales: exclusividad y calidad premium en cada esencia.
-            </p>
-
-            {/* CTAs mejorados */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-12 animate-fade-up w-full sm:w-auto">
-              <button
-                type="button"
-                onClick={abrirAsistente}
-                className="relative group/btn px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-body font-bold text-sm sm:text-base text-text tracking-wide overflow-hidden shadow-2xl hover:shadow-violet/50 transition-all duration-300 hover:scale-105 text-center"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-violet via-violet-light to-violet" />
-                <div className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity bg-gradient-to-r from-white/20 to-transparent" />
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <Sparkles size={16} className="sm:w-[18px] sm:h-[18px]" aria-hidden="true" />
-                  Encontrá tu perfume
+    <div className="relative">
+      {/* ── Dos puertas: la portada es una decisión ─────────── */}
+      <section aria-labelledby="titular" className="px-4 pb-6 pt-9 sm:px-6 sm:pb-8 sm:pt-14">
+        <div className="mx-auto max-w-7xl">
+          <p className="mb-3 font-body text-[11px] font-semibold uppercase tracking-luxury text-lila">Perfumería árabe original</p>
+          <h1 id="titular" className="mb-6 font-display text-[2.2rem] font-extralight leading-[1.05] tracking-[-0.035em] text-text text-balance sm:mb-8 sm:text-6xl">
+            Encontrá el perfume que te define
+          </h1>
+          <div className="grid gap-3.5 md:grid-cols-2 md:gap-5">
+            <button type="button" onClick={abrirAsistente} className="puerta group">
+              <div className="relative z-10 flex h-full max-w-[60%] flex-col gap-2.5 p-6 sm:p-8 md:max-w-[62%]">
+                <Gift size={30} strokeWidth={1.5} className="text-lila" aria-hidden="true" />
+                <h2 className="font-display text-[1.9rem] font-extralight leading-none tracking-tight text-text sm:text-5xl">Regalar</h2>
+                <p className="max-w-[30ch] font-body text-[14.5px] leading-snug text-[#b9aed6]">Respondé unas preguntas y te sugerimos el perfume ideal para esa persona.</p>
+                <span className="mt-auto inline-flex items-center gap-2 pt-3 font-body text-[14.5px] font-semibold text-text">
+                  Encontrá tu perfume <ArrowRight size={18} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
                 </span>
-              </button>
-              <Link
-                to="/catalogo"
-                className="flex items-center justify-center px-6 sm:px-8 py-3.5 sm:py-4 rounded-full glass-hover border border-lila/30 font-body text-sm sm:text-base text-text transition-all duration-300 hover:border-lila/60"
-              >
-                Ver catálogo
-              </Link>
-            </div>
-
-            {/* Ornamental divider - más elaborado */}
-            <div className="flex items-center justify-center gap-4 sm:gap-6" aria-hidden="true">
-              <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-violet/60 to-transparent" />
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="text-violet/70 text-xl sm:text-2xl">✦</span>
-                <span className="text-lila/50 text-base sm:text-lg">◆</span>
-                <span className="text-violet/70 text-xl sm:text-2xl">✦</span>
               </div>
-              <div className="h-px w-16 sm:w-24 bg-gradient-to-r from-transparent via-violet/60 to-transparent" />
-            </div>
+              <Flotante perfume={flotantes[1]} className="bottom-[6%] right-[3%] max-h-[62%] w-[36%]" />
+              <Flotante perfume={flotantes[2]} className="bottom-[2%] right-[30%] hidden max-h-[46%] w-[30%] sm:block" />
+            </button>
 
-            {/* Detalles adicionales */}
-            <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-text-secondary">
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/70 shrink-0"></span>
-                <span className="whitespace-nowrap">Envíos AMBA</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet/70 shrink-0"></span>
-                <span className="whitespace-nowrap">100% Originales</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-lila/70 shrink-0"></span>
-                <span className="whitespace-nowrap">Consultas WhatsApp</span>
-              </span>
-            </div>
-
-            <p className="mt-6 text-center text-xs text-text-secondary">
-              <a
-                href="https://www.instagram.com/fraganzia.ar/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 transition-colors hover:text-lila"
-              >
-                <Instagram size={14} aria-hidden="true" />
-                Seguinos en @fraganzia.ar
-              </a>
-            </p>
+            <Link to="/catalogo" className="puerta group">
+              <div className="relative z-10 flex h-full max-w-[60%] flex-col gap-2.5 p-6 sm:p-8 md:max-w-[62%]">
+                <Compass size={30} strokeWidth={1.5} className="text-lila" aria-hidden="true" />
+                <h2 className="font-display text-[1.9rem] font-extralight leading-none tracking-tight text-text sm:text-5xl">Explorar</h2>
+                <p className="max-w-[30ch] font-body text-[14.5px] leading-snug text-[#b9aed6]">Recorré el catálogo por aroma, notas o marca, y compará.</p>
+                <ul className="flex flex-wrap gap-1.5" aria-label="Aromas">
+                  {AROMAS.map((a) => (
+                    <li key={a} className="rounded-full border border-border px-3 py-1 font-body text-xs text-[#d7caf2]">{a}</li>
+                  ))}
+                </ul>
+                <span className="mt-auto inline-flex items-center gap-2 pt-3 font-body text-[14.5px] font-semibold text-text">
+                  Ver el catálogo <ArrowRight size={18} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
+                </span>
+              </div>
+              <Flotante perfume={flotantes[3]} className="bottom-[6%] right-[3%] max-h-[58%] w-[34%]" />
+              <Flotante perfume={flotantes[4]} className="bottom-[3%] right-[30%] hidden max-h-[44%] w-[32%] sm:block" />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ── Promociones: antes de los destacados, es lo que más empuja la compra ── */}
+      {/* ── Promociones vigentes ─────────────────────────────── */}
       {promociones?.length > 0 && (
-        <section aria-label="Promociones" className="mx-auto max-w-7xl px-4 pb-8 pt-4 sm:px-6">
+        <section aria-label="Promociones" className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
           <div className={`grid gap-5 ${promociones.length > 1 ? 'md:grid-cols-2' : 'mx-auto max-w-5xl'}`}>
             {promociones.map((promo, i) => (
-              <Link
-                key={promo.id}
-                to="/catalogo"
-                className="card-surface card-hover group block overflow-hidden rounded-2xl"
-              >
+              <Link key={promo.id} to="/catalogo?ofertas=1" className="vitrina group block overflow-hidden rounded-[22px]">
                 {promo.imagen && (
                   <img
                     src={promo.imagen}
                     alt={promo.titulo}
-                    // La primera promoción suele ser lo primero grande que se ve en el
-                    // celular: se pide ya, con prioridad, en vez de esperar al scroll.
                     loading={i === 0 ? 'eager' : 'lazy'}
                     fetchpriority={i === 0 ? 'high' : undefined}
                     decoding="async"
@@ -149,18 +128,14 @@ export default function Home() {
                 <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
                   <div className="min-w-0">
                     <h2 className="font-display text-lg font-semibold text-text">{promo.titulo}</h2>
-                    {promo.descripcion && (
-                      <p className="mt-1 text-sm leading-relaxed text-text-secondary">{promo.descripcion}</p>
-                    )}
+                    {promo.descripcion && <p className="mt-1 text-sm leading-relaxed text-text-secondary">{promo.descripcion}</p>}
                     {promo.perfumeIds?.length > 0 && (
                       <p className="mt-1 text-xs text-text-secondary">
                         Válida en {promo.perfumeIds.length} {promo.perfumeIds.length === 1 ? 'perfume seleccionado' : 'perfumes seleccionados'}
                       </p>
                     )}
                   </div>
-                  <span className="font-body text-sm font-semibold text-lila transition-colors group-hover:text-text">
-                    Ver perfumes
-                  </span>
+                  <span className="font-body text-sm font-semibold text-lila transition-colors group-hover:text-text">Ver perfumes</span>
                 </div>
               </Link>
             ))}
@@ -168,39 +143,67 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── Destacados Slider ────────────────────────────────── */}
-      <section className="diferir-render px-6 py-16 max-w-7xl mx-auto">
-        <div className="mb-8 flex items-baseline justify-between">
-          <h2 className="font-luxury text-2xl tracking-wide text-text sm:text-3xl">Destacados</h2>
-          <Link to="/catalogo" className="font-body text-sm text-lila transition-base hover:text-text">
-            Ver todo el catálogo
-          </Link>
-        </div>
-        {isLoading ? (
-          // Mismo alto que el slider cargado, para que la página no salte.
-          <div className="flex gap-4 overflow-hidden pb-4" role="status" aria-label="Cargando destacados">
-            {Array.from({ length: 4 }, (_, i) => (
-              <div key={i} className="card-surface h-[560px] w-[280px] flex-none animate-pulse rounded-2xl" />
-            ))}
-          </div>
-        ) : (
-          <HorizontalSlider perfumes={destacados} dolarMedio={dolarMedio} onAgregar={agregar} promociones={promociones} />
-        )}
+      {/* ── Los más elegidos ─────────────────────────────────── */}
+      <section aria-labelledby="h-elegidos" className="diferir-render mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+        <TituloSeccion etiqueta="Selección" titulo="Los más elegidos" id="h-elegidos" />
+        {isLoading ? <PerfumeGridSkeleton cantidad={8} /> : <ul className={GRILLA} aria-label="Los más elegidos">{masElegidos?.map(tarjeta)}</ul>}
       </section>
 
-      {nuevos?.length > 0 && (
-        <section className="diferir-render px-6 pb-16 max-w-7xl mx-auto">
-          <div className="mb-8 flex items-baseline justify-between">
-            <h2 className="font-luxury text-2xl tracking-wide text-text sm:text-3xl">Nuevos ingresos</h2>
-            <Link to="/catalogo" className="font-body text-sm text-lila transition-base hover:text-text">
-              Ver todo el catálogo
-            </Link>
+      {/* ── Decants ──────────────────────────────────────────── */}
+      <section aria-labelledby="h-decants" className="border-y border-border bg-gradient-to-br from-[#1a1038] to-[#0e0a22]">
+        <div className="mx-auto grid max-w-7xl items-center gap-5 px-4 py-10 sm:px-6 md:grid-cols-[1.3fr_auto_auto] md:gap-9">
+          <div>
+            <p className="mb-2.5 font-body text-[11px] font-semibold uppercase tracking-luxury text-lila">Probalo antes</p>
+            <h2 id="h-decants" className="font-display text-[1.7rem] font-extralight tracking-tight text-text sm:text-4xl">Decants originales</h2>
+            <p className="mt-2 max-w-[42ch] font-body text-[#b9aed6]">Fracciones de perfumes originales para conocerlos sin comprar el frasco entero.</p>
           </div>
-          <HorizontalSlider perfumes={nuevos} dolarMedio={dolarMedio} onAgregar={agregar} promociones={promociones} etiqueta="Nuevos ingresos" />
+          <ul className="flex gap-2.5" aria-label="Tamaños de decant">
+            {[3, 5, 10].map((ml) => (
+              <li key={ml} className="flex items-baseline gap-1 rounded-2xl border border-border px-[18px] py-2.5 font-body text-[13px] text-text-secondary">
+                <b className="font-display text-[1.75rem] font-light text-text">{ml}</b>ml
+              </li>
+            ))}
+          </ul>
+          <Link to="/decants" className="inline-flex w-max items-center gap-2 rounded-full border border-lila/55 px-6 py-3 font-body text-[14.5px] font-semibold text-text transition-colors hover:bg-violet/25">
+            Ver decants <ArrowRight size={18} aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Novedades ────────────────────────────────────────── */}
+      {novedades?.length > 0 && (
+        <section aria-labelledby="h-novedades" className="diferir-render mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+          <TituloSeccion etiqueta="Recién llegados" titulo="Novedades" id="h-novedades" />
+          <ul className={GRILLA} aria-label="Novedades">{novedades.map(tarjeta)}</ul>
         </section>
       )}
 
-      <PreguntasFrecuentes />
+      {/* ── La marca y cómo comprar ──────────────────────────── */}
+      <section aria-labelledby="h-marca" className="diferir-render mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6">
+        <div className="grid items-center gap-8 md:grid-cols-[1.1fr_1fr] md:gap-14">
+          <div>
+            <p className="mb-2.5 font-body text-[11px] font-semibold uppercase tracking-luxury text-lila">Fraganzia</p>
+            <h2 id="h-marca" className="font-display text-[1.7rem] font-extralight leading-tight tracking-tight text-text sm:text-4xl">Perfumería árabe, elegida con criterio</h2>
+            <p className="my-4 max-w-[50ch] font-body text-[#b9aed6]">
+              Nació de la búsqueda de fragancias que cuenten historias y sean accesibles sin resignar calidad. Hoy es un catálogo cuidadosamente curado.
+            </p>
+            <Link to="/sobre-nosotros" className="inline-flex items-center gap-1.5 font-body text-sm font-semibold text-lila transition-base hover:text-text">
+              Conocé Fraganzia <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
+          <ol className="grid gap-3.5">
+            {PASOS.map(({ titulo, texto }, i) => (
+              <li key={titulo} className="flex items-start gap-3.5 font-body text-sm text-[#b9aed6]">
+                <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-lila/50 font-display text-[17px] font-light text-lila">{i + 1}</span>
+                <span>
+                  <strong className="block text-[15px] font-semibold text-text">{titulo}</strong>
+                  {texto}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
     </div>
   );
 }

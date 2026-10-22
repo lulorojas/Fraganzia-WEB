@@ -1,6 +1,6 @@
 // Genera las piezas de Instagram de Fraganzia (posts 1080x1350 e historias
 // 1080x1920) en public/flyers/instagram/*.png, con la identidad de la web
-// (fondo oscuro, violeta, Cinzel + Manrope) y fotos reales del catálogo.
+// (fondo oscuro, violeta, Outfit + Manrope, sello de la marca) y fotos reales del catálogo.
 //
 // Uso: node tools/generar-flyers-instagram.mjs
 // Necesita Chrome (CHROME_PATH o la ruta de Windows) y leer Firestore (REST).
@@ -11,6 +11,7 @@ import { pathToFileURL } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { listarColeccion } from './lib/firestore-rest.mjs';
 import { hashTexto } from '../src/utils/hash.js';
+import { COLA_PATH, F_PATH, GOTA, LACRE_FINO } from '../src/components/ui/selloPath.js';
 
 const SALIDA = 'public/flyers/instagram';
 const CHROME = process.env.CHROME_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -25,7 +26,8 @@ const DECANTS = [
 ];
 
 const fuente = (nombre) => pathToFileURL(join('src/assets/fonts', nombre)).href;
-const logo = pathToFileURL(join('public', 'logo-256.webp')).href;
+// Sello de la marca (el mismo de src/components/ui/LogoFraganzia.jsx), con la F calada.
+const SELLO = `<svg viewBox="0 0 80 80" width="76" height="76"><defs><linearGradient id="oro" gradientUnits="userSpaceOnUse" x1="8" y1="6" x2="72" y2="74"><stop offset="0" stop-color="#F1E3FF"/><stop offset=".45" stop-color="#C084FC"/><stop offset="1" stop-color="#7B2FBE"/></linearGradient><mask id="mk" maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80"><rect width="80" height="80" fill="#fff"/><g fill="#000"><path d="${F_PATH}"/><path d="${COLA_PATH}"/><circle cx="${GOTA.cx}" cy="${GOTA.cy}" r="${GOTA.r}"/></g></mask></defs><path d="${LACRE_FINO}" fill="url(#oro)" mask="url(#mk)"/></svg>`;
 
 // Foto local de un perfume (public/img/p/<hash>-800.webp o /productos-bot/...).
 function fotoDe(url) {
@@ -35,7 +37,7 @@ function fotoDe(url) {
 }
 
 const CSS = `
-@font-face{font-family:Cinzel;src:url(${fuente('cinzel.woff2')})}
+@font-face{font-family:Outfit;font-weight:300 700;src:url(${fuente('outfit.woff2')})}
 @font-face{font-family:Manrope;src:url(${fuente('manrope.woff2')})}
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#06040D;--v:#7B2FBE;--l:#C084FC;--t:#F8F4FF;--s:#C9BEE0}
@@ -45,15 +47,14 @@ body{background:var(--bg);color:var(--t);font-family:Manrope,sans-serif;position
 .marco{position:absolute;inset:36px;border:2px solid #C084FC33;border-radius:36px}
 .in{position:relative;height:100%;display:flex;flex-direction:column;padding:96px 90px 84px}
 .marca{display:flex;align-items:center;gap:22px}
-.marca img{width:76px;height:76px;border-radius:50%;box-shadow:0 0 36px #7B2FBE99}
-.marca span{font-family:Cinzel;font-size:38px;letter-spacing:8px;font-weight:600}
-h1{font-family:Cinzel;font-weight:600;line-height:1.08;letter-spacing:2px}
+.marca span{font-family:Outfit;font-size:38px;letter-spacing:.26em;font-weight:700}
+h1{font-family:Outfit;font-weight:300;line-height:1.06;letter-spacing:-.02em}
 h1 em{font-style:normal;color:var(--l)}
 p.sub{color:var(--s);line-height:1.45}
 .pie{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;color:var(--l);letter-spacing:3px;text-transform:uppercase;font-weight:600}
 .boton{display:inline-block;background:linear-gradient(135deg,#7B2FBE,#9B59D0);padding:26px 46px;border-radius:999px;font-weight:800;font-size:34px;color:#fff;box-shadow:0 14px 50px #7B2FBE88}
 .chip{display:inline-block;border:2px solid #C084FC66;background:#7B2FBE22;border-radius:999px;padding:12px 26px;margin:7px;font-weight:600;color:var(--t)}
-.num{font-family:Cinzel;color:var(--l);font-weight:700}
+.num{font-family:Outfit;color:var(--l);font-weight:500}
 .tarjeta{background:#ffffff0d;border:2px solid #C084FC33;border-radius:30px;padding:34px 38px}
 .foto{background:#fff;border-radius:28px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .foto img{max-width:88%;max-height:88%;object-fit:contain}
@@ -62,7 +63,7 @@ p.sub{color:var(--s);line-height:1.45}
 const pagina = (w, h, cuerpo) =>
   `<!doctype html><meta charset="utf-8"><style>${CSS}body{width:${w}px;height:${h}px}</style><body><div class="g1"></div><div class="g2"></div><div class="marco"></div><div class="in">${cuerpo}</div></body>`;
 
-const marca = `<div class="marca"><img src="${logo}"><span>FRAGANZIA</span></div>`;
+const marca = `<div class="marca">${SELLO}<span>FRAGANZIA</span></div>`;
 const pie = (txt = WEB) => `<div class="pie" style="font-size:26px"><span>${txt}</span><span>${IG}</span></div>`;
 
 function piezas(destacados) {
