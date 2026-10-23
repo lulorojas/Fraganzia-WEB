@@ -29,3 +29,6 @@ skills-lock.json
 
 # Caché de la herramienta de recorte de fotos
 tools/.cache/
+
+# Caché de Python de las herramientas de recorte
+__pycache__/

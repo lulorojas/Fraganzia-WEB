@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
+import { Heart, Plus, Sparkles } from 'lucide-react';
 import { usePerfumes } from '../hooks/usePerfumes';
 import { useDolarBlue } from '../hooks/useDolarBlue';
 import { useCart } from '../context/CartContext';
@@ -116,6 +116,12 @@ export default function Catalogo() {
           </button>
         </p>
       </div>
+      <p className="-mt-3 mb-5 max-w-2xl font-body text-[13px] leading-relaxed text-text-secondary">
+        Tocá el corazón <Heart size={13} className="inline align-[-2px] text-lila" aria-hidden="true" /> para guardar un
+        perfume en{' '}
+        <Link to="/favoritos" className="font-semibold text-lila hover:text-text">Favoritos</Link> y verlo después. Con
+        el <Plus size={13} className="inline align-[-2px] text-lila" aria-hidden="true" /> lo sumás al carrito.
+      </p>
       <Filtros filtros={filtros} onChange={setFiltros} />
       {usandoCorreccion && (
         <p className="mt-4 font-body text-sm text-text-secondary" role="status">

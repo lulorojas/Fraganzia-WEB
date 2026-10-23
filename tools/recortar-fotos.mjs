@@ -8,16 +8,24 @@
 //   node tools/recortar-fotos.mjs --parte 1/3     (y 2/3, 3/3 en otras terminales)
 //   node tools/recortar-fotos.mjs --indice        (regenera src/data/recortes.json al terminar)
 //   node tools/recortar-fotos.mjs --solo <hash>   (rehace una sola, por ejemplo tras retocar el original)
+//   node tools/recortar-fotos.mjs --modelos       (solo guarda la máscara del modelo de cada foto en la caché)
+//   node tools/recortar-fotos.mjs --rehacer       (rehace todas con lo guardado en la caché, sin volver a correr el modelo)
+//
+// Si existe tools/fotos-alternativas/<hash>.(jpg|png|webp) se recorta esa foto (por ejemplo una con la caja
+// al lado) en lugar de la del catálogo; el recorte conserva el nombre (hash) de la foto original.
 //
 // Requisitos (no están en package.json: pesan mucho y solo se usan acá):
 //   npm install --no-save @imgly/background-removal-node
 //   pip install pillow numpy scipy
 // El modelo tarda ~10 s por foto; el método está explicado en tools/lib/recorte_hibrido.py.
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, unlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 
 const FOTOS = 'public/img/p';
+const ALTERNATIVAS = 'tools/fotos-alternativas';
+// Opciones por foto para los casos difíciles (caja blanca sobre fondo blanco): ver tools/lib/recorte_hibrido.py.
+const OPCIONES = JSON.parse(readFileSync('tools/lib/recorte-opciones.json', 'utf8'));
 const CACHE = 'tools/.cache/recortes';
 const INDICE = 'src/data/recortes.json';
 const args = process.argv.slice(2);
@@ -34,11 +42,21 @@ if (args.includes('--indice')) {
   process.exit(0);
 }
 
-const { removeBackground } = await import('@imgly/background-removal-node').catch(() => {
-  console.error('Falta el modelo: npm install --no-save @imgly/background-removal-node');
-  process.exit(1);
-});
 mkdirSync(CACHE, { recursive: true });
+const rehacer = args.includes('--rehacer');
+const soloModelos = args.includes('--modelos'); // solo calcula (y guarda) la máscara del modelo, sin armar los WebP
+const { removeBackground } = rehacer
+  ? {}
+  : await import('@imgly/background-removal-node').catch(() => {
+      console.error('Falta el modelo: npm install --no-save @imgly/background-removal-node');
+      process.exit(1);
+    });
+
+// Foto de origen: la alternativa elegida (con caja) o, si no hay, la del catálogo.
+function origenDe(hash) {
+  const alt = ['jpg', 'png', 'webp'].map((e) => join(ALTERNATIVAS, `${hash}.${e}`)).find((f) => existsSync(f));
+  return alt ?? join(FOTOS, `${hash}-800.webp`);
+}
 
 let hashes = JSON.parse(readFileSync('src/data/imagenes-locales.json', 'utf8')).sort();
 const solo = valor('--solo');
@@ -51,18 +69,27 @@ if (parte) {
 
 let hechas = 0;
 for (const hash of hashes) {
-  const original = join(FOTOS, `${hash}-800.webp`);
+  const original = origenDe(hash);
   const salida = join(FOTOS, `${hash}-cut.webp`);
-  if (!existsSync(original) || (existsSync(salida) && !solo)) continue;
+  if (!existsSync(original) || (existsSync(salida) && !solo && !rehacer && !soloModelos)) continue;
   const modelo = join(CACHE, `${hash}.png`);
   try {
-    const sharp = (await import('sharp')).default;
-    const png = await sharp(original).png().toBuffer();
-    const blob = await removeBackground(new Blob([png], { type: 'image/png' }), { model: 'medium', output: { format: 'image/png' } });
-    writeFileSync(modelo, Buffer.from(await blob.arrayBuffer()));
-    const r = spawnSync('python', ['tools/lib/recorte_hibrido.py', original, modelo, salida], { encoding: 'utf8' });
+    // La máscara del modelo se guarda en la caché: permite ajustar el postproceso sin repetir los ~10 s por foto.
+    if (!existsSync(modelo) || solo) {
+      if (rehacer) continue;
+      const sharp = (await import('sharp')).default;
+      const png = await sharp(original).png().toBuffer();
+      const blob = await removeBackground(new Blob([png], { type: 'image/png' }), { model: 'medium', output: { format: 'image/png' } });
+      writeFileSync(modelo, Buffer.from(await blob.arrayBuffer()));
+    }
+    if (soloModelos) {
+      hechas++;
+      console.log(`${hash} modelo`);
+      continue;
+    }
+    const extra = OPCIONES[hash] ?? [];
+    const r = spawnSync('python', ['tools/lib/recorte_hibrido.py', original, modelo, salida, ...extra], { encoding: 'utf8' });
     if (r.status !== 0) throw new Error(r.stderr.trim().split('\n').pop());
-    unlinkSync(modelo);
     hechas++;
     console.log(`${hash} ${r.stdout.trim()}`);
   } catch (err) {

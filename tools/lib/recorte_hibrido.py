@@ -3,8 +3,18 @@
 El modelo (@imgly/background-removal-node) acierta con cajas blancas y reflejos; el color rescata cajas claras
 o de colores que el modelo pierde; y un completado dentro del casco convexo recupera brillos casi blancos.
 
+Después se corrigen los dos defectos que se notan sobre el escenario oscuro:
+  - restos del fondo blanco de estudio (huecos entre la caja y el frasco, esquinas): se quita el blanco puro que
+    el modelo marcó como fondo, así el escenario se ve por esos huecos;
+  - el halo de los bordes: el borde pasa a ser suave (transparencia continua) y toma el color del producto en
+    vez del tono mezclado con el fondo.
+
 Uso (lo llama tools/recortar-fotos.mjs):
-    python tools/lib/recorte_hibrido.py <foto-original> <salida-del-modelo.png> <salida.webp>
+    python tools/lib/recorte_hibrido.py <foto-original> <salida-del-modelo.png> <salida.webp> [--conservar-blanco] [--casco]
+
+--conservar-blanco: no quita el blanco de estudio (para productos que son blancos, por ejemplo una caja blanca
+sobre fondo blanco, donde quitarlo se llevaría también la caja).
+--casco: cierra la silueta con su casco convexo (caja blanca sobre fondo blanco que la máscara deja a pedazos).
 
 Imprime una línea JSON con métricas. Requiere: pip install pillow numpy scipy
 """
@@ -20,6 +30,10 @@ DIST_MIN = 34      # distancia mínima al fondo para contar como producto
 UMBRAL_CASCO = 6   # sensibilidad del completado (casi blanco)
 MARGEN_CASCO = 26  # cuánto mira más allá de la silueta detectada
 ALTO_MAX = (640, 760)
+BLANCO_PURO = 247  # canal mínimo desde el cual un píxel cuenta como blanco de estudio
+FONDO_MODELO = 0.12  # el modelo lo marcó como fondo si su transparencia es menor que esto
+RESTO_MIN = 0.003  # un resto de fondo se quita si ocupa más de esta fracción de la imagen
+BANDA = 6  # px del borde donde el color se reemplaza por el del interior
 
 
 def fondo_estimado(rgb):
@@ -61,7 +75,46 @@ def completar_con_casco(m, rgb):
     return ndi.binary_fill_holes(m2)
 
 
-def recortar(original, modelo, salida):
+def quitar_blanco_de_fondo(m, rgb, alfa):
+    """Saca de la máscara el blanco puro que el modelo consideró fondo (huecos entre objetos, esquinas)."""
+    resto = m & (rgb.min(axis=2) >= BLANCO_PURO) & (alfa < FONDO_MODELO)
+    resto = ndi.binary_opening(resto, structure=np.ones((3, 3)))
+    et, n = ndi.label(resto)
+    if not n:
+        return m
+    tam = ndi.sum(resto, et, range(1, n + 1))
+    grandes = [k + 1 for k, t in enumerate(tam) if t >= RESTO_MIN * m.size]
+    quitar = ndi.binary_dilation(np.isin(et, grandes), iterations=2) & (rgb.min(axis=2) >= BLANCO_PURO - 12)
+    return m & ~quitar
+
+
+def color_del_producto(rgb, alfa):
+    """En el borde, reemplaza el color mezclado con el fondo por el del producto más cercano."""
+    nucleo = ndi.binary_erosion(alfa > 0.98, iterations=2)
+    if nucleo.sum() < 50:
+        return rgb
+    dist, (iy, ix) = ndi.distance_transform_edt(~nucleo, return_indices=True)
+    out = rgb.copy()
+    cambiar = (~nucleo) & (dist <= BANDA)
+    out[cambiar] = rgb[iy, ix][cambiar]
+    return out
+
+
+def forma_del_casco(m):
+    """Casco convexo de la máscara (relleno)."""
+    ys, xs = np.nonzero(m)
+    paso = max(1, len(xs) // 4000)
+    pts = np.column_stack([xs[::paso], ys[::paso]])
+    try:
+        c = ConvexHull(pts)
+    except Exception:
+        return m
+    img = Image.new('L', (m.shape[1], m.shape[0]), 0)
+    ImageDraw.Draw(img).polygon([tuple(pts[v]) for v in c.vertices], fill=1)
+    return np.asarray(img).astype(bool)
+
+
+def recortar(original, modelo, salida, conservar_blanco=False, casco=False):
     orig = Image.open(original).convert('RGB')
     rec = Image.open(modelo).convert('RGBA').resize(orig.size)
     rgb = np.asarray(orig)
@@ -74,18 +127,27 @@ def recortar(original, modelo, salida):
         tam = ndi.sum(m, etiquetas, range(1, n + 1))
         m = np.isin(etiquetas, [k + 1 for k, t in enumerate(tam) if t >= 0.03 * tam.max()])
     m = completar_con_casco(m, rgb)
+    if not conservar_blanco:
+        m = quitar_blanco_de_fondo(m, rgb, alfa)
+    if casco:
+        m = ndi.binary_dilation(m, iterations=3)
+        m = m | forma_del_casco(m)
     m = ndi.binary_erosion(m, iterations=1)
+    # Después de quitar el blanco pueden quedar piezas sueltas.
+    etiquetas, n = ndi.label(m)
+    if n:
+        tam = ndi.sum(m, etiquetas, range(1, n + 1))
+        m = np.isin(etiquetas, [k + 1 for k, t in enumerate(tam) if t >= 0.03 * tam.max()])
 
-    suave = np.clip((ndi.gaussian_filter(m.astype(np.float32), 0.9) - 0.15) / 0.7, 0, 1)
-    borde = (suave > 0) & (suave < 1)
-    rgb2 = rgb.astype(np.float32)
-    rgb2[borde] *= 0.55 + 0.45 * suave[borde, None]  # saca el halo blanco del borde
+    suave = np.clip((ndi.gaussian_filter(m.astype(np.float32), 1.0) - 0.2) / 0.6, 0, 1)
+    rgb2 = color_del_producto(rgb.astype(np.float32), suave)
     img = Image.fromarray(np.dstack([rgb2.clip(0, 255), suave * 255]).astype(np.uint8), 'RGBA')
     caja = img.getchannel('A').point(lambda v: 255 if v > 20 else 0).getbbox()
     if caja:
         img = img.crop(caja)
-    img.thumbnail(ALTO_MAX)
-    img.save(salida, 'WEBP', quality=86, method=6)
+    pre = img.convert('RGBa')  # achica con la transparencia premultiplicada: sin halos en el borde
+    pre.thumbnail(ALTO_MAX, Image.LANCZOS)
+    pre.convert('RGBA').save(salida, 'WEBP', quality=88, method=6)
 
     # Métrica: qué parte de lo que se aparta del fondo quedó dentro del recorte (solo orientativa).
     dif = ndi.binary_fill_holes(ndi.binary_closing(np.abs(rgb.astype(int) - fondo_estimado(rgb).astype(int)).max(axis=2) > 28, structure=np.ones((5, 5)), iterations=2))
@@ -94,4 +156,5 @@ def recortar(original, modelo, salida):
 
 
 if __name__ == '__main__':
-    print(json.dumps(recortar(sys.argv[1], sys.argv[2], sys.argv[3])))
+    banderas = sys.argv[4:]
+    print(json.dumps(recortar(sys.argv[1], sys.argv[2], sys.argv[3], '--conservar-blanco' in banderas, '--casco' in banderas)))

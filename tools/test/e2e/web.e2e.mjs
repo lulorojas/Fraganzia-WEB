@@ -215,14 +215,24 @@ test('el buscador del encabezado lleva al catálogo con los resultados', async (
   await page.close();
 });
 
-test('las categorías del encabezado filtran el catálogo por género', async () => {
+test('el encabezado lleva a cada sección y los botones se entienden con texto', async () => {
   const { page, errores } = await abrir('/');
-  await tocar(page, 'Para ella');
-  await page.waitForFunction(
-    () => document.querySelector('[aria-label="Filtrar por género"] button[aria-pressed="true"]')?.textContent.trim() === 'Femenino',
-    { timeout: 20000 }
-  );
-  assert.deepEqual(errores, [], `Errores en las categorías: ${errores.join(' | ')}`);
+  await page.waitForSelector('nav[aria-label="Secciones del sitio"]', { timeout: 30000 });
+  const enlaces = await page.$$eval('nav[aria-label="Secciones del sitio"] a', (as) => as.map((a) => [a.textContent.trim(), a.getAttribute('href')]));
+  const hrefs = Object.fromEntries(enlaces);
+  assert.equal(hrefs['Catálogo'], '/catalogo');
+  assert.equal(hrefs['Decants'], '/decants');
+  assert.equal(hrefs['Seguí tu pedido'], '/mis-pedidos');
+  assert.equal(hrefs['Nosotros'], '/sobre-nosotros');
+  assert.equal(hrefs['Contacto'], '/contacto');
+  assert.ok(!('Para ella' in hrefs) && !('Para él' in hrefs), 'el encabezado no debería tener atajos por género');
+  // Favoritos y Carrito se leen como palabras, no solo como íconos.
+  const acciones = await page.$$eval('header a[href="/favoritos"], header a[href="/carrito"]', (as) => as.map((a) => a.innerText.replace(/\s+/g, ' ').trim()));
+  assert.ok(acciones.some((t) => t.startsWith('Favoritos')) && acciones.some((t) => t.startsWith('Carrito')), `botones sin texto: ${acciones}`);
+  await tocar(page, 'Catálogo');
+  await page.waitForFunction(() => location.pathname === '/catalogo', { timeout: 20000 });
+  await page.waitForSelector('ul[aria-label="Perfumes"] li', { timeout: 30000 });
+  assert.deepEqual(errores, [], `Errores en el encabezado: ${errores.join(' | ')}`);
   await page.close();
 });
 

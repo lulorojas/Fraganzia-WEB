@@ -13,7 +13,7 @@ import { fuenteRecorte } from '../utils/image';
 const AROMAS = ['Oriental', 'Floral', 'Amaderado', 'Gourmand'];
 
 const PASOS = [
-  { titulo: 'Elegí tus perfumes', texto: 'Sumalos al carrito: cada uno muestra su precio por transferencia y en efectivo.' },
+  { titulo: 'Elegí tus perfumes', texto: 'Con el + los sumás al carrito. Con el corazón guardás los que te gustan para decidir después.' },
   { titulo: 'Confirmá el pedido', texto: 'Solo con tu nombre, sin crear una cuenta.' },
   { titulo: 'Lo coordinamos por WhatsApp', texto: 'Acordamos pago y entrega, y seguís tu pedido con un link.' },
 ];

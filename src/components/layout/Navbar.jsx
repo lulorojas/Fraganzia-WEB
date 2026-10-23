@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, X, Heart, Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ShoppingBag, Search, Heart, Sparkles } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useFavoritos } from '../../context/FavoritosContext';
 import { useDolarBlue } from '../../hooks/useDolarBlue';
@@ -10,57 +10,31 @@ import { formatARS } from '../../utils/format';
 import { LogoFraganzia } from '../ui/LogoFraganzia';
 import { abrirAsistente } from '../asistente/BotonAsistente';
 
-// Categorías: llevan al catálogo ya filtrado (el catálogo lee ?genero=, ?ofertas=1, ?buscar=).
-const CATEGORIAS = [
-  { to: '/catalogo?genero=Masculino', label: 'Para él' },
-  { to: '/catalogo?genero=Femenino', label: 'Para ella' },
-  { to: '/catalogo?genero=Unisex', label: 'Unisex' },
-  { to: '/decants', label: 'Decants' },
-];
-
-const MENU_MOVIL = [
+// Cada enlace lleva a una sección distinta: nada de atajos de filtros repetidos (eso vive en el catálogo).
+const SECCIONES = [
   { to: '/catalogo', label: 'Catálogo' },
   { to: '/decants', label: 'Decants' },
-  { to: '/favoritos', label: 'Favoritos' },
   { to: '/mis-pedidos', label: 'Seguí tu pedido' },
   { to: '/sobre-nosotros', label: 'Nosotros' },
   { to: '/contacto', label: 'Contacto' },
 ];
 
-// Cierra un menú desplegable al hacer click afuera o apretar Escape.
-function useCerrarAlSalir(ref, abierto, cerrar) {
-  useEffect(() => {
-    if (!abierto) return undefined;
-    function onPointer(e) {
-      if (ref.current && !ref.current.contains(e.target)) cerrar();
-    }
-    function onKey(e) {
-      if (e.key === 'Escape') cerrar();
-    }
-    document.addEventListener('mousedown', onPointer);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onPointer);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [ref, abierto, cerrar]);
-}
-
 /**
  * Encabezado de dos niveles: franja fina de anuncio y, debajo, el logo, el buscador (el único
- * elemento con color lleno), favoritos, el carrito con su importe, y una fila de categorías con
- * el asistente "Encontrá tu perfume".
+ * elemento con color lleno), Favoritos y Carrito (con texto, no solo ícono) y una fila con las
+ * secciones del sitio y el asistente "Encontrá tu perfume".
  */
 export function Navbar() {
   const { state } = useCart();
   const { ids: favoritos } = useFavoritos();
   const { dolarMedio } = useDolarBlue();
   const { data: promociones } = usePromocionesActivas();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const [consulta, setConsulta] = useState('');
-  const [menuAbierto, setMenuAbierto] = useState(false);
-  const cabeceraRef = useRef(null);
+  // El HTML prerenderizado no trae parámetros de URL: lo que depende de ?ofertas=1 se calcula después de montar.
+  const [montado, setMontado] = useState(false);
+  useEffect(() => setMontado(true), []);
 
   const cantidadItems = state.items.reduce((acc, item) => acc + item.cantidad, 0);
   const importe =
@@ -69,38 +43,32 @@ export function Navbar() {
       : null;
   const hayOfertas = Boolean(promociones?.length);
 
-  useCerrarAlSalir(cabeceraRef, menuAbierto, () => setMenuAbierto(false));
-  // Al navegar se cierra el menú.
-  useEffect(() => setMenuAbierto(false), [pathname]);
-
   function buscar(e) {
     e.preventDefault();
     const q = consulta.trim();
     navigate(q ? `/catalogo?buscar=${encodeURIComponent(q)}` : '/catalogo');
   }
 
-  const claseCat =
-    'shrink-0 rounded-full border border-transparent px-4 py-2 font-body text-[13.5px] text-[#cfc3ea] transition-colors hover:border-border hover:text-text';
+  // "Catálogo" y "Ofertas" comparten ruta: se distinguen por el parámetro ?ofertas=1.
+  const enOfertas = montado && pathname === '/catalogo' && search.includes('ofertas=1');
+  const estaActiva = (to) => (to === '/catalogo' ? pathname === '/catalogo' && !enOfertas : pathname === to);
+
+  const claseLink = (activa) =>
+    `shrink-0 rounded-full border px-4 py-2 font-body text-[13.5px] transition-colors hover:border-border hover:text-text ${
+      activa ? 'border-border bg-white/[0.06] font-semibold text-text' : 'border-transparent text-[#cfc3ea]'
+    }`;
+
+  const claseAccion =
+    'relative flex min-h-11 min-w-11 flex-col items-center justify-center gap-0.5 rounded-xl px-2 font-body text-[11px] font-medium text-[#d9ccf2] transition-colors hover:text-text lg:flex-row lg:gap-2 lg:px-3 lg:text-[13.5px]';
 
   return (
-    <header ref={cabeceraRef} className="sticky top-0 z-40">
+    <header className="sticky top-0 z-40">
       <div className="bg-gradient-to-r from-[#150d2e] via-[#2a1658] to-[#150d2e] px-3 py-1.5 text-center font-body text-[10.5px] font-medium uppercase tracking-[0.16em] text-[#dcc6ff]">
         Envíos a todo el AMBA · Transferencia o efectivo
       </div>
 
       <div className="border-b border-border bg-[rgba(12,9,26,0.97)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
-        <div className="mx-auto grid max-w-7xl grid-cols-[44px_1fr_auto] items-center gap-x-2 gap-y-2.5 px-3.5 pb-2 pt-2.5 [grid-template-areas:'menu_logo_acc'_'busq_busq_busq'_'cats_cats_cats'] lg:grid-cols-[auto_minmax(340px,1fr)_auto] lg:gap-x-7 lg:gap-y-3 lg:px-6 lg:pt-3.5 lg:[grid-template-areas:'logo_busq_acc'_'cats_cats_cats']">
-          <button
-            type="button"
-            onClick={() => setMenuAbierto((a) => !a)}
-            aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'}
-            aria-expanded={menuAbierto}
-            aria-controls="menu-movil"
-            className="flex h-11 w-11 items-center justify-center rounded-xl text-[#d9ccf2] [grid-area:menu] lg:hidden"
-          >
-            {menuAbierto ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
-          </button>
-
+        <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto] items-center gap-x-2 gap-y-2.5 px-3.5 pb-2 pt-2.5 [grid-template-areas:'logo_acc'_'busq_busq'_'nav_nav'] lg:grid-cols-[auto_minmax(340px,1fr)_auto] lg:gap-x-7 lg:gap-y-3 lg:px-6 lg:pt-3.5 lg:[grid-template-areas:'logo_busq_acc'_'nav_nav_nav']">
           <Link to="/" aria-label="Fraganzia, ir al inicio" className="justify-self-start [grid-area:logo] transition-opacity hover:opacity-85">
             <LogoFraganzia className="[--logo-scale:0.9] lg:[--logo-scale:1.05]" />
           </Link>
@@ -128,11 +96,13 @@ export function Navbar() {
             <Link
               to="/favoritos"
               aria-label={favoritos.length ? `Favoritos, ${favoritos.length} guardados` : 'Favoritos'}
-              className="relative flex h-11 w-11 items-center justify-center rounded-xl text-[#d9ccf2] transition-colors hover:text-text"
+              title="Los perfumes que guardaste con el corazón"
+              className={claseAccion}
             >
               <Heart size={22} aria-hidden="true" />
+              <span>Favoritos</span>
               {favoritos.length > 0 && (
-                <span aria-hidden="true" className="absolute left-5 top-0.5 flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#E11D74] px-1 text-[10px] font-bold text-white">
+                <span aria-hidden="true" className="absolute right-0.5 top-0 flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#E11D74] px-1 text-[10px] font-bold text-white lg:right-auto lg:left-6">
                   {favoritos.length}
                 </span>
               )}
@@ -144,16 +114,18 @@ export function Navbar() {
                   ? `Carrito, ${cantidadItems} ${cantidadItems === 1 ? 'producto' : 'productos'}${importe ? `, ${formatARS(importe)}` : ''}`
                   : 'Carrito'
               }
-              className="relative flex h-11 items-center gap-2 rounded-xl px-2.5 text-[#d9ccf2] transition-colors hover:text-text"
+              title="Ver lo que vas a comprar"
+              className={claseAccion}
             >
               <ShoppingBag size={22} aria-hidden="true" />
-              {importe != null && <b className="hidden font-body text-[13px] font-semibold text-text tabular-nums sm:inline">{formatARS(importe)}</b>}
+              <span>Carrito</span>
+              {importe != null && <b className="hidden font-semibold text-text tabular-nums lg:inline">{formatARS(importe)}</b>}
               {cantidadItems > 0 && (
                 <span
                   // La key cambia con la cantidad: React recrea el badge y la animación "bump" corre en cada agregado.
                   key={cantidadItems}
                   aria-hidden="true"
-                  className="absolute left-5 top-0.5 flex h-[17px] min-w-[17px] animate-bump items-center justify-center rounded-full bg-[#E11D74] px-1 text-[10px] font-bold text-white"
+                  className="absolute right-0.5 top-0 flex h-[17px] min-w-[17px] animate-bump items-center justify-center rounded-full bg-[#E11D74] px-1 text-[10px] font-bold text-white lg:right-auto lg:left-6"
                 >
                   {cantidadItems}
                 </span>
@@ -161,7 +133,7 @@ export function Navbar() {
             </Link>
           </div>
 
-          <nav aria-label="Categorías" className="hide-scrollbar -mx-3.5 flex items-center gap-2 overflow-x-auto px-3.5 py-0.5 [grid-area:cats] lg:mx-0 lg:px-0">
+          <nav aria-label="Secciones del sitio" className="hide-scrollbar -mx-3.5 flex items-center gap-1.5 overflow-x-auto px-3.5 py-0.5 [grid-area:nav] lg:mx-0 lg:px-0">
             <button
               type="button"
               onClick={abrirAsistente}
@@ -170,31 +142,23 @@ export function Navbar() {
               <Sparkles size={16} aria-hidden="true" />
               Encontrá tu perfume
             </button>
-            {CATEGORIAS.map(({ to, label }) => (
-              <Link key={to} to={to} className={claseCat}>{label}</Link>
+            {SECCIONES.slice(0, 2).map(({ to, label }) => (
+              <Link key={to} to={to} aria-current={estaActiva(to) ? 'page' : undefined} className={claseLink(estaActiva(to))}>
+                {label}
+              </Link>
             ))}
-            {hayOfertas && <Link to="/catalogo?ofertas=1" className={claseCat}>Ofertas</Link>}
+            {hayOfertas && (
+              <Link to="/catalogo?ofertas=1" aria-current={enOfertas ? 'page' : undefined} className={claseLink(enOfertas)}>
+                Ofertas
+              </Link>
+            )}
+            {SECCIONES.slice(2).map(({ to, label }) => (
+              <Link key={to} to={to} aria-current={estaActiva(to) ? 'page' : undefined} className={claseLink(estaActiva(to))}>
+                {label}
+              </Link>
+            ))}
           </nav>
         </div>
-
-        {menuAbierto && (
-          <nav id="menu-movil" aria-label="Menú" className="border-t border-border px-3.5 pb-4 pt-2 lg:hidden">
-            <ul className="flex flex-col font-body">
-              {MENU_MOVIL.map(({ to, label }) => (
-                <li key={to}>
-                  <NavLink
-                    to={to}
-                    className={({ isActive }) =>
-                      `block rounded-lg px-3 py-3 text-base transition-colors hover:bg-violet/10 hover:text-text ${isActive ? 'text-text' : 'text-text-secondary'}`
-                    }
-                  >
-                    {label}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
       </div>
     </header>
   );

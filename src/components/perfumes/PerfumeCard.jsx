@@ -138,6 +138,7 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
         type="button"
         onClick={() => onAgregar?.(perfume)}
         aria-label={`Agregar al carrito: ${completo}`}
+        title="Agregar al carrito"
         className="absolute bottom-3.5 right-3 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-lila/55 text-lila transition-colors duration-200 hover:border-violet hover:bg-violet hover:text-white"
       >
         <Plus size={18} strokeWidth={2.2} aria-hidden="true" />

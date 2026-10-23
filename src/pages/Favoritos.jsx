@@ -31,7 +31,8 @@ export default function Favoritos() {
       <div className="mb-8">
         <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Mis favoritos</h1>
         <p className="mt-2 font-body text-sm text-text-secondary">
-          Se guardan en este dispositivo. No hace falta crear una cuenta.
+          Acá están los perfumes que marcaste con el corazón, para que los veas y los compares cuando quieras.
+          Se guardan en este dispositivo: no hace falta crear una cuenta.
         </p>
       </div>
 
