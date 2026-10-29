@@ -9,6 +9,7 @@
 //   node tools/recortar-fotos.mjs --indice        (regenera src/data/recortes.json al terminar)
 //   node tools/recortar-fotos.mjs --solo <hash>   (rehace una sola, por ejemplo tras retocar el original)
 //   node tools/recortar-fotos.mjs --modelos       (solo guarda la máscara del modelo de cada foto en la caché)
+//   (composiciones: ver tools/fotos-alternativas/composiciones.json, caja y frasco de dos fotos reales)
 //   node tools/recortar-fotos.mjs --rehacer       (rehace todas con lo guardado en la caché, sin volver a correr el modelo)
 //
 // Si existe tools/fotos-alternativas/<hash>.(jpg|png|webp) se recorta esa foto (por ejemplo una con la caja
@@ -67,31 +68,63 @@ if (parte) {
   hashes = hashes.filter((_, k) => k % n === i - 1);
 }
 
+// Máscara del modelo de una foto, guardada en la caché (permite ajustar el postproceso sin repetir los ~10 s por foto).
+async function asegurarMascara(original, modelo, forzar = false) {
+  if (existsSync(modelo) && !forzar) return true;
+  if (rehacer) return false;
+  const sharp = (await import('sharp')).default;
+  const png = await sharp(original).png().toBuffer();
+  const blob = await removeBackground(new Blob([png], { type: 'image/png' }), { model: 'medium', output: { format: 'image/png' } });
+  writeFileSync(modelo, Buffer.from(await blob.arrayBuffer()));
+  return true;
+}
+
+function python(...argumentos) {
+  const r = spawnSync('python', argumentos, { encoding: 'utf8' });
+  if (r.status !== 0) throw new Error((r.stderr ?? r.error?.message ?? '').trim().split('\n').pop());
+  return r.stdout.trim();
+}
+
+// Perfumes cuya foto con caja se arma juntando dos fotos reales (una del frasco y otra de la caja):
+// tools/fotos-alternativas/composiciones.json → { hash: { frasco, caja, escala? } }, con las partes en tools/fotos-alternativas/partes/.
+const COMPOSICIONES = existsSync(join(ALTERNATIVAS, 'composiciones.json')) ? JSON.parse(readFileSync(join(ALTERNATIVAS, 'composiciones.json'), 'utf8')) : {};
+
+async function recortarParte(nombre, forzar) {
+  const original = join(ALTERNATIVAS, 'partes', nombre);
+  const clave = nombre.replace(/\.\w+$/, '');
+  const modelo = join(CACHE, `parte-${clave}.png`);
+  mkdirSync('tools/.cache/partes', { recursive: true });
+  const salida = join('tools/.cache/partes', `${clave}.webp`);
+  if (!(await asegurarMascara(original, modelo, forzar))) return null;
+  python('tools/lib/recorte_hibrido.py', original, modelo, salida, ...(OPCIONES[`parte:${clave}`] ?? []));
+  return salida;
+}
+
 let hechas = 0;
 for (const hash of hashes) {
-  const original = origenDe(hash);
   const salida = join(FOTOS, `${hash}-cut.webp`);
-  if (!existsSync(original) || (existsSync(salida) && !solo && !rehacer && !soloModelos)) continue;
-  const modelo = join(CACHE, `${hash}.png`);
   try {
-    // La máscara del modelo se guarda en la caché: permite ajustar el postproceso sin repetir los ~10 s por foto.
-    if (!existsSync(modelo) || solo) {
-      if (rehacer) continue;
-      const sharp = (await import('sharp')).default;
-      const png = await sharp(original).png().toBuffer();
-      const blob = await removeBackground(new Blob([png], { type: 'image/png' }), { model: 'medium', output: { format: 'image/png' } });
-      writeFileSync(modelo, Buffer.from(await blob.arrayBuffer()));
+    const comp = COMPOSICIONES[hash];
+    if (comp) {
+      if (existsSync(salida) && !solo && !rehacer && !soloModelos) continue;
+      const caja = await recortarParte(comp.caja, solo);
+      const frasco = await recortarParte(comp.frasco, solo);
+      if (soloModelos || !caja || !frasco) { if (soloModelos) hechas++; continue; }
+      console.log(`${hash} compuesta ${python('tools/lib/componer.py', caja, frasco, salida, String(comp.escala ?? 0.8))}`);
+      hechas++;
+      continue;
     }
+    const original = origenDe(hash);
+    if (!existsSync(original) || (existsSync(salida) && !solo && !rehacer && !soloModelos)) continue;
+    const modelo = join(CACHE, `${hash}.png`);
+    if (!(await asegurarMascara(original, modelo, solo))) continue;
     if (soloModelos) {
       hechas++;
       console.log(`${hash} modelo`);
       continue;
     }
-    const extra = OPCIONES[hash] ?? [];
-    const r = spawnSync('python', ['tools/lib/recorte_hibrido.py', original, modelo, salida, ...extra], { encoding: 'utf8' });
-    if (r.status !== 0) throw new Error(r.stderr.trim().split('\n').pop());
+    console.log(`${hash} ${python('tools/lib/recorte_hibrido.py', original, modelo, salida, ...(OPCIONES[hash] ?? []))}`);
     hechas++;
-    console.log(`${hash} ${r.stdout.trim()}`);
   } catch (err) {
     console.warn(`${hash} falló: ${err.message}`);
   }

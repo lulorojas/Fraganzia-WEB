@@ -4,6 +4,7 @@
 //   node tools/buscar-fotos-con-caja.mjs --tiendas              baja el listado de productos de cada tienda (con pausas)
 //   node tools/buscar-fotos-con-caja.mjs --emparejar [lista]    cruza el catálogo con las tiendas → tools/.cache/candidatas.json
 //   node tools/buscar-fotos-con-caja.mjs --descargar            baja las fotos candidatas → tools/.cache/candidatas/<hash>/<n>.jpg
+//   node tools/buscar-fotos-con-caja.mjs --paginas <lista.json> toma las fotos de páginas de producto sueltas ({hash: [urls]})
 //
 // No cambia nada del sitio: solo deja candidatas para revisar a ojo. Lo elegido se copia a
 // tools/fotos-alternativas/<hash>.jpg y lo usa tools/recortar-fotos.mjs en lugar de la foto original.
@@ -44,7 +45,7 @@ if (args.includes('--tiendas')) {
   for (const host of TIENDAS) {
     const productos = [];
     try {
-      for (let pagina = 1; pagina <= 12; pagina++) {
+      for (let pagina = 1; pagina <= 60; pagina++) {
         const { products } = await pedir(`https://${host}/products.json?limit=250&page=${pagina}`);
         if (!products?.length) break;
         productos.push(...products.map((p) => ({ titulo: p.title, marca: p.vendor, handle: p.handle, imagenes: p.images.map((i) => i.src) })));
@@ -138,4 +139,42 @@ if (args.includes('--descargar')) {
   process.exit(0);
 }
 
-console.log('Uso: --tiendas | --emparejar [lista.json] | --descargar');
+// ─── 4. Fotos de páginas de producto sueltas (tiendas que no son Shopify o no figuran en el listado) ───
+if (args.includes('--paginas')) {
+  const lista = JSON.parse(readFileSync(args[args.indexOf('--paginas') + 1], 'utf8'));
+  const decodificar = (t) => t.replace(/&amp;/g, '&').replace(/\\\//g, '/').replace(/\\u002F/gi, '/');
+  for (const [hash, paginas] of Object.entries(lista)) {
+    const dir = `${CACHE}/candidatas/${hash}`;
+    mkdirSync(dir, { recursive: true });
+    const urls = [];
+    for (const pagina of paginas) {
+      try {
+        const html = (await pedir(pagina, { json: false })).toString('utf8');
+        const hallazgos = [
+          ...html.matchAll(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)["'][^>]+content=["']([^"']+)["']/gi),
+          ...html.matchAll(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:image|twitter:image)["']/gi),
+          ...html.matchAll(/"image"\s*:\s*\[?\s*"(https?:[^"]+)"/g),
+        ].map((m) => decodificar(m[1]));
+        urls.push(...hallazgos.filter((u) => /^https?:/.test(u)));
+      } catch (err) {
+        console.warn(`${pagina}: ${err.message}`);
+      }
+      await dormir(PAUSA_MS / 2);
+    }
+    const unicas = [...new Set(urls)].slice(0, 5);
+    for (const [i, url] of unicas.entries()) {
+      const destino = join(dir, `p${i + 1}.jpg`);
+      if (existsSync(destino)) continue;
+      try {
+        writeFileSync(destino, await pedir(url, { json: false }));
+        await dormir(700);
+      } catch (err) {
+        console.warn(`${hash} ${url.slice(0, 70)}: ${err.message}`);
+      }
+    }
+    console.log(`${hash}: ${unicas.length} fotos de ${paginas.length} páginas`);
+  }
+  process.exit(0);
+}
+
+console.log('Uso: --tiendas | --emparejar [lista.json] | --descargar | --paginas <lista.json>');
