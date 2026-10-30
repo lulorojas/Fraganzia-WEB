@@ -153,7 +153,7 @@ export default function PerfumeDetalle() {
                 height="600"
                 fetchpriority="high"
                 decoding="async"
-                className="foto-recorte !h-[88%] !w-[82%]"
+                className="foto-recorte !mb-0 !h-[96%] !w-auto"
               />
             ) : imagen ? (
               <ImagenProducto

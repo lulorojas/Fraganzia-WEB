@@ -1,7 +1,8 @@
 // Saca el fondo de las fotos de producto para mostrarlas sobre el escenario oscuro de las cards.
 //
 // Entrada:  public/img/p/<hash>-800.webp (las que deja tools/localizar-imagenes.mjs)
-// Salida:   public/img/p/<hash>-cut.webp (WebP con transparencia, recortada al producto)
+// Salida:   public/img/p/<hash>-cut.webp (WebP con transparencia, en un lienzo de 800x800 igual para todos:
+//           mismo tamaño a la vista, centrado y apoyado en el mismo piso; ver tools/lib/normalizar_recorte.py)
 //           src/data/recortes.json       (hashes con recorte: la web usa el recorte solo si está en la lista)
 //
 // Es incremental (no repite lo que ya tiene recorte) y se puede repartir en varios procesos:
@@ -111,6 +112,7 @@ for (const hash of hashes) {
       const frasco = await recortarParte(comp.frasco, solo);
       if (soloModelos || !caja || !frasco) { if (soloModelos) hechas++; continue; }
       console.log(`${hash} compuesta ${python('tools/lib/componer.py', caja, frasco, salida, String(comp.escala ?? 0.8))}`);
+      python('tools/lib/normalizar_recorte.py', salida); // mismo lienzo, tamaño y piso que el resto
       hechas++;
       continue;
     }
@@ -124,6 +126,7 @@ for (const hash of hashes) {
       continue;
     }
     console.log(`${hash} ${python('tools/lib/recorte_hibrido.py', original, modelo, salida, ...(OPCIONES[hash] ?? []))}`);
+    python('tools/lib/normalizar_recorte.py', salida);
     hechas++;
   } catch (err) {
     console.warn(`${hash} falló: ${err.message}`);
