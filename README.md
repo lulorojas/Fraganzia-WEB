@@ -39,7 +39,7 @@ npm run dev                  # http://localhost:5173
 | `npm run test:bot` | Tests rápidos: bot de precios, cuentas de precios y decants |
 | `npm run test:e2e` | Pruebas de navegador sobre `dist/` (hace falta `npm run build` antes y Chrome): carga e hidratación de cada página, catálogo, carrito, decants, asistente y quien vuelve con carrito guardado. Bloquea las escrituras a Firestore |
 
-Cada push a `main` corre los tests y las pruebas de navegador y, si pasan, se publica automáticamente con GitHub Actions (solo hosting; las reglas se publican con `npm run deploy:rules`).
+Cada push a `main` corre los tests y las pruebas de navegador y, si pasan, se publica automáticamente con GitHub Actions (solo hosting; las reglas se publican con `npm run deploy:rules`). El bot de precios (`bot-proveedor.yml`) también vuelve a publicar el sitio cuando aplica cambios de precios o nuevos ingresos, y el deploy se puede lanzar a mano desde la pestaña Actions.
 
 ### Repos
 

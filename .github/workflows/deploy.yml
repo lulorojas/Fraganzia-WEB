@@ -4,13 +4,30 @@ on:
   push:
     branches:
       - main
+  # Lo llama el bot de precios cuando aplicó cambios (bot-proveedor.yml).
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Rama o commit a publicar'
+        type: string
+        default: main
+  # Para volver a publicar a mano desde la pestaña Actions.
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # Nunca dos publicaciones a la vez: la segunda espera a que termine la primera.
+    concurrency:
+      group: deploy-produccion
+      cancel-in-progress: false
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
+        with:
+          # En un push, el commit pusheado; llamado por el bot, la punta de main
+          # (que ya incluye las fotos que el bot acaba de subir).
+          ref: ${{ inputs.ref || github.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
