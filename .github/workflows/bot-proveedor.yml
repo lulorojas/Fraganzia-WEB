@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      aplico: ${{ steps.bot.outputs.aplico }}
     steps:
       - uses: actions/checkout@v4
 
@@ -30,6 +32,7 @@ jobs:
         run: npm run test:bot
 
       - name: Actualizar precios
+        id: bot
         run: node tools/bot-proveedor.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '--dry-run' || '' }}
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FRAGANZIA_E9B70 }}
@@ -46,3 +49,15 @@ jobs:
             git commit -m "chore(bot): fotos de nuevos ingresos detectadas automaticamente"
             git push
           fi
+
+  # Si el bot cambió precios o dio de alta perfumes, vuelve a publicar el sitio:
+  # el HTML pre-generado queda con los datos nuevos y las fotos de los nuevos
+  # ingresos llegan al hosting. Hace falta llamarlo así porque un push hecho con
+  # el token de Actions (el de las fotos) no dispara el workflow de deploy.
+  desplegar:
+    needs: actualizar
+    if: needs.actualizar.outputs.aplico == 'true'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      ref: main
+    secrets: inherit

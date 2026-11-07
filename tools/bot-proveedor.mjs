@@ -2,7 +2,7 @@
 // da de alta los perfumes nuevos. Corre en GitHub Actions (bot-proveedor.yml).
 //   node tools/bot-proveedor.mjs [--dry-run] [--forzar] [--pdf archivo.pdf] [--catalogo perfumes.json]
 // Con --catalogo no se toca Firestore (solo simula). --forzar saltea solo el tope de % de cambios.
-import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync, writeFileSync, appendFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
@@ -147,6 +147,9 @@ async function main() {
   await db.doc('config/botProveedor').set({ hash, ultimaCorrida: ahora, ultimoChequeo: ahora, whatsappConfigurado: whatsappConfigurado() });
 
   if (resultado.cambios.length || resultado.nuevos.length) {
+    // Le avisa al workflow que hubo cambios: así vuelve a publicar el sitio
+    // (HTML pre-generado con los precios nuevos y las fotos de los nuevos ingresos).
+    if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, 'aplico=true\n');
     await avisar(
       `Fraganzia: ${resultado.cambios.length} precios y ${resultado.nuevos.length} perfumes nuevos`,
       resumen(resultado)
