@@ -32,9 +32,14 @@ export function imagenGrande(url) {
   return LOCALES.has(hash) ? `/img/p/${hash}-800.webp` : url;
 }
 
-/** Foto recortada (WebP con transparencia) para el escenario oscuro de las cards, o null si todavía no hay. */
+// Los recortes de fondo quedaron en pausa (17/11/2026): en las cajas blancas sobre fondo blanco salen mal cortados, y cada perfume
+// nuevo del bot necesitaría su recorte a mano. Las cards y la ficha usan la foto original en una ventana clara. Para retomarlos,
+// poner esto en true (los archivos -cut.webp y src/data/recortes.json siguen en el repo).
+const USAR_RECORTES = false;
+
+/** Foto recortada (WebP con transparencia) para el escenario oscuro de las cards, o null si no se usan o todavía no hay. */
 export function fuenteRecorte(url) {
-  if (!url) return null;
+  if (!USAR_RECORTES || !url) return null;
   const hash = hashTexto(url);
   return RECORTADAS.has(hash) ? `/img/p/${hash}-cut.webp` : null;
 }

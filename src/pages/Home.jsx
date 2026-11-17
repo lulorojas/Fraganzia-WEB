@@ -8,7 +8,7 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { abrirAsistente } from '../components/asistente/BotonAsistente';
 import { PerfumeCard } from '../components/perfumes/PerfumeCard';
 import { PerfumeGridSkeleton } from '../components/perfumes/PerfumeCardSkeleton';
-import { fuenteRecorte } from '../utils/image';
+import { ImagenProducto } from '../components/perfumes/ImagenProducto';
 
 const AROMAS = ['Oriental', 'Floral', 'Amaderado', 'Gourmand'];
 
@@ -34,11 +34,15 @@ function TituloSeccion({ etiqueta, titulo, id }) {
   );
 }
 
-/** Foto recortada que flota en una puerta (solo se muestra si el perfume tiene recorte). */
+/** Ventana clara con la foto original, apenas inclinada, que adorna una puerta (es decorativa: el nombre ya está en el catálogo). */
 function Flotante({ perfume, className }) {
-  const recorte = perfume && fuenteRecorte(perfume.imagenes?.[0]);
-  if (!recorte) return null;
-  return <img src={recorte} alt="" aria-hidden="true" loading="eager" decoding="async" className={`pointer-events-none absolute object-contain drop-shadow-[0_16px_16px_rgba(0,0,0,0.55)] ${className}`} />;
+  const imagen = perfume?.imagenes?.[0];
+  if (!imagen) return null;
+  return (
+    <div aria-hidden="true" className={`plinto pointer-events-none absolute grid aspect-square place-items-center overflow-hidden rounded-2xl shadow-[0_14px_30px_rgba(0,0,0,0.5)] ${className}`}>
+      <ImagenProducto url={imagen} alt="" sizes="220px" width="220" height="220" prioridad className="foto-producto h-[88%] w-[88%] object-contain" />
+    </div>
+  );
 }
 
 export default function Home() {
@@ -49,9 +53,8 @@ export default function Home() {
   const { data: promociones } = usePromocionesActivas();
   useDocumentMeta({ path: '/' });
 
-  // Las fotos que flotan en las puertas: perfumes distintos, solo los que tienen recorte.
-  const conRecorte = (lista) => (lista ?? []).filter((p) => fuenteRecorte(p.imagenes?.[0]));
-  const flotantes = conRecorte(destacados);
+  // Las ventanas que adornan las puertas: perfumes distintos y con foto.
+  const flotantes = (destacados ?? []).filter((p) => p.imagenes?.[0]);
   const masElegidos = destacados?.slice(0, 8);
   // El catálogo viene de más nuevo a más viejo: las novedades son los primeros que no están ya arriba.
   const idsArriba = new Set(masElegidos?.map((p) => p.id));
@@ -82,8 +85,8 @@ export default function Home() {
                   Encontrá tu perfume <ArrowRight size={18} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
                 </span>
               </div>
-              <Flotante perfume={flotantes[1]} className="bottom-[6%] right-[3%] max-h-[62%] w-[36%]" />
-              <Flotante perfume={flotantes[2]} className="bottom-[2%] right-[30%] hidden max-h-[46%] w-[30%] sm:block" />
+              <Flotante perfume={flotantes[1]} className="bottom-[8%] right-[5%] w-[34%] rotate-[4deg]" />
+              <Flotante perfume={flotantes[2]} className="bottom-[4%] right-[32%] hidden w-[26%] -rotate-[5deg] sm:grid" />
             </button>
 
             <Link to="/catalogo" className="puerta group">
@@ -100,8 +103,8 @@ export default function Home() {
                   Ver el catálogo <ArrowRight size={18} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
                 </span>
               </div>
-              <Flotante perfume={flotantes[3]} className="bottom-[6%] right-[3%] max-h-[58%] w-[34%]" />
-              <Flotante perfume={flotantes[4]} className="bottom-[3%] right-[30%] hidden max-h-[44%] w-[32%] sm:block" />
+              <Flotante perfume={flotantes[3]} className="bottom-[8%] right-[5%] w-[32%] -rotate-[3deg]" />
+              <Flotante perfume={flotantes[4]} className="bottom-[4%] right-[30%] hidden w-[26%] rotate-[5deg] sm:grid" />
             </Link>
           </div>
         </div>
