@@ -11,6 +11,7 @@ import {
   descargarPdf,
   hashPdf,
   leerFilasDelPdf,
+  leerFilasConFotos,
   extraerImagenesCrudas,
   asociarImagenes,
   cruzar,
@@ -56,6 +57,23 @@ function resumen(r) {
 
 let db;
 
+/**
+ * Las filas del PDF con su foto emparejada POR POSICIÓN en la página (cada foto está al lado de su nombre y su precio).
+ * Antes se emparejaban por orden en el archivo y solo si la cantidad de fotos coincidía exacto con la de filas: con una
+ * sola de diferencia (un producto con dos imágenes, una fila agregada) no se emparejaba ninguna y todos los perfumes
+ * nuevos quedaban ocultos. Si la lectura nueva fallara, se usa el método anterior.
+ */
+async function leerFilasConFotosOReserva(pdf) {
+  try {
+    const filas = await leerFilasConFotos(pdf);
+    console.log(`fotos emparejadas por posición: ${filas.filter((f) => f.imagenBuffer).length} de ${filas.length} filas`);
+    return filas;
+  } catch (err) {
+    console.warn(`no se pudieron emparejar las fotos por posición (${err.message}); se usa el método anterior`);
+    return asociarImagenes(await leerFilasDelPdf(pdf), extraerImagenesCrudas(pdf));
+  }
+}
+
 /** Deja el error en Firestore para que el panel admin lo muestre (el WhatsApp puede no estar configurado). */
 async function registrarError(err) {
   if (!db || dryRun) return;
@@ -89,7 +107,7 @@ async function main() {
     perfumes = (await db.collection('perfumes').get()).docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
-  const filas = asociarImagenes(await leerFilasDelPdf(pdf), extraerImagenesCrudas(pdf));
+  const filas = await leerFilasConFotosOReserva(pdf);
   const resultado = cruzar(filas, perfumes);
   const aborto = motivoDeAborto(filas, resultado, perfumes.length, { forzar: args.includes('--forzar') });
   if (aborto) {

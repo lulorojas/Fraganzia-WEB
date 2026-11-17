@@ -2,7 +2,7 @@
 // de Firestore. Sin efectos secundarios: la escritura vive en bot-proveedor.mjs.
 import './polyfills.mjs';
 import { createHash } from 'node:crypto';
-import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { getDocument, OPS } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { normalizarTexto } from '../../src/utils/texto.js';
 
 const LINKTREE = 'https://linktr.ee/Franzebi';
@@ -50,27 +50,47 @@ export function generoDePagina(textos) {
   return undefined;
 }
 
-/** Filas `{ nombre, volumenML, precioUSD, genero }` a partir del texto de una página (en orden de lectura). */
-export function filasDesdeTextos(textos) {
-  const genero = generoDePagina(textos);
+/**
+ * Núcleo de la lectura de filas. `items` son los textos de una página en orden de lectura, cada uno
+ * `{ s, x, y }` (posición en puntos del PDF; solo hacen falta para emparejar fotos). Devuelve
+ * `{ nombre, volumenML, precioUSD, genero, x, y }`: `y` es la altura del precio (el centro de la fila) y `x` el borde
+ * izquierdo del nombre (las fotos de la tabla están a la izquierda de ese borde).
+ */
+export function filasDesdeItems(items) {
+  const genero = generoDePagina(items.map((i) => i.s));
   const filas = [];
   let buf = [];
-  for (const crudo of textos) {
-    const s = crudo.trim();
+  for (const item of items) {
+    const s = item.s.trim();
     if (!s) continue;
     const precio = s.match(/^(\d+(?:[.,]\d+)?)\s*USD/i);
     if (!precio) {
-      buf.push(s);
+      buf.push({ ...item, s });
       continue;
     }
-    const nombre = buf.join(' ').replace(/\s+/g, ' ').replace(/^.*MODELO PRECIO\s+/i, '').trim();
+    const nombre = buf.map((b) => b.s).join(' ').replace(/\s+/g, ' ').replace(/^.*MODELO PRECIO\s+/i, '').trim();
     const volumen = nombre.match(/(\d+)\s?ML$/i);
     if (volumen) {
-      filas.push({ nombre, volumenML: Number(volumen[1]), precioUSD: Number(precio[1].replace(',', '.')), genero });
+      // En la primera fila de la página el buffer trae el encabezado ("MODELO", "PRECIO"): el nombre empieza después.
+      const desde = buf.findLastIndex((b) => /^PRECIO$/i.test(b.s)) + 1;
+      const xs = buf.slice(desde).map((b) => b.x).filter(Number.isFinite);
+      filas.push({
+        nombre,
+        volumenML: Number(volumen[1]),
+        precioUSD: Number(precio[1].replace(',', '.')),
+        genero,
+        x: xs.length ? Math.min(...xs) : undefined,
+        y: item.y,
+      });
     }
     buf = [];
   }
   return filas;
+}
+
+/** Filas `{ nombre, volumenML, precioUSD, genero }` a partir del texto de una página (en orden de lectura). */
+export function filasDesdeTextos(textos) {
+  return filasDesdeItems(textos.map((s) => ({ s }))).map(({ x, y, ...fila }) => fila);
 }
 
 export async function leerFilasDelPdf(buffer) {
@@ -116,10 +136,55 @@ export function extraerImagenesCrudas(buffer) {
 }
 
 /**
+ * Empareja las fotos de UNA página con sus filas por POSICIÓN: la foto de cada producto está en la columna de la
+ * izquierda, a la misma altura que su nombre y su precio. Es lo que hace una persona al mirar la tabla, y no
+ * depende del orden de los objetos dentro del archivo ni de cuántas fotos trae el PDF en total (un producto
+ * puede usar dos imágenes pegadas, y el proveedor agrega o saca filas al editar el catálogo).
+ *
+ *   filas: [{ x, y }]                       borde izquierdo del nombre y altura del precio (puntos del PDF)
+ *   fotos: [{ id, x, y, w, h }]             esquina inferior izquierda y tamaño con que se dibuja cada imagen
+ *   → [[foto, ...] | null, ...]             una entrada por fila; null = sin foto segura (queda oculta, como antes)
+ *
+ * Reglas, todas pensadas para NO poner una foto equivocada (publicar con la foto de otro perfume es peor que no tener foto):
+ *  - la foto debe estar a la izquierda del nombre y su centro vertical dentro de la banda de la fila (la mitad de la
+ *    distancia a la fila vecina, hasta 40 puntos);
+ *  - se ignoran las imágenes chicas (logos, íconos);
+ *  - varias piezas se aceptan solo si son contiguas (una al lado de la otra: un mismo dibujo partido en dos);
+ *  - si una foto cae en dos filas, o hay varias piezas que no son contiguas, no se adivina: ninguna fila la recibe.
+ */
+export function emparejarPorPosicion(filas, fotos) {
+  const TAMANO_MIN = 20; // puntos: lo que mide un logo o un ícono
+  const GRANDES = fotos.filter((f) => f.w >= TAMANO_MIN && f.h >= TAMANO_MIN);
+  const ys = filas.map((f) => f.y).sort((a, b) => a - b);
+  const separacion = (fila) => {
+    const vecinas = ys.filter((y) => y !== fila.y).map((y) => Math.abs(y - fila.y));
+    return vecinas.length ? Math.min(...vecinas) : 66;
+  };
+
+  const candidatas = filas.map((fila) => {
+    if (!Number.isFinite(fila.x) || !Number.isFinite(fila.y)) return [];
+    const banda = Math.min(40, separacion(fila) / 2);
+    return GRANDES.filter((f) => f.x + f.w <= fila.x + 6 && Math.abs(f.y + f.h / 2 - (fila.y + 3)) <= banda).sort((a, b) => a.x - b.x);
+  });
+
+  // Una foto que cae en dos filas es dudosa: no se le da a ninguna.
+  const usos = new Map();
+  candidatas.forEach((lista) => lista.forEach((f) => usos.set(f.id, (usos.get(f.id) ?? 0) + 1)));
+
+  return candidatas.map((lista) => {
+    if (!lista.length || lista.some((f) => usos.get(f.id) > 1)) return null;
+    if (lista.length === 1) return lista;
+    const contiguas = lista.every((f, i) => i === 0 || Math.abs(f.x - (lista[i - 1].x + lista[i - 1].w)) <= 4);
+    return contiguas ? lista : null;
+  });
+}
+
+/**
  * Empareja imágenes con filas por orden, pero solo si la cantidad coincide
  * exacto con la cantidad de filas: si el PDF trajo una cantidad distinta de
  * fotos que de productos, no hay forma confiable de saber cuál va con cuál,
  * así que no se asocia ninguna (quedan igual que antes, para carga manual).
+ * Ya no la usa el bot (ver `leerFilasConFotos`); queda por compatibilidad y como respaldo.
  */
 export function asociarImagenes(filas, imagenes) {
   if (!filas.length || imagenes.length !== filas.length) return filas;
@@ -196,4 +261,114 @@ export function motivoDeAborto(filas, resultado, totalPerfumes, { forzar = false
     return `${resultado.nuevos.length} de ${filas.length} filas figuran como nuevas (más del ${LIMITES.maxNuevosPct}%): puede haber cambiado el formato de los nombres`;
   }
   return null;
+}
+
+const mul = (a, b) => [
+  a[0] * b[0] + a[2] * b[1], a[1] * b[0] + a[3] * b[1], a[0] * b[2] + a[2] * b[3], a[1] * b[2] + a[3] * b[3],
+  a[0] * b[4] + a[2] * b[5] + a[4], a[1] * b[4] + a[3] * b[5] + a[5],
+];
+
+/** Fotos de una página con el lugar donde se dibujan: sigue la matriz de transformación del PDF (save/restore/transform). */
+function fotosDePagina(operadores) {
+  const pila = [];
+  let m = [1, 0, 0, 1, 0, 0];
+  const fotos = [];
+  operadores.fnArray.forEach((fn, k) => {
+    const a = operadores.argsArray[k];
+    if (fn === OPS.save) pila.push(m);
+    else if (fn === OPS.restore) m = pila.pop() ?? m;
+    else if (fn === OPS.transform) m = mul(m, a);
+    else if (fn === OPS.paintImageXObject) fotos.push({ id: a[0], x: m[4], y: m[5], w: Math.abs(m[0]), h: Math.abs(m[3]) });
+  });
+  return fotos;
+}
+
+/** pdfjs decodifica las imágenes en segundo plano (las compartidas viven en otra tabla): se espera a que esté lista. */
+async function esperarImagen(pagina, id, ms = 3000) {
+  const hasta = Date.now() + ms;
+  for (;;) {
+    if (pagina.objs.has(id)) return pagina.objs.get(id);
+    if (pagina.commonObjs.has(id)) return pagina.commonObjs.get(id);
+    if (Date.now() > hasta) return null;
+    await new Promise((resolver) => setTimeout(resolver, 40));
+  }
+}
+
+/** Píxeles de una imagen ya decodificada por pdfjs → sharp (null si no se puede leer). */
+async function pixelesDeImagen(sharp, pagina, id) {
+  const obj = await esperarImagen(pagina, id);
+  if (!obj?.data || !obj.width || !obj.height) return null;
+  const { width, height, data, kind } = obj;
+  if (kind === 1) {
+    // 1 bit por píxel (blanco y negro): se expande a 8 bits
+    const salida = Buffer.alloc(width * height);
+    const fila = Math.ceil(width / 8);
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) salida[y * width + x] = data[y * fila + (x >> 3)] & (0x80 >> (x & 7)) ? 255 : 0;
+    return sharp(salida, { raw: { width, height, channels: 1 } });
+  }
+  const canales = kind === 2 ? 3 : 4;
+  return sharp(Buffer.from(data.buffer, data.byteOffset, data.length), { raw: { width, height, channels: canales } });
+}
+
+const MIN_PIXELES_FOTO = 80; // una foto de producto es mucho más grande: esto descarta restos y recortes minúsculos
+
+/**
+ * Lee el catálogo y devuelve las filas con su foto (`imagenBuffer`, JPEG) cuando se puede emparejar con seguridad por
+ * posición en la página (ver `emparejarPorPosicion`). Las filas sin foto segura quedan sin `imagenBuffer`.
+ * Reemplaza a `asociarImagenes(leerFilasDelPdf(...), extraerImagenesCrudas(...))`, que se rompía con cualquier
+ * diferencia entre la cantidad de fotos y de filas.
+ */
+export async function leerFilasConFotos(buffer) {
+  const { default: sharp } = await import('sharp');
+  const pdf = await getDocument({ data: new Uint8Array(buffer) }).promise;
+  const resultado = [];
+  for (let n = 1; n <= pdf.numPages; n++) {
+    const pagina = await pdf.getPage(n);
+    const { items } = await pagina.getTextContent();
+    const filas = filasDesdeItems(items.map((i) => ({ s: i.str, x: i.transform[4], y: i.transform[5] })));
+    if (filas.length) {
+      const fotos = fotosDePagina(await pagina.getOperatorList());
+      const emparejadas = emparejarPorPosicion(filas, fotos);
+      for (let k = 0; k < filas.length; k++) {
+        const { x, y, ...fila } = filas[k];
+        const piezas = emparejadas[k];
+        let imagenBuffer;
+        if (piezas) {
+          try {
+            imagenBuffer = await armarFoto(sharp, pagina, piezas);
+          } catch {
+            imagenBuffer = undefined; // sin foto antes que una foto rota
+          }
+        }
+        resultado.push(imagenBuffer ? { ...fila, imagenBuffer } : fila);
+      }
+    }
+    pagina.cleanup();
+  }
+  return resultado;
+}
+
+/** Una pieza = la foto; varias contiguas se pegan de izquierda a derecha. Aplana transparencias a blanco y guarda JPEG. */
+async function armarFoto(sharp, pagina, piezas) {
+  const imagenes = [];
+  for (const pieza of piezas) {
+    const im = await pixelesDeImagen(sharp, pagina, pieza.id);
+    if (!im) return undefined;
+    const png = await im.flatten({ background: '#ffffff' }).png().toBuffer();
+    const { width, height } = await sharp(png).metadata();
+    if (width < MIN_PIXELES_FOTO || height < MIN_PIXELES_FOTO) return undefined;
+    imagenes.push({ png, width, height });
+  }
+  if (imagenes.length === 1) return sharp(imagenes[0].png).jpeg({ quality: 92 }).toBuffer();
+  const alto = Math.max(...imagenes.map((i) => i.height));
+  const ancho = imagenes.reduce((a, i) => a + i.width, 0);
+  let izquierda = 0;
+  return sharp({ create: { width: ancho, height: alto, channels: 3, background: '#ffffff' } })
+    .composite(imagenes.map((i) => {
+      const capa = { input: i.png, left: izquierda, top: Math.round((alto - i.height) / 2) };
+      izquierda += i.width;
+      return capa;
+    }))
+    .jpeg({ quality: 92 })
+    .toBuffer();
 }
