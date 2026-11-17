@@ -17,6 +17,7 @@ import { Button } from '../components/ui/Button';
 import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
 import { formatARS, nombreCompleto } from '../utils/format';
 import { imagenGrande, fuenteRecorte } from '../utils/image';
+import { VigenciaPromo } from '../components/ui/VigenciaPromo';
 import { construirLinkWhatsApp } from '../utils/whatsapp';
 import { WHATSAPP_NUMERO } from '../constants';
 import { ImagenProducto } from '../components/perfumes/ImagenProducto';
@@ -195,8 +196,9 @@ export default function PerfumeDetalle() {
           {precios ? (
             <div className="card-surface rounded-2xl p-5 tabular-nums">
               {pct > 0 && (
-                <p className="mb-3 font-body text-sm font-medium text-lila">
-                  {promo?.titulo ?? promo?.nombre ?? 'Promoción'} · {pct}% off
+                <p className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2 font-body text-sm font-medium text-lila">
+                  <span>{promo?.titulo ?? promo?.nombre ?? 'Promoción'} · {pct}% off</span>
+                  <VigenciaPromo promo={promo} />
                 </p>
               )}
               <div className="flex items-baseline justify-between gap-4">

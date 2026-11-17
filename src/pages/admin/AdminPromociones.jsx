@@ -2,6 +2,7 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { useTodasLasPromociones, useEditarPromocion, useEliminarPromocion } from '../../hooks/usePromociones';
 import { useAdminActions } from '../../context/AdminActionsContext';
 import { Card, Switch, Tag, Cargando, Empty } from '../../components/admin/ui/kit';
+import { finDePromo, fechaLarga } from '../../utils/vigencia';
 
 const TIPO = { descuento: 'Descuento', '2x1': '2×1', otro: 'Otro' };
 
@@ -33,7 +34,14 @@ export default function AdminPromociones() {
               <div className="flex items-center gap-2">
                 <span className="mono faint" style={{ fontSize: 11 }}>#{p.orden}</span>
                 <Tag tone="accent">{TIPO[p.tipo] ?? p.tipo ?? '—'}</Tag>
-                <Tag tone={p.activa ? 'ok' : 'neutral'} className="ml-auto">{p.activa ? 'Activa' : 'Inactiva'}</Tag>
+                {finDePromo(p) !== null && (
+                  <Tag tone={finDePromo(p) <= Date.now() ? 'bad' : 'warn'}>
+                    {finDePromo(p) <= Date.now() ? 'Vencida' : `Vence ${fechaLarga(finDePromo(p))}`}
+                  </Tag>
+                )}
+                <Tag tone={p.activa && !(finDePromo(p) !== null && finDePromo(p) <= Date.now()) ? 'ok' : 'neutral'} className="ml-auto">
+                  {finDePromo(p) !== null && finDePromo(p) <= Date.now() ? 'Terminó' : p.activa ? 'Activa' : 'Inactiva'}
+                </Tag>
               </div>
               <div>
                 <div style={{ fontFamily: 'Outfit', fontSize: 17 }}>{p.titulo}</div>

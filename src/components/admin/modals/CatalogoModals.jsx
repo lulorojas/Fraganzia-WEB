@@ -9,6 +9,7 @@ import { notificarNuevoPerfume, notificarNuevaPromocion } from '../../../service
 import { useCrearPromocion, useEditarPromocion } from '../../../hooks/usePromociones';
 import { usePerfumesAdmin } from '../../../hooks/usePerfumesAdmin';
 import { normalizarTexto } from '../../../utils/texto';
+import { aInputLocal, desdeInputLocal, finDePromo, finDelDia, finDeMes, fechaLarga } from '../../../utils/vigencia';
 import { GENEROS, FAMILIAS_OLFATIVAS, MARCAS } from '../../../constants';
 import { Field, Seg, Thumb } from '../ui/kit';
 import { ModalShell } from './shared';
@@ -121,16 +122,21 @@ export function PromocionModal({ editando, onClose, onGuardado }) {
   const sugeridos = busqueda.trim()
     ? (catalogo ?? []).filter((x) => !perfumeIds.includes(x.id) && x.nombre?.toLowerCase().includes(busqueda.trim().toLowerCase())).slice(0, 8)
     : [];
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
-    defaultValues: editando ?? { titulo: '', descripcion: '', imagen: '', activa: true, orden: 1, tipo: 'descuento', descuentoPorcentaje: 0 },
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
+    defaultValues: editando
+      ? { ...editando, venceEn: aInputLocal(finDePromo(editando)) }
+      : { titulo: '', descripcion: '', imagen: '', activa: true, orden: 1, tipo: 'descuento', descuentoPorcentaje: 0, venceEn: '' },
   });
+  const finElegido = desdeInputLocal(watch('venceEn'));
 
   async function guardar(base) {
     if (soloElegidos && perfumeIds.length === 0) {
       setErrorPerfumes('Elegí al menos un perfume o volvé a "Todos los perfumes".');
       return;
     }
-    const datos = { ...base, perfumeIds: soloElegidos && base.tipo !== 'otro' ? perfumeIds : [] };
+    const { venceEn, ...resto } = base;
+    // null = sin fecha de cierre (la promo sigue hasta que la apagues). Con fecha, se apaga sola.
+    const datos = { ...resto, venceEn: desdeInputLocal(venceEn) === null ? null : new Date(desdeInputLocal(venceEn)), perfumeIds: soloElegidos && base.tipo !== 'otro' ? perfumeIds : [] };
     if (editando) {
       await editar.mutateAsync({ id: editando.id, datos });
     } else {
@@ -184,6 +190,27 @@ export function PromocionModal({ editando, onClose, onGuardado }) {
           </Field>
         )}
         <Field label="Descripción"><textarea rows={2} className="input" {...register('descripcion')} /></Field>
+        <Field label="Vence el (opcional)">
+          <input type="datetime-local" className="input" {...register('venceEn')} />
+          <div className="flex flex-wrap gap-2" style={{ marginTop: 6 }} role="group" aria-label="Plazos rápidos">
+            {[
+              ['Hoy 23:59', () => finDelDia(Date.now(), 0)],
+              ['En 3 días', () => finDelDia(Date.now(), 3)],
+              ['En 7 días', () => finDelDia(Date.now(), 7)],
+              ['Fin de mes', () => finDeMes(Date.now())],
+            ].map(([texto, calcular]) => (
+              <button key={texto} type="button" className="chip" onClick={() => setValue('venceEn', aInputLocal(calcular()), { shouldDirty: true })}>{texto}</button>
+            ))}
+            <button type="button" className="chip" onClick={() => setValue('venceEn', '', { shouldDirty: true })}>Sin vencimiento</button>
+          </div>
+          <p className="card-note" style={{ margin: '6px 0 0' }}>
+            {finElegido !== null && finElegido <= Date.now()
+              ? 'Esa fecha ya pasó: la promoción no se va a ver en el sitio.'
+              : finElegido !== null
+                ? `Se muestra "Termina en…" en el sitio y se apaga sola el ${fechaLarga(finElegido)}.`
+                : 'Una promo con fecha de cierre se decide antes que una sin plazo: conviene que dure entre 3 y 7 días.'}
+          </p>
+        </Field>
         <Field label="URL de imagen"><input className="input" {...register('imagen')} /></Field>
         <label className="flex cursor-pointer items-center gap-2 dim"><input type="checkbox" {...register('activa')} /> Activa</label>
         <div className="adm-modal-foot">

@@ -3,6 +3,7 @@ import {
   query, where, orderBy, serverTimestamp,
 } from 'firebase/firestore/lite';
 import { db } from '../firebase/config';
+import { vigentes } from '../utils/vigencia';
 
 const COLLECTION = 'promociones';
 
@@ -10,7 +11,7 @@ export async function listarPromocionesActivas() {
   const snap = await getDocs(
     query(collection(db, COLLECTION), where('activa', '==', true), orderBy('orden', 'asc'))
   );
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return vigentes(snap.docs.map((d) => ({ id: d.id, ...d.data() })), Date.now());
 }
 
 export async function listarTodasLasPromociones() {

@@ -16,6 +16,9 @@ import { Button } from '../components/ui/Button';
 import { GlassCard } from '../components/ui/GlassCard';
 import { preciosPorMetodo, calcularCarritoConPromos } from '../utils/precios';
 import { formatARS } from '../utils/format';
+import { useAhora, refrescarAhora } from '../hooks/useAhora';
+import { cierreMasCercano, fechaLarga, finDePromo, vigentes } from '../utils/vigencia';
+import { VigenciaPromo } from '../components/ui/VigenciaPromo';
 import { guardarPedidoLocal } from '../utils/misPedidos';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
@@ -28,6 +31,7 @@ export default function Carrito() {
   const { data: promociones } = usePromocionesActivas();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const ahora = useAhora();
 
   const [clienteNombre, setClienteNombre] = useState(user?.displayName ?? '');
   const [errorNombre, setErrorNombre] = useState(null);
@@ -107,6 +111,14 @@ export default function Carrito() {
       return;
     }
 
+    // Una promo puede haber vencido mientras se miraba el carrito: se vuelve a leer el reloj y, si cambió, se avisa
+    // y no se confirma, para que nadie pague un total distinto del que vio.
+    const horaReal = refrescarAhora();
+    if (vigentes(promociones, horaReal).length !== (promociones ?? []).length) {
+      setAvisoDisponibilidad('Una promoción terminó justo ahora y el total cambió. Revisá el nuevo total y confirmá de nuevo.');
+      return;
+    }
+
     const esEfectivo = state.metodoPago === 'Efectivo';
     const { itemsConPrecio, subtotalARS, totalARS, descuentoARS } = calcularCarritoConPromos(
       state.items, promociones, esEfectivo, dolarMedio
@@ -152,12 +164,26 @@ export default function Carrito() {
     });
   }
 
+  const nombresAplicados = new Set(
+    dolarMedio ? calcularCarritoConPromos(state.items, promociones, state.metodoPago === 'Efectivo', dolarMedio).lineas.map((l) => l.nombre) : []
+  );
+  const cierre = cierreMasCercano((promociones ?? []).filter((p) => nombresAplicados.has(p.titulo)), ahora);
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-display font-light text-3xl tracking-tight text-text sm:text-4xl">Tu carrito</h1>
       </div>
+
+      {cierre && (
+        <div role="note" className="mb-5 flex flex-col gap-2 rounded-2xl border border-lila/30 bg-lila/[0.07] p-4 font-body text-sm text-text">
+          <p>
+            <b>{cierre.titulo}</b>: tu descuento vale hasta el {fechaLarga(finDePromo(cierre))}. Si confirmás tu pedido antes, te quedás con este precio.
+          </p>
+          <VigenciaPromo promo={cierre} className="self-start" />
+        </div>
+      )}
 
       {/* Productos */}
       <ul className="flex flex-col gap-3" aria-label="Productos en el carrito">
@@ -206,6 +232,11 @@ export default function Carrito() {
         {avisoDisponibilidad && (
           <p className="text-sm text-error" role="alert">{avisoDisponibilidad}</p>
         )}
+
+        <p className="font-body text-xs leading-relaxed text-text-secondary">
+          Confirmar lleva menos de un minuto: solo necesitás tu nombre y después seguimos por WhatsApp.
+          {dolarMedio ? ` Los precios en pesos siguen al dólar blue de hoy (${formatARS(dolarMedio)}) y pueden cambiar de un día para otro.` : ''}
+        </p>
 
         <Button
           onClick={handleConfirmar}

@@ -9,6 +9,7 @@ import { abrirAsistente } from '../components/asistente/BotonAsistente';
 import { PerfumeCard } from '../components/perfumes/PerfumeCard';
 import { PerfumeGridSkeleton } from '../components/perfumes/PerfumeCardSkeleton';
 import { ImagenProducto } from '../components/perfumes/ImagenProducto';
+import { VigenciaPromo } from '../components/ui/VigenciaPromo';
 
 const AROMAS = ['Oriental', 'Floral', 'Amaderado', 'Gourmand'];
 
@@ -138,7 +139,10 @@ export default function Home() {
                       </p>
                     )}
                   </div>
-                  <span className="font-body text-sm font-semibold text-lila transition-colors group-hover:text-text">Ver perfumes</span>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <VigenciaPromo promo={promo} />
+                    <span className="font-body text-sm font-semibold text-lila transition-colors group-hover:text-text">Ver perfumes</span>
+                  </div>
                 </div>
               </Link>
             ))}

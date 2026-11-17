@@ -11,6 +11,8 @@
  * viejos, así que en cuanto un componente los usa se vuelven a pedir a
  * Firestore en segundo plano y se reemplazan por los datos en vivo.
  */
+import { fijarHoraDelBuild } from '../hooks/useAhora';
+
 export function sembrarDatosIniciales(queryClient) {
   const el = document.getElementById('datos-iniciales');
   if (!el) return;
@@ -23,6 +25,8 @@ export function sembrarDatosIniciales(queryClient) {
   }
 
   const updatedAt = Date.parse(datos.generadoEn) || 1;
+  // El HTML pre-generado se calculó a esta hora: el primer pintado la usa para coincidir (ver hooks/useAhora.js).
+  fijarHoraDelBuild(Date.parse(datos.generadoEn));
   const sembrar = (key, value) => {
     if (value !== undefined && value !== null) queryClient.setQueryData(key, value, { updatedAt });
   };

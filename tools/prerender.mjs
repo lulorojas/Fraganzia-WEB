@@ -19,6 +19,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { preview } from 'vite';
 import { listarColeccion, leerDocumento } from './lib/firestore-rest.mjs';
 import { hashTexto } from '../src/utils/hash.js';
+import { estaVigente } from '../src/utils/vigencia.js';
 import {
   preciosDe, htmlFicha, jsonLdFicha, jsonLdSitio, jsonLdCatalogo, llmsTxt, llmsFull, catalogoJson,
 } from './lib/contenido-agentes.mjs';
@@ -60,7 +61,7 @@ async function tomarFoto() {
       .sort((a, b) => String(b.createdAt ?? '').localeCompare(String(a.createdAt ?? '')))
       .map(({ createdAt, activo, disponible, imagenes, ...p }) => ({ ...p, imagenes: imagenes?.slice(0, 1) ?? [] })),
     promociones: promociones
-      .filter((p) => p.activa === true)
+      .filter((p) => p.activa === true && estaVigente(p, Date.now())) // una promo ya vencida no entra al HTML
       .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)),
     config,
     dolarBlue,
