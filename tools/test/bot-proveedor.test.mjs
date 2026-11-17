@@ -111,3 +111,57 @@ test('el bot anda aunque Node no tenga Promise.withResolvers (Node 20)', async (
   `;
   execFileSync(process.execPath, ['--input-type=module', '-e', codigo], { stdio: 'pipe' });
 });
+
+// ─── Emparejamiento de fotos por posición ────────────────────────────────────
+
+test('filasDesdeItems guarda dónde está cada fila: altura del precio y borde izquierdo del nombre (sin contar el encabezado)', async () => {
+  const { filasDesdeItems } = await import('../lib/catalogo-proveedor.mjs');
+  const it = (s, x, y) => ({ s, x, y });
+  const filas = filasDesdeItems([
+    it('FRAGANCIAS MASCULINAS', 195, 710), it('MODELO', 241, 692), it('PRECIO', 380, 692),
+    it('ARMAF ODYSSEY MANDARIN', 183, 666), it('SKY VINTAGE 100ML', 208, 648), it('56 USD', 381, 657),
+    it('ARMAF ODYSSEY NEXUS 100ML', 176, 523), it('48 USD', 380, 523),
+  ]);
+  assert.equal(filas.length, 2);
+  assert.deepEqual(filas.map((f) => [f.nombre, f.precioUSD, f.genero, f.x, f.y]), [
+    ['ARMAF ODYSSEY MANDARIN SKY VINTAGE 100ML', 56, 'Masculino', 183, 657],
+    ['ARMAF ODYSSEY NEXUS 100ML', 48, 'Masculino', 176, 523],
+  ]);
+});
+
+const foto = (id, x, y, w = 50, h = 45) => ({ id, x, y, w, h });
+const fila = (y, x = 175) => ({ x, y });
+
+test('cada foto se empareja con la fila que tiene a su altura, a la izquierda del nombre', async () => {
+  const { emparejarPorPosicion } = await import('../lib/catalogo-proveedor.mjs');
+  const r = emparejarPorPosicion([fila(657), fila(590), fila(523)], [foto('c', 98, 505), foto('a', 95, 640), foto('b', 97, 575)]);
+  assert.deepEqual(r.map((l) => l?.map((f) => f.id)), [['a'], ['b'], ['c']]);
+});
+
+test('el caso que rompía al bot: una foto de más en el PDF (un logo o una imagen partida) ya no deja a todos sin foto', async () => {
+  const { emparejarPorPosicion } = await import('../lib/catalogo-proveedor.mjs');
+  const filas = [fila(657), fila(590), fila(523)];
+  const fotos = [foto('a', 95, 640), foto('b', 97, 575), foto('c', 98, 505), foto('logo', 439, 653, 17, 19), foto('otra', 439, 670, 23, 23)];
+  assert.equal(fotos.length, filas.length + 2, 'hay más fotos que filas: el método anterior no emparejaba ninguna');
+  assert.deepEqual(emparejarPorPosicion(filas, fotos).map((l) => l?.[0].id), ['a', 'b', 'c']);
+});
+
+test('un producto con su dibujo partido en dos imágenes contiguas se arma con las dos, de izquierda a derecha', async () => {
+  const { emparejarPorPosicion } = await import('../lib/catalogo-proveedor.mjs');
+  const r = emparejarPorPosicion([fila(256)], [foto('derecha', 130, 240, 27, 46), foto('izquierda', 93, 240, 37, 46)]);
+  assert.deepEqual(r[0].map((f) => f.id), ['izquierda', 'derecha']);
+});
+
+test('no se adivina: piezas separadas, una foto que cae en dos filas, una foto a la derecha del nombre o una fila sin foto quedan sin foto', async () => {
+  const { emparejarPorPosicion } = await import('../lib/catalogo-proveedor.mjs');
+  // dos piezas que NO se tocan (podrían ser de dos productos distintos)
+  assert.deepEqual(emparejarPorPosicion([fila(256)], [foto('a', 90, 240, 30, 46), foto('b', 140, 240, 27, 46)]), [null]);
+  // una foto justo entre dos filas: entra en las dos bandas, así que no es de ninguna
+  assert.deepEqual(emparejarPorPosicion([fila(500), fila(440)], [foto('entre', 95, 450, 50, 46)]), [null, null]); // centro a 473: a 30 pt de cada fila
+  // a la derecha del nombre (es otra cosa de la página, no la foto del producto)
+  assert.deepEqual(emparejarPorPosicion([fila(500, 175)], [foto('x', 300, 480)]), [null]);
+  // fila sin foto a su altura
+  assert.deepEqual(emparejarPorPosicion([fila(500), fila(300)], [foto('a', 95, 485)]).map((l) => l?.[0].id ?? null), ['a', null]);
+  // fila sin posición (formato inesperado)
+  assert.deepEqual(emparejarPorPosicion([{ x: undefined, y: undefined }], [foto('a', 95, 485)]), [null]);
+});
