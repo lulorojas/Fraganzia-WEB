@@ -1,6 +1,7 @@
 import locales from '../data/imagenes-locales.json';
 import recortes from '../data/recortes.json';
 import { hashTexto } from './hash';
+import { VERSION_FOTOS } from './versionFotos';
 
 // Hashes de las fotos que tools/localizar-imagenes.mjs ya descargó y optimizó.
 const LOCALES = new Set(locales);
@@ -20,8 +21,8 @@ export function fuentesImagen(url) {
   const hash = hashTexto(url);
   if (!LOCALES.has(hash)) return { src: url };
   return {
-    src: `/img/p/${hash}-400.webp`,
-    srcSet: `/img/p/${hash}-400.webp 400w, /img/p/${hash}-800.webp 800w`,
+    src: `/img/p/${hash}-400.webp?v=${VERSION_FOTOS}`,
+    srcSet: `/img/p/${hash}-400.webp?v=${VERSION_FOTOS} 400w, /img/p/${hash}-800.webp?v=${VERSION_FOTOS} 800w`,
   };
 }
 
@@ -29,7 +30,7 @@ export function fuentesImagen(url) {
 export function imagenGrande(url) {
   if (!url) return undefined;
   const hash = hashTexto(url);
-  return LOCALES.has(hash) ? `/img/p/${hash}-800.webp` : url;
+  return LOCALES.has(hash) ? `/img/p/${hash}-800.webp?v=${VERSION_FOTOS}` : url;
 }
 
 // Los recortes de fondo quedaron en pausa (17/11/2026): en las cajas blancas sobre fondo blanco salen mal cortados, y cada perfume

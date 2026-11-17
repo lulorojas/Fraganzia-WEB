@@ -46,3 +46,4 @@ for (const { hash, origen } of todas) {
   hechas++;
 }
 console.log(`fotos aplicadas: ${hechas}`);
+console.log('IMPORTANTE: si estas fotos ya estaban publicadas, subí VERSION_FOTOS en src/utils/versionFotos.js (si no, los navegadores siguen mostrando la vieja por 30 días).');

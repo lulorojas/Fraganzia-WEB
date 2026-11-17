@@ -20,6 +20,7 @@ import { preview } from 'vite';
 import { listarColeccion, leerDocumento } from './lib/firestore-rest.mjs';
 import { hashTexto } from '../src/utils/hash.js';
 import { estaVigente } from '../src/utils/vigencia.js';
+import { VERSION_FOTOS } from '../src/utils/versionFotos.js';
 import {
   preciosDe, htmlFicha, jsonLdFicha, jsonLdSitio, jsonLdCatalogo, llmsTxt, llmsFull, catalogoJson,
 } from './lib/contenido-agentes.mjs';
@@ -169,7 +170,7 @@ if (!chrome) {
 function urlImagen(url) {
   if (!url) return `${SITE}/og-fraganzia.png`;
   const hash = hashTexto(url);
-  if (existsSync(`${DIST}/img/p/${hash}-800.webp`)) return `${SITE}/img/p/${hash}-800.webp`;
+  if (existsSync(`${DIST}/img/p/${hash}-800.webp`)) return `${SITE}/img/p/${hash}-800.webp?v=${VERSION_FOTOS}`;
   return url.startsWith('/') ? `${SITE}${url}` : url;
 }
 
