@@ -1,5 +1,5 @@
 import { Minus, Plus, X } from 'lucide-react';
-import { formatARS, nombreCompleto } from '../../utils/format';
+import { formatARS, nombreCompleto, tituloCard } from '../../utils/format';
 import { ImagenProducto } from '../perfumes/ImagenProducto';
 import { CANTIDAD_MAX } from '../../context/CartContext';
 
@@ -15,8 +15,8 @@ export function CartItem({ item, precioARS, onCambiarCantidad, onQuitar }) {
 
       {/* Info del producto */}
       <div className="flex-1 min-w-0">
-        <p className="font-body text-sm text-text font-medium truncate">{item.marca}</p>
-        <p className="text-xs text-text-secondary line-clamp-2 sm:line-clamp-1">{item.nombre}</p>
+        <p className="truncate font-body text-[11px] font-semibold uppercase tracking-wide2 text-lila">{item.marca}</p>
+        <p className="font-display text-sm font-medium leading-snug text-text line-clamp-2">{item.esDecant ? item.nombre : tituloCard(item)}</p>
         <p className="mt-1 text-sm text-lila font-medium tabular-nums">{formatARS(precioARS)} c/u</p>
       </div>
 

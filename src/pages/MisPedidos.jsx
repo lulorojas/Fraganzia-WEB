@@ -63,7 +63,7 @@ export default function MisPedidos() {
         <div className="card-surface flex flex-col items-center gap-4 rounded-2xl p-8 text-center">
           <Package size={32} className="text-lila" aria-hidden="true" />
           <p className="font-body text-text-secondary">Todavía no hiciste pedidos desde este dispositivo.</p>
-          <Link to="/catalogo" className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-text">
+          <Link to="/catalogo" className="boton boton-principal">
             Ver catálogo
           </Link>
         </div>

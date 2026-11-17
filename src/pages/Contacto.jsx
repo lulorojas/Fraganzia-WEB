@@ -34,7 +34,7 @@ export default function Contacto() {
         </p>
         {numero ? (
           <a href={linkConsulta} target="_blank" rel="noopener noreferrer">
-            <Button className="flex items-center gap-2 bg-success/20 hover:bg-success/30 text-success border border-success/40">
+            <Button variant="secondary" className="border-success/50 text-success hover:border-success hover:bg-success/15 hover:text-success">
               <MessageCircle className="h-4 w-4" />
               Escribirnos por WhatsApp
             </Button>

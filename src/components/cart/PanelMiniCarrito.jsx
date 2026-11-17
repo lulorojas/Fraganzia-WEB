@@ -6,7 +6,7 @@ import { useDolarBlue } from '../../hooks/useDolarBlue';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { ImagenProducto } from '../perfumes/ImagenProducto';
 import { preciosPorMetodo } from '../../utils/precios';
-import { formatARS } from '../../utils/format';
+import { formatARS, tituloCard } from '../../utils/format';
 
 function precioUnitario(item, dolarMedio, metodoPago) {
   if (!dolarMedio || !item.precioUSD) return null;
@@ -67,7 +67,7 @@ export default function PanelMiniCarrito({ agregado, onCerrar }) {
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate font-body text-[11px] font-semibold uppercase tracking-wide2 text-lila">{item.marca}</p>
-              <p className="line-clamp-2 font-display text-sm font-semibold leading-snug text-text">{item.nombre}</p>
+              <p className="line-clamp-2 font-display text-sm font-medium leading-snug text-text">{item.esDecant ? item.nombre : tituloCard(item)}</p>
               <p className="mt-0.5 font-body text-xs text-text-secondary">
                 {agregado.cantidad > 1 ? `${agregado.cantidad} unidades` : '1 unidad'}
                 {item.cantidad > agregado.cantidad && ` · ${item.cantidad} en total`}
@@ -87,7 +87,7 @@ export default function PanelMiniCarrito({ agregado, onCerrar }) {
           <Link
             to="/carrito"
             data-principal=""
-            className="gradient-violet flex-1 rounded-xl px-4 py-3 text-center font-body text-sm font-semibold text-text shadow-lg shadow-violet/20 transition-shadow hover:shadow-violet/40"
+            className="boton boton-principal flex-1"
           >
             Ir al carrito
           </Link>

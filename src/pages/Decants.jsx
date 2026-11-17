@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { preciosPorMetodo } from '../utils/precios';
 import { ML_DECANT, precioDecantUSD, esDecant } from '../utils/decants';
-import { formatARS, nombreCompleto } from '../utils/format';
+import { formatARS, nombreCompleto, tituloCard } from '../utils/format';
 import { ImagenProducto } from '../components/perfumes/ImagenProducto';
 import { GlassCard } from '../components/ui/GlassCard';
 
@@ -32,7 +32,7 @@ function FilaDecant({ perfume, ml, dolarMedio, onAgregar }) {
         type="button"
         onClick={() => onAgregar(perfume, ml)}
         disabled={!tienePrecio}
-        className="rounded-lg bg-violet px-3 py-2 text-xs font-semibold text-white transition-base hover:bg-violet/90 disabled:opacity-40"
+        className="boton boton-contorno boton-chico"
       >
         Agregar
       </button>
@@ -50,7 +50,10 @@ function CardDecant({ perfume, dolarMedio, onAgregar }) {
         </div>
         <div className="min-w-0">
           <p className="text-[11px] font-semibold uppercase tracking-wide2 text-lila truncate">{perfume.marca}</p>
-          <h2 className="font-display text-sm font-semibold leading-snug text-text line-clamp-2">{perfume.nombre}</h2>
+          <h2 className="font-display text-base font-medium leading-snug text-text line-clamp-2">
+            {tituloCard(perfume)}
+            <span className="sr-only"> ({nombreCompleto(perfume)})</span>
+          </h2>
         </div>
       </div>
       <div className="flex flex-col gap-2">

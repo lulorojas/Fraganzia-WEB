@@ -15,7 +15,7 @@ import { InspiradoEn } from '../components/perfumes/InspiradoEn';
 import { PrecioNoDisponible } from '../components/perfumes/PrecioNoDisponible';
 import { Button } from '../components/ui/Button';
 import { preciosPorMetodo, getMejorPromo } from '../utils/precios';
-import { formatARS, nombreCompleto } from '../utils/format';
+import { formatARS, nombreCompleto, tituloCard } from '../utils/format';
 import { imagenGrande, fuenteRecorte } from '../utils/image';
 import { VigenciaPromo } from '../components/ui/VigenciaPromo';
 import { construirLinkWhatsApp } from '../utils/whatsapp';
@@ -183,8 +183,9 @@ export default function PerfumeDetalle() {
         <div className="flex flex-col gap-6">
           <div>
             <p className="mb-2 font-body text-xs font-semibold uppercase tracking-wide2 text-lila">{perfume.marca}</p>
-            <h1 className="font-display text-3xl font-semibold leading-tight text-text text-balance sm:text-4xl">
-              {perfume.nombre}
+            <h1 className="font-display text-4xl font-extralight leading-[1.05] tracking-[-0.03em] text-text text-balance sm:text-5xl">
+              {tituloCard(perfume)}
+              <span className="sr-only"> ({nombreCompleto(perfume)})</span>
             </h1>
             <p className="mt-2 font-body text-sm text-text-secondary">
               {[perfume.volumenML && `${perfume.volumenML} ml`, perfume.genero, perfume.familiaOlfativa]

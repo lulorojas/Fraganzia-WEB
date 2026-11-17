@@ -72,7 +72,7 @@ export default function Favoritos() {
               <div className="flex flex-wrap justify-center gap-3">
                 <Link
                   to="/catalogo"
-                  className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-text"
+                  className="boton boton-principal"
                 >
                   Ver catálogo
                 </Link>

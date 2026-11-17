@@ -99,7 +99,7 @@ export default function Pedido() {
             href={construirLinkWhatsApp(whatsapp, `Hola! Quiero consultar por mi pedido ${numero}.`)}
             target="_blank"
             rel="noopener noreferrer"
-            className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-text"
+            className="boton boton-principal"
           >
             Escribir por WhatsApp
           </a>
@@ -135,7 +135,7 @@ export default function Pedido() {
 
       {esNuevo && !cancelado && (
         <section className="card-surface mb-6 rounded-2xl p-5 ring-1 ring-violet/50" aria-labelledby="ultimo-paso">
-          <h2 id="ultimo-paso" className="font-display text-lg font-semibold text-text">
+          <h2 id="ultimo-paso" className="font-display text-lg font-medium text-text">
             ¡Listo! Falta un último paso
           </h2>
           <p className="mt-1 font-body text-sm text-text-secondary">

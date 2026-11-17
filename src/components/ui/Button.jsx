@@ -1,15 +1,16 @@
 const VARIANTS = {
-  primary: 'gradient-violet text-text shadow-lg shadow-violet/20 hover:shadow-violet/40 hover:scale-[1.02]',
-  secondary: 'glass text-text hover:glow hover:border-lila/40',
-  ghost: 'bg-transparent text-text-secondary hover:text-text',
+  primary: 'boton-principal',
+  secondary: 'boton-contorno',
+  ghost: 'text-text-secondary hover:text-text',
 };
 
-export function Button({ variant = 'primary', className = '', children, ...props }) {
+/**
+ * Botón de las páginas internas: píldora, como los del Home. `primary` = la acción de la pantalla (una por vista),
+ * `secondary` = contorno lila, `ghost` = solo texto. `size="chico"` para botones dentro de filas y tarjetas.
+ */
+export function Button({ variant = 'primary', size, className = '', children, ...props }) {
   return (
-    <button
-      className={`px-4 py-2 rounded-xl font-body font-medium transition-base disabled:opacity-50 disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
-      {...props}
-    >
+    <button className={`boton ${VARIANTS[variant]} ${size === 'chico' ? 'boton-chico' : ''} ${className}`} {...props}>
       {children}
     </button>
   );

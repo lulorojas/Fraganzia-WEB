@@ -403,3 +403,46 @@ html[data-lectura='facil'] .font-display, html[data-lectura='facil'] .font-body 
   word-spacing: 0.08em;
 }
 html[data-lectura='facil'] p, html[data-lectura='facil'] li { line-height: 1.7; }
+
+/* ═══════════════════════════════════════════════════════════
+   BOTONES de las páginas internas: píldoras, como los del Home ("Encontrá tu perfume", "Buscar").
+   .boton-principal = la acción de la pantalla (una por vista); .boton-contorno = el resto.
+   ═══════════════════════════════════════════════════════════ */
+@layer components {
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.8rem 1.7rem;
+    font-family: var(--font-body, inherit);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .boton:disabled { opacity: 0.5; cursor: not-allowed; }
+  .boton-principal {
+    background: linear-gradient(135deg, #7B2FBE, #9B59D0);
+    color: #fff;
+  }
+  .boton-principal:hover:not(:disabled) {
+    background: linear-gradient(135deg, #8A3AD0, #AA68E0);
+    box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.18);
+  }
+  .boton-contorno {
+    border: 1px solid rgba(192, 132, 252, 0.45);
+    background: transparent;
+    color: #C084FC;
+  }
+  .boton-contorno:hover:not(:disabled) {
+    border-color: rgba(192, 132, 252, 0.75);
+    background: rgba(123, 47, 190, 0.22);
+    color: #F8F4FF;
+  }
+  .boton-chico { padding: 0.45rem 0.8rem; font-size: 0.78rem; }
+}

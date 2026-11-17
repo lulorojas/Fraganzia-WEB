@@ -140,7 +140,7 @@ export default function Catalogo() {
             <button
               type="button"
               onClick={() => refetch()}
-              className="gradient-violet rounded-xl px-5 py-2.5 font-body text-sm font-semibold text-text"
+              className="boton boton-principal"
             >
               Reintentar
             </button>
