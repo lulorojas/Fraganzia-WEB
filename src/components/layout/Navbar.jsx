@@ -69,8 +69,8 @@ export function Navbar() {
 
       <div className="border-b border-border bg-[rgba(12,9,26,0.97)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
         <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto] items-center gap-x-2 gap-y-2.5 px-3.5 pb-2 pt-2.5 [grid-template-areas:'logo_acc'_'busq_busq'_'nav_nav'] lg:grid-cols-[auto_minmax(340px,1fr)_auto] lg:gap-x-7 lg:gap-y-3 lg:px-6 lg:pt-3.5 lg:[grid-template-areas:'logo_busq_acc'_'nav_nav_nav']">
-          <Link to="/" aria-label="Fraganzia, ir al inicio" className="justify-self-start [grid-area:logo] transition-opacity hover:opacity-85">
-            <LogoFraganzia className="[--logo-scale:0.9] lg:[--logo-scale:1.05]" />
+          <Link to="/" aria-label="Fraganzia Perfumes árabes, ir al inicio" className="justify-self-start [grid-area:logo] transition-opacity hover:opacity-85">
+            <LogoFraganzia subtitulo="sm" className="[--logo-scale:0.95] lg:[--logo-scale:1.05]" />
           </Link>
 
           <form role="search" onSubmit={buscar} className="flex items-stretch overflow-hidden rounded-full border-[1.5px] border-lila bg-white/[0.05] shadow-[0_0_0_4px_rgba(155,89,208,0.12)] [grid-area:busq]">

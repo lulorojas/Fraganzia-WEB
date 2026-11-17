@@ -314,7 +314,8 @@ test('robots.txt da la bienvenida a los agentes de IA sin abrir lo privado', asy
 test('el nombre del logo es texto real: se lee "FRAGANZIA"', async () => {
   const { page, errores } = await abrir('/');
   const texto = await page.$eval('header a[href="/"]', (a) => a.textContent.replace(/\s+/g, ''));
-  assert.equal(texto, 'FRAGANZIA');
+  // El nombre es texto real y va primero; desde tableta el enlace suma el subtítulo «Perfumes árabes» (en el celular no entra).
+  assert.match(texto, /^FRAGANZIA(Perfumesárabes)?$/);
   assert.deepEqual(errores, []);
   await page.close();
 });
