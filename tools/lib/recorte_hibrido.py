@@ -15,6 +15,7 @@ Uso (lo llama tools/recortar-fotos.mjs):
 --conservar-blanco: no quita el blanco de estudio (para productos que son blancos, por ejemplo una caja blanca
 sobre fondo blanco, donde quitarlo se llevaría también la caja).
 --casco: cierra la silueta con su casco convexo (caja blanca sobre fondo blanco que la máscara deja a pedazos).
+--cierre=N: rellena las mordidas del borde con un cierre morfológico de radio N px (más local que --casco; 40 a 100).
 
 Imprime una línea JSON con métricas. Requiere: pip install pillow numpy scipy
 """
@@ -114,7 +115,21 @@ def forma_del_casco(m):
     return np.asarray(img).astype(bool)
 
 
-def recortar(original, modelo, salida, conservar_blanco=False, casco=False):
+def disco(radio):
+    y, x = np.ogrid[-radio:radio + 1, -radio:radio + 1]
+    return (x * x + y * y) <= radio * radio
+
+
+def cerrar_mordidas(m, radio):
+    """Cierre morfológico con un disco grande: rellena las mordidas del borde (cajas blancas sobre fondo blanco)
+    sin trazar el casco entero, que agregaría cuñas de fondo entre el frasco y la caja."""
+    margen = radio + 2
+    grande = np.pad(m, margen)
+    grande = ndi.binary_closing(grande, structure=disco(radio))
+    return ndi.binary_fill_holes(grande)[margen:-margen, margen:-margen]
+
+
+def recortar(original, modelo, salida, conservar_blanco=False, casco=False, cierre=0):
     orig = Image.open(original).convert('RGB')
     rec = Image.open(modelo).convert('RGBA').resize(orig.size)
     rgb = np.asarray(orig)
@@ -129,6 +144,8 @@ def recortar(original, modelo, salida, conservar_blanco=False, casco=False):
     m = completar_con_casco(m, rgb)
     if not conservar_blanco:
         m = quitar_blanco_de_fondo(m, rgb, alfa)
+    if cierre:
+        m = cerrar_mordidas(m, cierre)
     if casco:
         m = ndi.binary_dilation(m, iterations=3)
         m = m | forma_del_casco(m)
@@ -157,4 +174,5 @@ def recortar(original, modelo, salida, conservar_blanco=False, casco=False):
 
 if __name__ == '__main__':
     banderas = sys.argv[4:]
-    print(json.dumps(recortar(sys.argv[1], sys.argv[2], sys.argv[3], '--conservar-blanco' in banderas, '--casco' in banderas)))
+    cierre = next((int(b.split('=')[1]) for b in banderas if b.startswith('--cierre=')), 0)
+    print(json.dumps(recortar(sys.argv[1], sys.argv[2], sys.argv[3], '--conservar-blanco' in banderas, '--casco' in banderas, cierre)))
