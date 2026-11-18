@@ -108,7 +108,7 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
 
         <div className="mt-auto pt-2.5">
           {precios ? (
-            <div className="flex items-end justify-between gap-2 pr-11 tabular-nums">
+            <div className="flex flex-col gap-1.5 pr-11 tabular-nums sm:flex-row sm:items-end sm:justify-between sm:gap-2">
               <div>
                 <span className="block font-body text-[10px] uppercase tracking-wide text-text-secondary">Transferencia</span>
                 {pct > 0 && (
@@ -121,7 +121,7 @@ export function PerfumeCard({ perfume, dolarMedio, onAgregar, config, promocione
                   {formatARS(pct > 0 ? conPromo(precios.precioTransferencia) : precios.precioTransferencia)}
                 </b>
               </div>
-              <div className="text-right">
+              <div className="sm:text-right">
                 <span className="block font-body text-[10px] uppercase tracking-wide text-text-secondary">Efectivo</span>
                 <span className={`font-body text-[13px] ${pct > 0 ? 'text-emerald-400' : 'text-[#cfc3ea]'}`}>
                   {formatARS(pct > 0 ? conPromo(precios.precioEfectivo) : precios.precioEfectivo)}
