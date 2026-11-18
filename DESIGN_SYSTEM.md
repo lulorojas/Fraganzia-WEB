@@ -276,7 +276,7 @@ hover: color text-primary
 - El buscador lleva al catálogo con `?buscar=`; las categorías, con `?genero=` / `?ofertas=1`.
 
 ### 8. Card de producto («vitrina»)
-- La foto original va en una **ventana clara lila** (`.plinto`) dentro de la tarjeta oscura. Todas las fotos muestran **frasco con caja** (salvo los perfumes que no traen caja, como Armaf Tag): las copias de `public/img/p` salen de `tools/fotos-alternativas` (`node tools/aplicar-fotos-alternativas.mjs`) y llevan `?v=N` (`src/utils/versionFotos.js`) para no quedar en la caché del navegador.
+- La foto original va en una **ventana clara lila** (`.plinto`) dentro de la tarjeta oscura. Todas las fotos muestran **frasco con caja** (todos los perfumes la traen, incluidos los Armaf Tag): las copias de `public/img/p` salen de `tools/fotos-alternativas` (`node tools/aplicar-fotos-alternativas.mjs`) y llevan `?v=N` (`src/utils/versionFotos.js`) para no quedar en la caché del navegador.
 - Muestra marca, nombre corto, familia · género y los **dos precios** (Transferencia grande, Efectivo chico), más el botón **+** redondo.
 - Los **recortes de fondo están en pausa** (salían mal en las cajas blancas y cada perfume nuevo del bot necesitaría el suyo a mano): `USAR_RECORTES = false` en `src/utils/image.js`. Los archivos `-cut.webp`, `src/data/recortes.json` y `tools/recortar-fotos.mjs` siguen en el repo por si se retoma.
 

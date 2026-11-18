@@ -6,4 +6,4 @@
 //
 // Subirla cada vez que se regeneren fotos que ya estaban publicadas (tools/aplicar-fotos-alternativas.mjs).
 // Las fotos NUEVAS no la necesitan: nadie las tiene en caché.
-export const VERSION_FOTOS = 3;
+export const VERSION_FOTOS = 4;
