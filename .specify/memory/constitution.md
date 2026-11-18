@@ -121,7 +121,7 @@ Tema oscuro premium, violeta sobre negro, con glassmorphism y glow violeta.
 ```css
 :root {
   /* Fondos */
-  --color-bg: #0A0A0F;                       /* Fondo principal de la app */
+  --color-bg: #06040D;                       /* Fondo principal de la app (enmienda 17/11/2026: antes #0A0A0F) */
 
   /* Acentos violeta */
   --color-violet: #7B2FBE;                   /* Acento primario (botones, links activos) */
@@ -142,10 +142,11 @@ Tema oscuro premium, violeta sobre negro, con glassmorphism y glow violeta.
 }
 ```
 
-**Tipografías** (Google Fonts):
-- `Playfair Display` → títulos y encabezados (serif elegante).
-- `Inter` → cuerpo de texto, UI, formularios (sans legible).
-- `Cormorant Garamond` → precios y detalles de lujo (serif refinada).
+**Tipografías** (servidas desde el propio sitio, ver `src/assets/fonts/`):
+- `Outfit` → títulos, encabezados, precios y el logo (sin serifa, trazo fino en títulos).
+- `Manrope` → cuerpo de texto, UI, formularios.
+
+> **Enmienda (17/11/2026, spec 006 «rediseño del front»):** reemplaza `Playfair Display`, `Inter` y `Cormorant Garamond` (con serifa) por Outfit y Manrope, y el fondo `#0A0A0F` por `#06040D`. El logo pasó a ser solo el nombre «FRAGANZIA» en trazo fino (ver `DESIGN_SYSTEM.md`, sección 6). Aprobada por el usuario tras revisar la vista previa.
 
 **Efectos visuales** (valores base, ajustables por componente en la spec correspondiente):
 ```css

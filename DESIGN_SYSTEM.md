@@ -265,19 +265,24 @@ hover: color text-primary
 ```
 
 ### 6. Logo
-- **Sello «lacre» de borde fino**: disco violeta en degradé con borde festoneado (30 dientes) y una **F con estela** (la barra superior se eleva y se afina como el humo de un perfume). La F está calada con una máscara, así se ve el fondo a través de ella.
-- **Nombre**: FRAGANZIA en Outfit 700, mayúsculas, espaciado 0.26em, **texto real** (lo leen buscadores, lectores de pantalla y agentes de IA).
-- Geometría única en `src/components/ui/selloPath.js`; el componente es `LogoFraganzia` (el tamaño sale de `--logo-scale`). En tamaños chicos el sello usa borde liso.
-- Íconos (favicon, app, imagen para redes): `node tools/generar-iconos.mjs`.
+- **Solo el nombre** (propuesta A, elegida el 17/11/2026): FRAGANZIA en Outfit 300, mayúsculas, espaciado 0.34em, con un hilo de luz lila debajo y «Perfumes árabes» (Outfit 400, 0.5em) en el pie y, en el encabezado, desde tableta. Sin símbolo: se lee igual en cualquier tamaño.
+- El nombre es **texto real** (lo leen buscadores, lectores de pantalla y agentes de IA). El enlace del encabezado dice «Fraganzia Perfumes árabes, ir al inicio» para que su nombre accesible incluya lo que se ve (WCAG 2.5.3).
+- El componente es `LogoFraganzia` (el tamaño sale de `--logo-scale`; `subtitulo` = true o `'sm'`).
+- Íconos (favicon, app, imagen para redes): una **F simple** con degradé violeta; `node tools/generar-iconos.mjs`.
+- El sello «lacre» anterior (`src/components/ui/selloPath.js`) solo lo usa `tools/generar-flyers-instagram.mjs`.
 
 ### 7. Header (dos niveles)
 - Franja fina de anuncio (envíos AMBA · pago) + header con logo, **buscador** (el único elemento con color lleno), favoritos, carrito con importe, y una fila de categorías (Para él · Para ella · Unisex · Decants · Ofertas si hay promoción) con el asistente "Encontrá tu perfume" en tratamiento secundario.
 - El buscador lleva al catálogo con `?buscar=`; las categorías, con `?genero=` / `?ofertas=1`.
 
 ### 8. Card de producto («vitrina»)
-- La foto va **recortada** (sin fondo) y flota sobre un **escenario oscuro con luz violeta** (`.escenario`, `.foto-recorte` en `src/index.css`). Todas las fotos del catálogo se muestran así.
+- La foto original va en una **ventana clara lila** (`.plinto`) dentro de la tarjeta oscura. Todas las fotos muestran **frasco con caja** (salvo los perfumes que no traen caja, como Armaf Tag): las copias de `public/img/p` salen de `tools/fotos-alternativas` (`node tools/aplicar-fotos-alternativas.mjs`) y llevan `?v=N` (`src/utils/versionFotos.js`) para no quedar en la caché del navegador.
 - Muestra marca, nombre corto, familia · género y los **dos precios** (Transferencia grande, Efectivo chico), más el botón **+** redondo.
-- Las fotos recortadas se generan con `tools/recortar-fotos.mjs` (modelo + color + completado en `tools/lib/recorte_hibrido.py`) y se listan en `src/data/recortes.json`. Una foto nueva sin recorte se ve provisoriamente sobre una ventana clara.
+- Los **recortes de fondo están en pausa** (salían mal en las cajas blancas y cada perfume nuevo del bot necesitaría el suyo a mano): `USAR_RECORTES = false` en `src/utils/image.js`. Los archivos `-cut.webp`, `src/data/recortes.json` y `tools/recortar-fotos.mjs` siguen en el repo por si se retoma.
+
+### 8 bis. Botones y nombres de las páginas internas
+- **Botones en píldora**, como los del Home: `.boton-principal` (llena, la acción de la pantalla; una por vista) y `.boton-contorno` (contorno lila, el resto); `.boton-chico` dentro de filas. Componente `Button` (`variant`, `size="chico"`).
+- Los nombres de perfumes usan el formato de las tarjetas (`tituloCard`: sin marca repetida ni mayúsculas); la ficha, con el trazo fino del Home. El nombre completo queda en un `sr-only` para lectores de pantalla y buscadores.
 
 ### 9. Accesibilidad
 - Meta WCAG 2.2 AA (auditoría axe-core en las pruebas) y un **panel de preferencias** (botón flotante): tamaño del texto, alto contraste, reducir movimiento, subrayar enlaces y letra de lectura fácil. Se guardan en el navegador y se aplican antes de pintar.
